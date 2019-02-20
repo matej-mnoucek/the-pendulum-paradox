@@ -1,4 +1,4 @@
-package com.pendulumparadox.patterns.observer;
+package com.pendulumparadox.observer;
 
 import java.util.ArrayList;
 import java.util.List;

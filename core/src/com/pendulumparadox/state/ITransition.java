@@ -1,4 +1,4 @@
-package com.pendulumparadox.patterns.state;
+package com.pendulumparadox.state;
 
 public interface ITransition<T extends IState, U extends IState>
 {

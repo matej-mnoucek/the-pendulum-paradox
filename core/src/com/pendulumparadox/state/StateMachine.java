@@ -1,4 +1,4 @@
-package com.pendulumparadox.patterns.state;
+package com.pendulumparadox.state;
 
 import java.util.ArrayList;
 import java.util.List;

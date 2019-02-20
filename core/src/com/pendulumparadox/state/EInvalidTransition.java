@@ -1,3 +1,3 @@
-package com.pendulumparadox.patterns.state;
+package com.pendulumparadox.state;
 
 public class EInvalidTransition extends Exception { }

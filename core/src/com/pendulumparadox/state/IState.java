@@ -1,4 +1,4 @@
-package com.pendulumparadox.patterns.state;
+package com.pendulumparadox.state;
 
 public interface IState
 {

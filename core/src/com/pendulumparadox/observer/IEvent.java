@@ -1,4 +1,4 @@
-package com.pendulumparadox.patterns.observer;
+package com.pendulumparadox.observer;
 
 public interface IEvent<T>
 {
