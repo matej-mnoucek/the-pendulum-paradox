@@ -1,6 +1,20 @@
 package com.pendulumparadox.model;
 
-public abstract class Enemy extends Entity
+import com.pendulumparadox.controll.IControlled;
+import com.pendulumparadox.interfaces.IUpdatable;
+
+public abstract class Enemy extends Entity implements IEnemy, IUpdatable
 {
-    String name;
+    private IControlled controlled;
+
+    public Enemy(IControlled controlled)
+    {
+        this.controlled = controlled;
+    }
+
+    @Override
+    public void update(float delta)
+    {
+
+    }
 }

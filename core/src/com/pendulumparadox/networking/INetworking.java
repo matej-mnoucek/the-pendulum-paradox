@@ -1,4 +1,6 @@
 package com.pendulumparadox.networking;
 
-public class Networklogic {
+public interface INetworking
+{
+
 }

@@ -10,6 +10,9 @@ public class Event<T extends EventArgs> implements IEvent<T>
     @Override
     public void invoke(T args)
     {
+
+        IEventHandler<T> hand = (T ar)->{};
+
         for (IEventHandler<T> handler : handlers)
         {
             handler.handle(args);

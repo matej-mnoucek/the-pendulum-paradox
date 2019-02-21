@@ -1,9 +1,15 @@
-package com.pendulumparadox.screen;
+package com.pendulumparadox.scene;
 
-import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.maps.tiled.TiledMap;
 
-public class MainMenuScreen implements Screen
+public class GameScene extends Scene
 {
+    public GameScene(TiledMap level, OrthographicCamera camera)
+    {
+        super(level, camera);
+    }
+
     @Override
     public void show()
     {
