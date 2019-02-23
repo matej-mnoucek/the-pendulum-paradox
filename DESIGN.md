@@ -15,14 +15,21 @@
 * Maybe boss fights? (probably not)
 * Maybe respawn saves? (you always respawn at the latest save object location)
 
-# Design patterns
-* __Buidler__ = Setting up characters, enemies or other complex objects made from components. In the best case use of Fluent Builder: _"He".Append("ll").Append("o");_  
-(e.g. HTML Builder, String builder).
-* __Abstract factory__ = standard abstract factory for e.g. creating components for the final builder assembly.
-* __Bridge__ = decoupling abstraction from implementation (e.g. passing IRenderer to draw a sprite not one final implementation)
+# Architectural patterns
+* __MVP__ = Model-View-Presenter
+* __ECS__ = Entity-Component-System
+
+# Design patterns - already used
+* __Builder__ = building named entities from individual components (we use Fluent Builder)
+* __Abstract factory__ = standard abstract factory for creating components
+* __Chain of responsibility__ = applying modifiers to enemies or player (e.g. power ups, bonuses...)
+* __Observer__ = all various kinds of events (e.g. powerup collected, changes in model data...)
+* __State__ = mainly for controlling view states
+* __Proxy__ = multiplayer synchronization over network
+
+# Design patterns - possible candidates
+* __Bridge__ = decoupling abstraction from implementation (e.g. passing IRenderer to draw a sprite not one final renderer implementation)
 * __Composite__ = basically handle collections the same way like you handle individual objects (note: idk how to do this in Java)
 * __Decorator__ = maybe it will fit somewhere
-* __Chain of responsibility__ = modifiers for enemies and characters (power ups, bonuses...)
-* __Observer__ = all various kinds of events (e.g. powerup collected, end of level reached)
-* __State__ = various states objects (e.g. game state, character state, animation state)
-* __Strategy__ = maybe it will fit somewhere 
+* __Strategy__ = maybe it will fit somewhere
+* __Template method__ = maybe it will fit somewhere

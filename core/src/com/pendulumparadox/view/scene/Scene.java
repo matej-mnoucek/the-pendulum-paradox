@@ -6,6 +6,9 @@ import com.badlogic.gdx.maps.MapRenderer;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 
+/**
+ *  This class represents a scene/map loaded from external Tiled level editor
+ */
 public abstract class Scene implements Screen
 {
     TiledMap level;
