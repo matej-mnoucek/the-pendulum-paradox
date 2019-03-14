@@ -22,7 +22,7 @@ public class LifeEnhancement extends Enhancement
         LifeComponent life = entity.getComponent(LifeComponent.class);
         if (life != null)
         {
-            life.lifes += bonusLifes;
+            life.lives += bonusLifes;
         }
 
         super.apply();
