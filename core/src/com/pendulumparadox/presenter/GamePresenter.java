@@ -49,9 +49,9 @@ public class GamePresenter extends Game
     // Camera
     OrthographicCamera mainCamera = new OrthographicCamera();
 
-    //MenuScreen screen = new MenuScreen();
+    MenuScreen screen = new MenuScreen();
     //InGameScreen screen = new InGameScreen();
-    HighScoreScreen screen = new HighScoreScreen();
+    //HighScoreScreen screen = new HighScoreScreen();
 
     @Override
     public void create()

@@ -2,6 +2,7 @@ package com.pendulumparadox.view.screen;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
@@ -18,6 +19,7 @@ public class MenuScreen extends Screen
     private TextButton btnTutorial;
     private TextButton btnHighScore;
     private TextButton btnSettings;
+    private TextButton btnGoogleLogin;
 
     // Setup the whole layout here
     public void create()
@@ -71,6 +73,14 @@ public class MenuScreen extends Screen
             }
         });
 
+        btnGoogleLogin = new TextButton("Log In to Google", skin);
+        btnGoogleLogin.addListener(new ClickListener(){
+            @Override
+            public void touchUp(InputEvent e, float x, float y, int point, int button){
+                btnGoogleLoginClicked();
+            }
+        });
+
         table.add(btnNewGame).center().size(300,60).padTop(GamePresenter.V_HEIGHT / 5);
         table.row();
         table.add(btnHighScore).center().size(300,60).padTop(20);
@@ -78,6 +88,8 @@ public class MenuScreen extends Screen
         table.add(btnSettings).center().size(300,60).padTop(20);
         table.row();
         table.add(btnTutorial).center().size(300,60).padTop(20);
+        table.row();
+        table.add(btnGoogleLogin).center().size(300,60).padTop(20);
 
         stage.addActor(table);
     }
@@ -96,6 +108,9 @@ public class MenuScreen extends Screen
 
     public void btnSettingsClicked(){
         btnSettings.setText("YAY!");
+    }
+    public void btnGoogleLoginClicked(){
+        btnGoogleLogin.setText("YAY!");
     }
 
     @Override
