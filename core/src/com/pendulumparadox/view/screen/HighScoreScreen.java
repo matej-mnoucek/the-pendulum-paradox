@@ -1,13 +1,200 @@
 package com.pendulumparadox.view.screen;
 
+import com.badlogic.gdx.Game;
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.utils.Align;
+import com.pendulumparadox.presenter.GamePresenter;
+
+import sun.applet.resources.MsgAppletViewer_zh_HK;
+
+
 public class HighScoreScreen extends Screen
 {
+    private String[] names;
+    private Integer[] score;
+
+    private TextButton btnBack;
+
+    private Label scoreLabel;
+    private Label nameLabel;
+    private Label placeLabel;
+    private Label headLine;
+    private Label first;
+    private Label firstName;
+    private Label firstScore;
+    private Label second;
+    private Label secondName;
+    private Label secondScore;
+    private Label third;
+    private Label thirdName;
+    private Label thirdScore;
+    private Label fourth;
+    private Label fourthName;
+    private Label fourthScore;
+    private Label fifth;
+    private Label fifthName;
+    private Label fifthScore;
+    private Label sixth;
+    private Label sixthName;
+    private Label sixthScore;
+    private Label seventh;
+    private Label seventhName;
+    private Label seventhScore;
+    private Label eighth;
+    private Label eighthName;
+    private Label eighthScore;
+    private Label ninth;
+    private Label ninthName;
+    private Label ninthScore;
+    private Label tenth;
+    private Label tenthName;
+    private Label tenthScore;
+
 
     @Override
     public void create()
     {
         super.create();
 
+        this.names = new String[10];
+        this.score = new Integer[10];
+
+        populateHighscoreList();
+
+        BitmapFont font = new BitmapFont();
+        font.getData().scale(0.2f);
+        Label.LabelStyle labelStyle = new Label.LabelStyle();
+        labelStyle.font = font;
+        labelStyle.fontColor = Color.WHITE;
+
+        Gdx.input.setInputProcessor(stage);
+        Skin skin = new Skin(Gdx.files.internal("uiskin.json"));
+
+        Table headLineTable = new Table();
+        headLineTable.top();
+        headLineTable.setFillParent(true);
+
+
+        Table table = new Table();
+        table.center();
+        table.setFillParent(true);
+
+        headLine = new Label("HIGHSCORES", labelStyle);
+        placeLabel = new Label("Place", labelStyle);
+        nameLabel = new Label("Name", labelStyle);
+        scoreLabel = new Label("Score", labelStyle);
+        first = new Label("1",labelStyle);
+        firstName = new Label(names[0], labelStyle);
+        firstScore = new Label(String.format("%06d",score[0]), labelStyle);
+        second = new Label("2",labelStyle);
+        secondName = new Label(names[0], labelStyle);
+        secondScore = new Label(String.format("%06d",score[0]), labelStyle);
+        third = new Label("3",labelStyle);
+        thirdName = new Label(names[0], labelStyle);
+        thirdScore = new Label(String.format("%06d",score[0]), labelStyle);
+        fourth = new Label("4",labelStyle);
+        fourthName = new Label(names[0], labelStyle);
+        fourthScore = new Label(String.format("%06d",score[0]), labelStyle);
+        fifth = new Label("5",labelStyle);
+        fifthName = new Label(names[0], labelStyle);
+        fifthScore = new Label(String.format("%06d",score[0]), labelStyle);
+        sixth = new Label("6",labelStyle);
+        sixthName = new Label(names[0], labelStyle);
+        sixthScore = new Label(String.format("%06d",score[0]), labelStyle);
+        seventh = new Label("7",labelStyle);
+        seventhName = new Label(names[0], labelStyle);
+        seventhScore = new Label(String.format("%06d",score[0]), labelStyle);
+        eighth = new Label("8",labelStyle);
+        eighthName = new Label(names[0], labelStyle);
+        eighthScore = new Label(String.format("%06d",score[0]), labelStyle);
+        ninth = new Label("9",labelStyle);
+        ninthName = new Label(names[0], labelStyle);
+        ninthScore = new Label(String.format("%06d",score[0]), labelStyle);
+        tenth = new Label("10",labelStyle);
+        tenthName = new Label(names[0], labelStyle);
+        tenthScore = new Label(String.format("%06d",score[0]), labelStyle);
+
+        btnBack = new TextButton("BACK", skin);
+        btnBack.setSize(200, 60);
+        btnBack.setPosition(GamePresenter.V_WIDTH / 2 - btnBack.getWidth() / 2,
+                Align.bottom + (GamePresenter.V_HEIGHT / 10));
+        btnBack.addListener(new ClickListener(){
+            @Override
+            public void touchUp(InputEvent e, float x, float y, int point, int button){
+                btnBackClicked();
+            }
+        });
+
+        headLineTable.add(headLine).expandX().padTop(20).padBottom(20);
+        table.add(placeLabel);
+        table.add(nameLabel);
+        table.add(scoreLabel);
+        table.row();
+        table.add(first).expandX();
+        table.add(firstName).expandX();
+        table.add(firstScore).expandX();
+        table.row();
+        table.add(second).expandX();
+        table.add(secondName).expandX();
+        table.add(secondScore).expandX();
+        table.row();
+        table.add(third).expandX();
+        table.add(thirdName).expandX();
+        table.add(thirdScore).expandX();
+        table.row();
+        table.add(fourth).expandX();
+        table.add(fourthName).expandX();
+        table.add(fourthScore).expandX();
+        table.row();
+        table.add(fifth).expandX();
+        table.add(fifthName).expandX();
+        table.add(fifthScore).expandX();
+        table.row();
+        table.add(sixth).expandX();
+        table.add(sixthName).expandX();
+        table.add(sixthScore).expandX();
+        table.row();
+        table.add(seventh).expandX();
+        table.add(seventhName).expandX();
+        table.add(seventhScore).expandX();
+        table.row();
+        table.add(eighth).expandX();
+        table.add(eighthName).expandX();
+        table.add(eighthScore).expandX();
+        table.row();
+        table.add(ninth).expandX();
+        table.add(ninthName).expandX();
+        table.add(ninthScore).expandX();
+        table.row();
+        table.add(tenth).expandX();
+        table.add(tenthName).expandX();
+        table.add(tenthScore).expandX();
+        table.row();
+
+        stage.addActor(table);
+        stage.addActor(headLineTable);
+        stage.addActor(btnBack);
+
+    }
+
+    private void populateHighscoreList(){
+        for(int i = 0; i<10; i++){
+            score[i] = 0;
+            names[i] = "------";
+        }
+    }
+
+    public void btnBackClicked(){
+        btnBack.setText("yay!");
     }
 
     @Override
@@ -17,7 +204,10 @@ public class HighScoreScreen extends Screen
 
     @Override
     public void render() {
-
+        float delta = Gdx.graphics.getDeltaTime();
+        //Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+        stage.act(delta);
+        stage.draw();
     }
 
     @Override

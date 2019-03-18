@@ -14,6 +14,9 @@ import com.pendulumparadox.model.entity.EntityBuilder;
 import com.pendulumparadox.model.entity.IEntityBuilder;
 import com.pendulumparadox.state.IStateMachine;
 import com.pendulumparadox.state.StateMachine;
+import com.pendulumparadox.view.screen.HighScoreScreen;
+import com.pendulumparadox.view.screen.InGameScreen;
+import com.pendulumparadox.view.screen.MenuScreen;
 
 /**
  * The main control class of the whole game.
@@ -21,6 +24,9 @@ import com.pendulumparadox.state.StateMachine;
  */
 public class GamePresenter extends Game
 {
+
+    public static int V_WIDTH = 600;
+    public static int V_HEIGHT = 600;
     // Component based system root
     Engine ecs = new Engine();
 
@@ -43,10 +49,14 @@ public class GamePresenter extends Game
     // Camera
     OrthographicCamera mainCamera = new OrthographicCamera();
 
+    //MenuScreen screen = new MenuScreen();
+    //InGameScreen screen = new InGameScreen();
+    HighScoreScreen screen = new HighScoreScreen();
+
     @Override
     public void create()
     {
-
+        screen.create();
     }
 
     public void update(float delta)
@@ -65,6 +75,7 @@ public class GamePresenter extends Game
         super.render();
         Gdx.gl.glClearColor(0.4f, 0.4f, 0.4f, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+        screen.render();
 
         // Update
         update(Gdx.graphics.getDeltaTime());

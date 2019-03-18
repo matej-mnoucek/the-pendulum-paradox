@@ -3,10 +3,22 @@ package com.pendulumparadox.view.screen;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.pendulumparadox.presenter.GamePresenter;
 
 public class MenuScreen extends Screen
 {
+
+    private TextButton btnNewGame;
+    private TextButton btnTutorial;
+    private TextButton btnHighScore;
+    private TextButton btnSettings;
+
     // Setup the whole layout here
     public void create()
     {
@@ -18,10 +30,72 @@ public class MenuScreen extends Screen
         labelStyle.font = font;
         labelStyle.fontColor = Color.WHITE;
 
-        Label button = new Label("Life is not a malfunction. Number 5 is alive!", labelStyle);
-        stage.addActor(button);
-
         Gdx.input.setInputProcessor(stage);
+        Skin skin = new Skin(Gdx.files.internal("uiskin.json"));
+
+        Table table = new Table();
+        table.top();
+        table.setFillParent(true);
+
+        //TODO: Fit buttons with final size of screen!
+
+        btnNewGame = new TextButton("New Game", skin);
+        btnNewGame.addListener(new ClickListener(){
+            @Override
+            public void touchUp(InputEvent e, float x, float y, int point, int button){
+                btnNewGameClicked();
+            }
+        });
+
+        btnTutorial = new TextButton("Tutorial", skin);
+        btnTutorial.addListener(new ClickListener(){
+            @Override
+            public void touchUp(InputEvent e, float x, float y, int point, int button){
+                btnTutorialClicked();
+            }
+        });
+
+        btnHighScore = new TextButton("HighScore", skin);
+        btnHighScore.addListener(new ClickListener(){
+            @Override
+            public void touchUp(InputEvent e, float x, float y, int point, int button){
+                btnHighScoreClicked();
+            }
+        });
+
+        btnSettings = new TextButton("Settings", skin);
+        btnSettings.addListener(new ClickListener(){
+            @Override
+            public void touchUp(InputEvent e, float x, float y, int point, int button){
+                btnSettingsClicked();
+            }
+        });
+
+        table.add(btnNewGame).center().size(300,60).padTop(GamePresenter.V_HEIGHT / 5);
+        table.row();
+        table.add(btnHighScore).center().size(300,60).padTop(20);
+        table.row();
+        table.add(btnSettings).center().size(300,60).padTop(20);
+        table.row();
+        table.add(btnTutorial).center().size(300,60).padTop(20);
+
+        stage.addActor(table);
+    }
+
+    public void btnTutorialClicked(){
+        btnTutorial.setText("YAY!");
+    }
+
+    public void btnNewGameClicked(){
+        btnNewGame.setText("YAY!");
+    }
+
+    public void btnHighScoreClicked(){
+        btnHighScore.setText("YAY!");
+    }
+
+    public void btnSettingsClicked(){
+        btnSettings.setText("YAY!");
     }
 
     @Override
