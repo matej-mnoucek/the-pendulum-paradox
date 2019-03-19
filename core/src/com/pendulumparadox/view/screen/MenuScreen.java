@@ -36,12 +36,12 @@ public class MenuScreen extends Screen
         Skin skin = new Skin(Gdx.files.internal("uiskin.json"));
 
         Table table = new Table();
-        table.top();
+        table.center();
         table.setFillParent(true);
 
         //TODO: Fit buttons with final size of screen!
 
-        btnNewGame = new TextButton("New Game", skin);
+        TextButton btnNewGame = new TextButton("New Game", skin);
         btnNewGame.addListener(new ClickListener(){
             @Override
             public void touchUp(InputEvent e, float x, float y, int point, int button){
@@ -49,7 +49,7 @@ public class MenuScreen extends Screen
             }
         });
 
-        btnTutorial = new TextButton("Tutorial", skin);
+        TextButton btnTutorial = new TextButton("Tutorial", skin);
         btnTutorial.addListener(new ClickListener(){
             @Override
             public void touchUp(InputEvent e, float x, float y, int point, int button){
@@ -57,7 +57,7 @@ public class MenuScreen extends Screen
             }
         });
 
-        btnHighScore = new TextButton("HighScore", skin);
+        TextButton btnHighScore = new TextButton("HighScore", skin);
         btnHighScore.addListener(new ClickListener(){
             @Override
             public void touchUp(InputEvent e, float x, float y, int point, int button){
@@ -65,7 +65,7 @@ public class MenuScreen extends Screen
             }
         });
 
-        btnSettings = new TextButton("Settings", skin);
+        TextButton btnSettings = new TextButton("Settings", skin);
         btnSettings.addListener(new ClickListener(){
             @Override
             public void touchUp(InputEvent e, float x, float y, int point, int button){
@@ -73,7 +73,7 @@ public class MenuScreen extends Screen
             }
         });
 
-        btnGoogleLogin = new TextButton("Log In to Google", skin);
+        TextButton btnGoogleLogin = new TextButton("Log In to Google", skin);
         btnGoogleLogin.addListener(new ClickListener(){
             @Override
             public void touchUp(InputEvent e, float x, float y, int point, int button){

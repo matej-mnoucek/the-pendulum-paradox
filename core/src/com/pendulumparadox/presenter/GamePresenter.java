@@ -19,6 +19,9 @@ import com.pendulumparadox.model.entity.IEntityBuilder;
 import com.pendulumparadox.model.system.GraphicsSystem;
 import com.pendulumparadox.state.IStateMachine;
 import com.pendulumparadox.state.StateMachine;
+import com.pendulumparadox.view.scene.GameScene;
+import com.pendulumparadox.view.screen.GameOverScreen;
+import com.pendulumparadox.view.screen.Screen;
 
 
 /**
@@ -55,6 +58,8 @@ public class GamePresenter extends Game
 
     //Current Scene
     GameScene currentScene;
+    //Current Screen
+    GameOverScreen currentScreen = new GameOverScreen();
     @Override
     public void create()
     {
@@ -65,7 +70,7 @@ public class GamePresenter extends Game
         mainCamera.update();
         ecs.addSystem(graphicsSystem);
         currentScene = new GameScene(new TmxMapLoader().load("level1.tmx"), mainCamera);
-
+        currentScreen.create();
     }
 
     public void update(float delta)
@@ -84,11 +89,12 @@ public class GamePresenter extends Game
         super.render();
         Gdx.gl.glClearColor(0.0f, 0.4f, 0.4f, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-        screen.render();
 
         currentScene.render(Gdx.graphics.getDeltaTime());
         // Update
         update(Gdx.graphics.getDeltaTime());
+
+        currentScreen.render();
     }
 
     @Override
