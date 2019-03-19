@@ -3,6 +3,7 @@ package com.pendulumparadox.presenter;
 import com.badlogic.ashley.core.Engine;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -31,8 +32,8 @@ import com.pendulumparadox.view.screen.Screen;
 public class GamePresenter extends Game
 {
 
-    public static int V_WIDTH = 600;
-    public static int V_HEIGHT = 600;
+    public static int V_WIDTH = 960;
+    public static int V_HEIGHT = 540;
     // Component based system root
     Engine ecs = new Engine();
 
@@ -55,6 +56,7 @@ public class GamePresenter extends Game
     // Camera
     OrthographicCamera mainCamera = new OrthographicCamera();
 
+    MenuScreen screen = new MenuScreen();
 
     //Current Scene
     GameScene currentScene;
@@ -91,6 +93,7 @@ public class GamePresenter extends Game
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
         currentScene.render(Gdx.graphics.getDeltaTime());
+        screen.render();
         // Update
         update(Gdx.graphics.getDeltaTime());
 
