@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
@@ -21,16 +22,16 @@ public class MenuScreen extends Screen
     private TextButton btnSettings;
     private TextButton btnGoogleLogin;
 
+
     // Setup the whole layout here
     public void create()
     {
         super.create();
 
-        BitmapFont font = new BitmapFont();
-        font.getData().scale(0.2f);
+
+        initFonts();
         Label.LabelStyle labelStyle = new Label.LabelStyle();
-        labelStyle.font = font;
-        labelStyle.fontColor = Color.WHITE;
+        labelStyle.font = GamePresenter.font24;
 
         Gdx.input.setInputProcessor(stage);
         Skin skin = new Skin(Gdx.files.internal("uiskin.json"));
@@ -113,6 +114,17 @@ public class MenuScreen extends Screen
         btnGoogleLogin.setText("YAY!");
     }
 
+
+    private void initFonts(){
+        FreeTypeFontGenerator generator =
+                new FreeTypeFontGenerator(Gdx.files.internal("fonts/freeagentboldi.ttf"));
+        FreeTypeFontGenerator.FreeTypeFontParameter params = new FreeTypeFontGenerator.FreeTypeFontParameter();
+
+        params.size = 24;
+        params.color = Color.WHITE;
+        this.font24 = generator.generateFont(params);
+
+    }
     @Override
     public void resize(int width, int height) {
 
@@ -138,6 +150,7 @@ public class MenuScreen extends Screen
 
     @Override
     public void dispose() {
+        font24.dispose();
 
     }
 }

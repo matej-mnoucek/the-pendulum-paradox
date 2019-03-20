@@ -4,6 +4,7 @@ package com.pendulumparadox.view.screen;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
@@ -58,6 +59,7 @@ public class HighScoreScreen extends Screen
     private Label tenthName;
     private Label tenthScore;
 
+    private BitmapFont font24;
 
     @Override
     public void create()
@@ -69,11 +71,9 @@ public class HighScoreScreen extends Screen
 
         populateHighscoreList();
 
-        BitmapFont font = new BitmapFont();
-        font.getData().scale(0.2f);
+        initFont();
         Label.LabelStyle labelStyle = new Label.LabelStyle();
-        labelStyle.font = font;
-        labelStyle.fontColor = Color.WHITE;
+        labelStyle.font = font24;
 
         Gdx.input.setInputProcessor(stage);
         Skin skin = new Skin(Gdx.files.internal("uiskin.json"));
@@ -185,6 +185,14 @@ public class HighScoreScreen extends Screen
 
     }
 
+    private void initFont(){
+        FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("fonts/freeagentboldi.ttf"));
+        FreeTypeFontGenerator.FreeTypeFontParameter params = new FreeTypeFontGenerator.FreeTypeFontParameter();
+        params.size = 24;
+        params.color = Color.WHITE;
+        font24 = generator.generateFont(params);
+    }
+
     private void populateHighscoreList(){
         for(int i = 0; i<10; i++){
             score[i] = 0;
@@ -221,6 +229,7 @@ public class HighScoreScreen extends Screen
 
     @Override
     public void dispose() {
+        font24.dispose();
 
     }
 }
