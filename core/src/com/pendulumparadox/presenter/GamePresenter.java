@@ -87,17 +87,6 @@ public class GamePresenter extends Game
 
     }
 
-    private void initFonts(){
-        FreeTypeFontGenerator generator =
-                new FreeTypeFontGenerator(Gdx.files.internal("fonts.freeagentbold.ttf"));
-        FreeTypeFontGenerator.FreeTypeFontParameter params =
-                new FreeTypeFontGenerator.FreeTypeFontParameter();
-
-        params.size = 24;
-        params.color = Color.WHITE;
-        this.font24 = generator.generateFont(params);
-    }
-
 
     public void update(float delta)
     {

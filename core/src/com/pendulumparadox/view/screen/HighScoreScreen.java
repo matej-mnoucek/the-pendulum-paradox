@@ -73,11 +73,7 @@ public class HighScoreScreen extends Screen
 
         populateHighscoreList();
 
-        /*
-        initFont();
-        Label.LabelStyle labelStyle = new Label.LabelStyle();
-        labelStyle.font = font24;
-        */
+
         BitmapFont font = new BitmapFont();
         font.getData().scale(0.2f);
         Label.LabelStyle labelStyle = new Label.LabelStyle();
@@ -194,13 +190,6 @@ public class HighScoreScreen extends Screen
 
     }
 
-    private void initFont(){
-        FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("fonts/freeagentboldi.ttf"));
-        FreeTypeFontGenerator.FreeTypeFontParameter params = new FreeTypeFontGenerator.FreeTypeFontParameter();
-        params.size = 24;
-        params.color = Color.WHITE;
-        font24 = generator.generateFont(params);
-    }
 
     private void populateHighscoreList(){
         for(int i = 0; i<10; i++){

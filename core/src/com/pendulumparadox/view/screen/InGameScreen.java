@@ -30,7 +30,6 @@ public class InGameScreen extends Screen
     Image rightImg;
     Image jumpImg;
     Image shootImg;
-    Boolean upPressed;
 
     Skin skin;
 

@@ -121,15 +121,6 @@ public class MenuScreen extends Screen
     }
 
 
-    private void initFonts(){
-        FreeTypeFontGenerator generator =
-                new FreeTypeFontGenerator(Gdx.files.internal("fonts/freeagentboldi.ttf"));
-        FreeTypeFontGenerator.FreeTypeFontParameter params = new FreeTypeFontGenerator.FreeTypeFontParameter();
-
-        params.size = 24;
-        params.color = Color.WHITE;
-
-    }
     @Override
     public void resize(int width, int height) {
 
