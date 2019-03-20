@@ -11,6 +11,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.utils.Align;
 import com.pendulumparadox.presenter.GamePresenter;
 
 public class MenuScreen extends Screen
@@ -22,16 +23,18 @@ public class MenuScreen extends Screen
     private TextButton btnSettings;
     private TextButton btnGoogleLogin;
 
+    BitmapFont font;
 
     // Setup the whole layout here
     public void create()
     {
         super.create();
 
-
-        initFonts();
+        font = new BitmapFont();
+        font.getData().scale(0.2f);
         Label.LabelStyle labelStyle = new Label.LabelStyle();
-        labelStyle.font = GamePresenter.font24;
+        labelStyle.font = font;
+        labelStyle.fontColor = Color.WHITE;
 
         Gdx.input.setInputProcessor(stage);
         Skin skin = new Skin(Gdx.files.internal("uiskin.json"));
@@ -42,7 +45,7 @@ public class MenuScreen extends Screen
 
         //TODO: Fit buttons with final size of screen!
 
-        TextButton btnNewGame = new TextButton("New Game", skin);
+        this.btnNewGame = new TextButton("New Game", skin);
         btnNewGame.addListener(new ClickListener(){
             @Override
             public void touchUp(InputEvent e, float x, float y, int point, int button){
@@ -50,7 +53,7 @@ public class MenuScreen extends Screen
             }
         });
 
-        TextButton btnTutorial = new TextButton("Tutorial", skin);
+        this.btnTutorial = new TextButton("Tutorial", skin);
         btnTutorial.addListener(new ClickListener(){
             @Override
             public void touchUp(InputEvent e, float x, float y, int point, int button){
@@ -58,7 +61,7 @@ public class MenuScreen extends Screen
             }
         });
 
-        TextButton btnHighScore = new TextButton("HighScore", skin);
+        this.btnHighScore = new TextButton("HighScore", skin);
         btnHighScore.addListener(new ClickListener(){
             @Override
             public void touchUp(InputEvent e, float x, float y, int point, int button){
@@ -66,7 +69,7 @@ public class MenuScreen extends Screen
             }
         });
 
-        TextButton btnSettings = new TextButton("Settings", skin);
+        this.btnSettings = new TextButton("Settings", skin);
         btnSettings.addListener(new ClickListener(){
             @Override
             public void touchUp(InputEvent e, float x, float y, int point, int button){
@@ -74,7 +77,7 @@ public class MenuScreen extends Screen
             }
         });
 
-        TextButton btnGoogleLogin = new TextButton("Log In to Google", skin);
+        this.btnGoogleLogin = new TextButton("Log In to Google", skin);
         btnGoogleLogin.addListener(new ClickListener(){
             @Override
             public void touchUp(InputEvent e, float x, float y, int point, int button){
@@ -82,7 +85,7 @@ public class MenuScreen extends Screen
             }
         });
 
-        table.add(btnNewGame).center().size(300,60).padTop(GamePresenter.V_HEIGHT / 5);
+        //table.add(btnNewGame).center().size(300,60).padTop(GamePresenter.V_HEIGHT / 5);
         table.row();
         table.add(btnHighScore).center().size(300,60).padTop(20);
         table.row();
@@ -93,6 +96,7 @@ public class MenuScreen extends Screen
         table.add(btnGoogleLogin).center().size(300,60).padTop(20);
 
         stage.addActor(table);
+        stage.addActor(btnNewGame);
     }
 
     public void btnTutorialClicked(){
@@ -122,7 +126,6 @@ public class MenuScreen extends Screen
 
         params.size = 24;
         params.color = Color.WHITE;
-        this.font24 = generator.generateFont(params);
 
     }
     @Override
@@ -150,7 +153,7 @@ public class MenuScreen extends Screen
 
     @Override
     public void dispose() {
-        font24.dispose();
+        font.dispose();
 
     }
 }

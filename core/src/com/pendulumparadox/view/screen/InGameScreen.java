@@ -21,9 +21,19 @@ import java.util.BitSet;
 
 public class InGameScreen extends Screen
 {
-    private int lifeCounter;
-    private int ammoCounter;
+    Label lifeLabel;
+    Label lifeCount;
+    Label ammoLabel;
+    Label ammoCount;
+    Image weapon;
+    Image leftImg;
+    Image rightImg;
+    Image jumpImg;
+    Image shootImg;
     Boolean upPressed;
+
+    int lifeCounter;
+    int ammoCounter;
 
     @Override
     public void create()
@@ -58,15 +68,15 @@ public class InGameScreen extends Screen
         ammoCounter = 100;
 
 
-        Label lifeLabel = new Label("LIVES: ", labelStyle);
-        Label lifeCount = new Label(String.format("%01d", lifeCounter),labelStyle);
-        Label ammoLabel = new Label("Ammo:", labelStyle);
-        Label ammoCount = new Label(String.format("%03d", ammoCounter), labelStyle);
-        Image weapon = new Image(new Texture("ak47.png"));
-        Image leftImg = new Image(new Texture("leftArrow.png"));
-        Image rightImg = new Image(new Texture("rightArrow.png"));
-        Image jumpImg = new Image(new Texture("jumpButton.png"));
-        Image shootImg = new Image(new Texture("shootButton.png"));
+        lifeLabel = new Label("LIVES: ", labelStyle);
+        lifeCount = new Label(String.format("%01d", lifeCounter),labelStyle);
+        ammoLabel = new Label("Ammo:", labelStyle);
+        ammoCount = new Label(String.format("%03d", ammoCounter), labelStyle);
+        weapon = new Image(new Texture("ak47.png"));
+        leftImg = new Image(new Texture("leftArrow.png"));
+        rightImg = new Image(new Texture("rightArrow.png"));
+        jumpImg = new Image(new Texture("jumpButton.png"));
+        shootImg = new Image(new Texture("shootButton.png"));
 
         leftImg.addListener(new ClickListener(){
             @Override

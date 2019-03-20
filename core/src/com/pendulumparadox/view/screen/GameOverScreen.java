@@ -42,22 +42,22 @@ public class GameOverScreen extends Screen{
 
         headLine = new Label("GAME OVER!", labelStyle);
 
-        TextButton btnNewGame = new TextButton("New Game", skin);
+        btnNewGame = new TextButton("New Game", skin);
         btnNewGame.addListener(new ClickListener(){
             @Override
             public void touchUp(InputEvent e, float x, float y, int point, int button){
                 btnNewGamePressed();
             }
         });
-        TextButton btnToHighscores = new TextButton("Highscores", skin);
-        btnNewGame.addListener(new ClickListener(){
+        btnToHighscores = new TextButton("Highscores", skin);
+        btnToHighscores.addListener(new ClickListener(){
             @Override
             public void touchUp(InputEvent e, float x, float y, int point, int button){
                 btnToHighscoresPressed();
             }
         });
-        TextButton btnToMenu = new TextButton("Main Menu", skin);
-        btnNewGame.addListener(new ClickListener(){
+        btnToMenu = new TextButton("Main Menu", skin);
+        btnToMenu.addListener(new ClickListener(){
             @Override
             public void touchUp(InputEvent e, float x, float y, int point, int button){
                 btnToMenuPressed();

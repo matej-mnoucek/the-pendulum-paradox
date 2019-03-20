@@ -71,9 +71,16 @@ public class HighScoreScreen extends Screen
 
         populateHighscoreList();
 
+        /*
         initFont();
         Label.LabelStyle labelStyle = new Label.LabelStyle();
         labelStyle.font = font24;
+*/
+        BitmapFont font = new BitmapFont();
+        font.getData().scale(0.2f);
+        Label.LabelStyle labelStyle = new Label.LabelStyle();
+        labelStyle.font = font;
+        labelStyle.fontColor = Color.WHITE;
 
         Gdx.input.setInputProcessor(stage);
         Skin skin = new Skin(Gdx.files.internal("uiskin.json"));

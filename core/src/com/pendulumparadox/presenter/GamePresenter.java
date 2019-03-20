@@ -69,7 +69,7 @@ public class GamePresenter extends Game
     //Current Scene
     GameScene currentScene;
     //Current Screen
-    HighScoreScreen currentScreen = new HighScoreScreen();
+    MenuScreen currentScreen = new MenuScreen();
     @Override
     public void create()
     {
@@ -82,7 +82,6 @@ public class GamePresenter extends Game
         currentScene = new GameScene(new TmxMapLoader().load("level1.tmx"), mainCamera);
         currentScreen.create();
 
-        initFonts();
     }
 
     private void initFonts(){
