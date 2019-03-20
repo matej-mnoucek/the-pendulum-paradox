@@ -9,13 +9,16 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
-import com.badlogic.gdx.utils.Align;
+
 
 public class GameOverScreen extends Screen{
 
+    private Label headLine;
     TextButton btnNewGame;
     TextButton btnToHighscores;
     TextButton btnToMenu;
+
+    private Skin skin;
 
     public void create(){
         super.create();
@@ -27,44 +30,50 @@ public class GameOverScreen extends Screen{
         labelStyle.fontColor = Color.WHITE;
 
         Gdx.input.setInputProcessor(stage);
-        Skin skin = new Skin(Gdx.files.internal("uiskin.json"));
+        this.skin = new Skin(Gdx.files.internal("uiskin.json"));
 
         Table table = new Table();
         table.center();
         table.setFillParent(true);
         table.setDebug(true);
 
-        TextButton btnNewGame = new TextButton("New Game", skin);
+        Table headLineTable = new Table();
+        headLineTable.top();
+        headLineTable.setFillParent(true);
+
+        headLine = new Label("GAME OVER!", labelStyle);
+
+        btnNewGame = new TextButton("New Game", skin);
         btnNewGame.addListener(new ClickListener(){
             @Override
             public void touchUp(InputEvent e, float x, float y, int point, int button){
                 btnNewGamePressed();
             }
         });
-        TextButton btnToHighscores = new TextButton("Highscores", skin);
-        btnNewGame.addListener(new ClickListener(){
+        btnToHighscores = new TextButton("Highscores", skin);
+        btnToHighscores.addListener(new ClickListener(){
             @Override
             public void touchUp(InputEvent e, float x, float y, int point, int button){
                 btnToHighscoresPressed();
             }
         });
-        TextButton btnToMenu = new TextButton("Main Menu", skin);
-        btnNewGame.addListener(new ClickListener(){
+        btnToMenu = new TextButton("Main Menu", skin);
+        btnToMenu.addListener(new ClickListener(){
             @Override
             public void touchUp(InputEvent e, float x, float y, int point, int button){
                 btnToMenuPressed();
             }
         });
 
-        table.row().expandY().align(Align.center);
-        table.add(btnNewGame).expandY().align(Align.center);
+        headLineTable.add(headLine).center().padTop(60);
+        table.add(btnNewGame).center().size(300,60);
         table.row();
-        table.add(btnToMenu).expandY().align(Align.center);
+        table.add(btnToMenu).center().size(300,60).padTop(20);
         table.row();
-        table.add(btnToHighscores).expandY().align(Align.center);
-        table.row().expandY().align(Align.center);
+        table.add(btnToHighscores).center().size(300,60).padTop(20);
 
         stage.addActor(table);
+        stage.addActor(headLineTable);
 
     }
 

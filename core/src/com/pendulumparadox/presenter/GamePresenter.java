@@ -3,9 +3,13 @@ package com.pendulumparadox.presenter;
 import com.badlogic.ashley.core.Engine;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.assets.AssetManager;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.maps.MapRenderer;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
@@ -21,6 +25,7 @@ import com.pendulumparadox.state.IStateMachine;
 import com.pendulumparadox.state.StateMachine;
 import com.pendulumparadox.view.scene.GameScene;
 import com.pendulumparadox.view.screen.GameOverScreen;
+
 import com.pendulumparadox.view.screen.MenuScreen;
 
 
@@ -32,8 +37,12 @@ import com.pendulumparadox.view.screen.MenuScreen;
 public class GamePresenter extends Game
 {
 
-    public static int V_WIDTH = 600;
-    public static int V_HEIGHT = 600;
+    public static int V_WIDTH = 960;
+    public static int V_HEIGHT = 540;
+
+    //font
+    public BitmapFont font24;
+
     // Component based system root
     Engine ecs = new Engine();
 
@@ -56,11 +65,14 @@ public class GamePresenter extends Game
     // Camera
     OrthographicCamera mainCamera = new OrthographicCamera();
 
+    GameOverScreen screen = new GameOverScreen();
 
     //Current Scene
     GameScene currentScene;
     //Current Screen
+
     MenuScreen currentScreen = new MenuScreen();
+
     @Override
     public void create()
     {
@@ -72,7 +84,20 @@ public class GamePresenter extends Game
         ecs.addSystem(graphicsSystem);
         currentScene = new GameScene(new TmxMapLoader().load("level1.tmx"), mainCamera);
         currentScreen.create();
+
     }
+
+    private void initFonts(){
+        FreeTypeFontGenerator generator =
+                new FreeTypeFontGenerator(Gdx.files.internal("fonts.freeagentbold.ttf"));
+        FreeTypeFontGenerator.FreeTypeFontParameter params =
+                new FreeTypeFontGenerator.FreeTypeFontParameter();
+
+        params.size = 24;
+        params.color = Color.WHITE;
+        this.font24 = generator.generateFont(params);
+    }
+
 
     public void update(float delta)
     {

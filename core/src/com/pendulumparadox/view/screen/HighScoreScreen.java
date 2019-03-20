@@ -1,10 +1,10 @@
 package com.pendulumparadox.view.screen;
 
-import com.badlogic.gdx.Game;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
@@ -14,13 +14,15 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
 import com.pendulumparadox.presenter.GamePresenter;
 
-import sun.applet.resources.MsgAppletViewer_zh_HK;
+
 
 
 public class HighScoreScreen extends Screen
 {
     private String[] names;
     private Integer[] score;
+
+    private Skin skin;
 
     private TextButton btnBack;
 
@@ -59,6 +61,7 @@ public class HighScoreScreen extends Screen
     private Label tenthName;
     private Label tenthScore;
 
+    private BitmapFont font24;
 
     @Override
     public void create()
@@ -70,6 +73,11 @@ public class HighScoreScreen extends Screen
 
         populateHighscoreList();
 
+        /*
+        initFont();
+        Label.LabelStyle labelStyle = new Label.LabelStyle();
+        labelStyle.font = font24;
+        */
         BitmapFont font = new BitmapFont();
         font.getData().scale(0.2f);
         Label.LabelStyle labelStyle = new Label.LabelStyle();
@@ -77,7 +85,7 @@ public class HighScoreScreen extends Screen
         labelStyle.fontColor = Color.WHITE;
 
         Gdx.input.setInputProcessor(stage);
-        Skin skin = new Skin(Gdx.files.internal("uiskin.json"));
+        this.skin = new Skin(Gdx.files.internal("uiskin.json"));
 
         Table headLineTable = new Table();
         headLineTable.top();
@@ -186,6 +194,14 @@ public class HighScoreScreen extends Screen
 
     }
 
+    private void initFont(){
+        FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("fonts/freeagentboldi.ttf"));
+        FreeTypeFontGenerator.FreeTypeFontParameter params = new FreeTypeFontGenerator.FreeTypeFontParameter();
+        params.size = 24;
+        params.color = Color.WHITE;
+        font24 = generator.generateFont(params);
+    }
+
     private void populateHighscoreList(){
         for(int i = 0; i<10; i++){
             score[i] = 0;
@@ -222,6 +238,7 @@ public class HighScoreScreen extends Screen
 
     @Override
     public void dispose() {
+        font24.dispose();
 
     }
 }
