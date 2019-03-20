@@ -21,7 +21,8 @@ import com.pendulumparadox.state.IStateMachine;
 import com.pendulumparadox.state.StateMachine;
 import com.pendulumparadox.view.scene.GameScene;
 import com.pendulumparadox.view.screen.GameOverScreen;
-import com.pendulumparadox.view.screen.Screen;
+import com.pendulumparadox.view.screen.MenuScreen;
+
 
 
 /**
@@ -59,7 +60,7 @@ public class GamePresenter extends Game
     //Current Scene
     GameScene currentScene;
     //Current Screen
-    GameOverScreen currentScreen = new GameOverScreen();
+    MenuScreen currentScreen = new MenuScreen();
     @Override
     public void create()
     {
