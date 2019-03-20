@@ -27,6 +27,7 @@ import com.pendulumparadox.view.scene.GameScene;
 import com.pendulumparadox.view.screen.GameOverScreen;
 import com.pendulumparadox.view.screen.HighScoreScreen;
 import com.pendulumparadox.view.screen.MenuScreen;
+import com.pendulumparadox.view.screen.SettingsScreen;
 
 
 /**
@@ -69,7 +70,7 @@ public class GamePresenter extends Game
     //Current Scene
     GameScene currentScene;
     //Current Screen
-    MenuScreen currentScreen = new MenuScreen();
+    SettingsScreen currentScreen = new SettingsScreen();
     @Override
     public void create()
     {
