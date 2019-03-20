@@ -22,7 +22,6 @@ import com.pendulumparadox.state.IStateMachine;
 import com.pendulumparadox.state.StateMachine;
 import com.pendulumparadox.view.scene.GameScene;
 import com.pendulumparadox.view.screen.GameOverScreen;
-import com.pendulumparadox.view.screen.Screen;
 
 
 /**
@@ -56,7 +55,7 @@ public class GamePresenter extends Game
     // Camera
     OrthographicCamera mainCamera = new OrthographicCamera();
 
-    MenuScreen screen = new MenuScreen();
+    GameOverScreen screen = new GameOverScreen();
 
     //Current Scene
     GameScene currentScene;
@@ -93,7 +92,6 @@ public class GamePresenter extends Game
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
         currentScene.render(Gdx.graphics.getDeltaTime());
-        screen.render();
         // Update
         update(Gdx.graphics.getDeltaTime());
 

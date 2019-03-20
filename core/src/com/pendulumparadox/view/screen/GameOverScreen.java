@@ -10,9 +10,11 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
+import com.pendulumparadox.presenter.GamePresenter;
 
 public class GameOverScreen extends Screen{
 
+    private Label headLine;
     TextButton btnNewGame;
     TextButton btnToHighscores;
     TextButton btnToMenu;
@@ -33,6 +35,12 @@ public class GameOverScreen extends Screen{
         table.center();
         table.setFillParent(true);
         table.setDebug(true);
+
+        Table headLineTable = new Table();
+        headLineTable.top();
+        headLineTable.setFillParent(true);
+
+        headLine = new Label("GAME OVER!", labelStyle);
 
         TextButton btnNewGame = new TextButton("New Game", skin);
         btnNewGame.addListener(new ClickListener(){
@@ -56,15 +64,15 @@ public class GameOverScreen extends Screen{
             }
         });
 
-        table.row().expandY().align(Align.center);
-        table.add(btnNewGame).expandY().align(Align.center);
+        headLineTable.add(headLine).center().padTop(60);
+        table.add(btnNewGame).center().size(300,60);
         table.row();
-        table.add(btnToMenu).expandY().align(Align.center);
+        table.add(btnToMenu).center().size(300,60).padTop(20);
         table.row();
-        table.add(btnToHighscores).expandY().align(Align.center);
-        table.row().expandY().align(Align.center);
+        table.add(btnToHighscores).center().size(300,60).padTop(20);
 
         stage.addActor(table);
+        stage.addActor(headLineTable);
 
     }
 
