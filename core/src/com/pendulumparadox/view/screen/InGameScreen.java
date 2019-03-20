@@ -21,28 +21,32 @@ import java.util.BitSet;
 
 public class InGameScreen extends Screen
 {
-    Label lifeLabel;
-    Label lifeCount;
-    Label ammoLabel;
-    Label ammoCount;
-    Image weapon;
-    Image leftImg;
-    Image rightImg;
-    Image jumpImg;
-    Image shootImg;
-    Boolean upPressed;
+    private Label lifeLabel;
+    private Label lifeCount;
+    private Label ammoLabel;
+    private Label ammoCount;
+    private Image weapon;
+    private Image leftImg;
+    private Image rightImg;
+    private Image jumpImg;
+    private Image shootImg;
+    private Texture weaponTexture;
+    private Texture leftTexture;
+    private Texture rightTexture;
+    private Texture jumpTexture;
+    private Texture shootTexture;
+    private BitmapFont font;
+    private Skin skin;
 
-    Skin skin;
-
-    int lifeCounter;
-    int ammoCounter;
+    private int lifeCounter;
+    private int ammoCounter;
 
     @Override
     public void create()
     {
         super.create();
 
-        BitmapFont font = new BitmapFont();
+        font = new BitmapFont();
         font.getData().scale(0.2f);
         Label.LabelStyle labelStyle = new Label.LabelStyle();
         labelStyle.font = font;
@@ -74,11 +78,16 @@ public class InGameScreen extends Screen
         lifeCount = new Label(String.format("%01d", lifeCounter),labelStyle);
         ammoLabel = new Label("Ammo:", labelStyle);
         ammoCount = new Label(String.format("%03d", ammoCounter), labelStyle);
-        weapon = new Image(new Texture("ak47.png"));
-        leftImg = new Image(new Texture("leftArrow.png"));
-        rightImg = new Image(new Texture("rightArrow.png"));
-        jumpImg = new Image(new Texture("jumpButton.png"));
-        shootImg = new Image(new Texture("shootButton.png"));
+        weaponTexture = new Texture("ak47.png");
+        leftTexture = new Texture("leftArrow.png");
+        rightTexture = new Texture("rightArrow.png");
+        jumpTexture = new Texture("jumpButton.png");
+        shootTexture = new Texture("shootButton.png");
+        weapon = new Image(weaponTexture);
+        leftImg = new Image(leftTexture);
+        rightImg = new Image(rightTexture);
+        jumpImg = new Image(jumpTexture);
+        shootImg = new Image(shootTexture);
 
         leftImg.addListener(new ClickListener(){
             @Override
@@ -159,5 +168,11 @@ public class InGameScreen extends Screen
 
     @Override
     public void dispose() {
+        weaponTexture.dispose();
+        leftTexture.dispose();
+        rightTexture.dispose();
+        shootTexture.dispose();
+        jumpTexture.dispose();
+        font.dispose();
     }
 }

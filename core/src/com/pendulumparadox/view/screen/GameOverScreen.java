@@ -9,6 +9,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.pendulumparadox.observer.Event;
+import com.pendulumparadox.observer.EventArgs;
 
 
 public class GameOverScreen extends Screen{
@@ -17,13 +19,14 @@ public class GameOverScreen extends Screen{
     TextButton btnNewGame;
     TextButton btnToHighscores;
     TextButton btnToMenu;
-
+    BitmapFont font;
+    public Event<EventArgs> btnNewGamePressed;
     private Skin skin;
 
     public void create(){
         super.create();
 
-        BitmapFont font = new BitmapFont();
+        font = new BitmapFont();
         font.getData().scale(0.2f);
         Label.LabelStyle labelStyle = new Label.LabelStyle();
         labelStyle.font = font;
@@ -47,7 +50,7 @@ public class GameOverScreen extends Screen{
         btnNewGame.addListener(new ClickListener(){
             @Override
             public void touchUp(InputEvent e, float x, float y, int point, int button){
-                btnNewGamePressed();
+                btnNewGamePressed.invoke(null);
             }
         });
         btnToHighscores = new TextButton("Highscores", skin);
@@ -111,6 +114,7 @@ public class GameOverScreen extends Screen{
 
     @Override
     public void dispose() {
-
+        skin.dispose();
+        font.dispose();
     }
 }

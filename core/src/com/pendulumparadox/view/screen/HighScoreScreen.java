@@ -61,6 +61,8 @@ public class HighScoreScreen extends Screen
     private Label tenthName;
     private Label tenthScore;
 
+    private Table table;
+
     private BitmapFont font24;
 
     @Override
@@ -92,7 +94,7 @@ public class HighScoreScreen extends Screen
         headLineTable.setFillParent(true);
 
 
-        Table table = new Table();
+        table = new Table();
         table.center();
         table.setFillParent(true);
 
@@ -239,6 +241,5 @@ public class HighScoreScreen extends Screen
     @Override
     public void dispose() {
         font24.dispose();
-
     }
 }

@@ -70,7 +70,7 @@ public class GamePresenter extends Game
     //Current Scene
     GameScene currentScene;
     //Current Screen
-    SettingsScreen currentScreen = new SettingsScreen();
+    GameOverScreen currentScreen = new GameOverScreen();
     @Override
     public void create()
     {
@@ -82,6 +82,7 @@ public class GamePresenter extends Game
         ecs.addSystem(graphicsSystem);
         currentScene = new GameScene(new TmxMapLoader().load("level1.tmx"), mainCamera);
         currentScreen.create();
+        currentScreen.btnNewGameClicked();
 
     }
 
