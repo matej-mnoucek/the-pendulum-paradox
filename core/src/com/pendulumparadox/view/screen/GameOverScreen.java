@@ -9,8 +9,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
-import com.badlogic.gdx.utils.Align;
-import com.pendulumparadox.presenter.GamePresenter;
+
 
 public class GameOverScreen extends Screen{
 
@@ -18,6 +17,8 @@ public class GameOverScreen extends Screen{
     TextButton btnNewGame;
     TextButton btnToHighscores;
     TextButton btnToMenu;
+
+    private Skin skin;
 
     public void create(){
         super.create();
@@ -29,7 +30,7 @@ public class GameOverScreen extends Screen{
         labelStyle.fontColor = Color.WHITE;
 
         Gdx.input.setInputProcessor(stage);
-        Skin skin = new Skin(Gdx.files.internal("uiskin.json"));
+        this.skin = new Skin(Gdx.files.internal("uiskin.json"));
 
         Table table = new Table();
         table.center();

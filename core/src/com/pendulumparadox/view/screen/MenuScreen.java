@@ -22,6 +22,7 @@ public class MenuScreen extends Screen
     private TextButton btnHighScore;
     private TextButton btnSettings;
     private TextButton btnGoogleLogin;
+    private Skin skin;
 
     BitmapFont font;
 
@@ -30,6 +31,8 @@ public class MenuScreen extends Screen
     {
         super.create();
 
+        this.skin = new Skin(Gdx.files.internal("uiskin.json"));
+
         font = new BitmapFont();
         font.getData().scale(0.2f);
         Label.LabelStyle labelStyle = new Label.LabelStyle();
@@ -37,7 +40,6 @@ public class MenuScreen extends Screen
         labelStyle.fontColor = Color.WHITE;
 
         Gdx.input.setInputProcessor(stage);
-        Skin skin = new Skin(Gdx.files.internal("uiskin.json"));
 
         Table table = new Table();
         table.center();

@@ -32,6 +32,8 @@ public class InGameScreen extends Screen
     Image shootImg;
     Boolean upPressed;
 
+    Skin skin;
+
     int lifeCounter;
     int ammoCounter;
 
@@ -46,7 +48,7 @@ public class InGameScreen extends Screen
         labelStyle.font = font;
         labelStyle.fontColor = Color.WHITE;
 
-        Skin skin = new Skin(Gdx.files.internal("uiskin.json"));
+        this.skin = new Skin(Gdx.files.internal("uiskin.json"));
 
         Table hudTable = new Table();
         hudTable.top();

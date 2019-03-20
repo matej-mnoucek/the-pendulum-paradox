@@ -22,6 +22,8 @@ public class HighScoreScreen extends Screen
     private String[] names;
     private Integer[] score;
 
+    private Skin skin;
+
     private TextButton btnBack;
 
     private Label scoreLabel;
@@ -83,7 +85,7 @@ public class HighScoreScreen extends Screen
         labelStyle.fontColor = Color.WHITE;
 
         Gdx.input.setInputProcessor(stage);
-        Skin skin = new Skin(Gdx.files.internal("uiskin.json"));
+        this.skin = new Skin(Gdx.files.internal("uiskin.json"));
 
         Table headLineTable = new Table();
         headLineTable.top();
