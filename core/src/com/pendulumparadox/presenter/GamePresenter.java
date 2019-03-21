@@ -22,6 +22,7 @@ import com.pendulumparadox.model.entity.EntityBuilder;
 import com.pendulumparadox.model.entity.IEntityBuilder;
 import com.pendulumparadox.model.system.GraphicsSystem;
 import com.pendulumparadox.state.IStateMachine;
+import com.pendulumparadox.state.MenuState;
 import com.pendulumparadox.state.StateMachine;
 import com.pendulumparadox.view.scene.GameScene;
 import com.pendulumparadox.view.screen.GameOverScreen;
@@ -84,6 +85,8 @@ public class GamePresenter extends Game
         ecs.addSystem(graphicsSystem);
         currentScene = new GameScene(new TmxMapLoader().load("level1.tmx"), mainCamera);
         currentScreen.create();
+
+        viewMachine.setInitialState(MenuState);
 
     }
 
