@@ -11,6 +11,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.pendulumparadox.observer.Event;
 import com.pendulumparadox.observer.EventArgs;
+import com.pendulumparadox.presenter.GamePresenter;
 
 
 public class GameOverScreen extends Screen{
@@ -19,18 +20,13 @@ public class GameOverScreen extends Screen{
     TextButton btnNewGame;
     TextButton btnToHighscores;
     TextButton btnToMenu;
-    BitmapFont font;
     public Event<EventArgs> btnNewGamePressed;
     private Skin skin;
 
     public void create(){
         super.create();
 
-        font = new BitmapFont();
-        font.getData().scale(0.2f);
-        Label.LabelStyle labelStyle = new Label.LabelStyle();
-        labelStyle.font = font;
-        labelStyle.fontColor = Color.WHITE;
+
 
         Gdx.input.setInputProcessor(stage);
         this.skin = new Skin(Gdx.files.internal("uiskin.json"));
@@ -44,7 +40,7 @@ public class GameOverScreen extends Screen{
         headLineTable.top();
         headLineTable.setFillParent(true);
 
-        headLine = new Label("GAME OVER!", labelStyle);
+        headLine = new Label("GAME OVER!", GamePresenter.getFont24()labelStyle);
         btnNewGamePressed = new Event<EventArgs>();
         btnNewGame = new TextButton("New Game", skin);
         btnNewGame.addListener(new ClickListener(){

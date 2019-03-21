@@ -84,6 +84,8 @@ public class GamePresenter extends Game
         currentScreen.create();
         //currentScreen.btnNewGameClicked();
 
+        initFonts();
+
         //currentScreen.btnNewGamePressed.addHandler(args -> {StateMachine});
 
     }
@@ -99,6 +101,9 @@ public class GamePresenter extends Game
         this.font24 = generator.generateFont(params);
     }
 
+    public BitmapFont getFont24(){
+        return this.font24;
+    }
 
     public void update(float delta)
     {
