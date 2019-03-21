@@ -45,7 +45,7 @@ public class GameOverScreen extends Screen{
         headLineTable.setFillParent(true);
 
         headLine = new Label("GAME OVER!", labelStyle);
-
+        btnNewGamePressed = new Event<EventArgs>();
         btnNewGame = new TextButton("New Game", skin);
         btnNewGame.addListener(new ClickListener(){
             @Override

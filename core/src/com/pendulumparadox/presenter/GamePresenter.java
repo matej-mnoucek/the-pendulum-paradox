@@ -3,7 +3,6 @@ package com.pendulumparadox.presenter;
 import com.badlogic.ashley.core.Engine;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
@@ -27,6 +26,7 @@ import com.pendulumparadox.view.scene.GameScene;
 import com.pendulumparadox.view.screen.GameOverScreen;
 import com.pendulumparadox.view.screen.HighScoreScreen;
 import com.pendulumparadox.view.screen.MenuScreen;
+import com.pendulumparadox.view.screen.Screen;
 import com.pendulumparadox.view.screen.SettingsScreen;
 
 
@@ -70,7 +70,7 @@ public class GamePresenter extends Game
     //Current Scene
     GameScene currentScene;
     //Current Screen
-    GameOverScreen currentScreen = new GameOverScreen();
+    Screen currentScreen = new GameOverScreen();
     @Override
     public void create()
     {
@@ -82,7 +82,9 @@ public class GamePresenter extends Game
         ecs.addSystem(graphicsSystem);
         currentScene = new GameScene(new TmxMapLoader().load("level1.tmx"), mainCamera);
         currentScreen.create();
-        currentScreen.btnNewGameClicked();
+        //currentScreen.btnNewGameClicked();
+
+        //currentScreen.btnNewGamePressed.addHandler(args -> {StateMachine});
 
     }
 
