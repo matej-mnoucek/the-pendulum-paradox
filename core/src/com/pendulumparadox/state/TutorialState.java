@@ -1,7 +1,6 @@
 package com.pendulumparadox.state;
 
-public class GameOverState implements IState{
-
+public class TutorialState implements IState{
     @Override
     public void execute() {
 

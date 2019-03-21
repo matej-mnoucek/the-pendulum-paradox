@@ -1,4 +1,9 @@
 package com.pendulumparadox.state;
 
-public class MenuState {
+public class MenuState implements IState{
+
+    @Override
+    public void execute() {
+
+    }
 }
