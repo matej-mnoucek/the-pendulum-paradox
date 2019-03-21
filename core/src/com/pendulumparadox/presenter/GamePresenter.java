@@ -21,6 +21,7 @@ import com.pendulumparadox.model.component.ComponentFactory;
 import com.pendulumparadox.model.entity.EntityBuilder;
 import com.pendulumparadox.model.entity.IEntityBuilder;
 import com.pendulumparadox.model.system.GraphicsSystem;
+import com.pendulumparadox.model.system.PhysicsSystem;
 import com.pendulumparadox.state.IStateMachine;
 import com.pendulumparadox.state.StateMachine;
 import com.pendulumparadox.view.scene.GameScene;
@@ -54,7 +55,7 @@ public class GamePresenter extends Game
 
 
     // Physics world
-    World physics = new World(new Vector2(0, -10), true);
+    World world = new World(new Vector2(0, -10), true);
 
     // MVP view state machine
     IStateMachine viewMachine = new StateMachine();
@@ -85,6 +86,9 @@ public class GamePresenter extends Game
         currentScene = new GameScene(new TmxMapLoader().load("level1.tmx"), mainCamera);
         currentScreen.create();
 
+        // Physics
+        PhysicsSystem physics = new PhysicsSystem(world);
+        ecs.addSystem(physics);
     }
 
 
@@ -94,7 +98,7 @@ public class GamePresenter extends Game
         ecs.update(delta);
 
         // Update physics
-        physics.step(1/60f, 6, 2);
+        world.step(1/60f, 6, 2);
     }
 
     @Override
