@@ -9,6 +9,9 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.pendulumparadox.observer.Event;
+import com.pendulumparadox.observer.EventArgs;
+import com.pendulumparadox.observer.NewGameHandler;
 
 
 public class GameOverScreen extends Screen{
@@ -17,6 +20,10 @@ public class GameOverScreen extends Screen{
     TextButton btnNewGame;
     TextButton btnToHighscores;
     TextButton btnToMenu;
+
+    public Event<EventArgs> btnNewGamePressed;
+    public Event<EventArgs> btnToHighscoresPressed;
+    public Event<EventArgs> btnToMenuPressed;
 
     private Skin skin;
 
@@ -41,27 +48,33 @@ public class GameOverScreen extends Screen{
         headLineTable.top();
         headLineTable.setFillParent(true);
 
+
         headLine = new Label("GAME OVER!", labelStyle);
 
+        btnNewGamePressed = new Event<EventArgs>();
+        btnNewGamePressed.addHandler();
+        //create button for starting new game
         btnNewGame = new TextButton("New Game", skin);
         btnNewGame.addListener(new ClickListener(){
             @Override
             public void touchUp(InputEvent e, float x, float y, int point, int button){
-                btnNewGamePressed();
+                btnNewGamePressed.invoke(null);
             }
         });
+        btnToHighscoresPressed = new Event<EventArgs>();
         btnToHighscores = new TextButton("Highscores", skin);
         btnToHighscores.addListener(new ClickListener(){
             @Override
             public void touchUp(InputEvent e, float x, float y, int point, int button){
-                btnToHighscoresPressed();
+                btnNewGamePressed.invoke(null);
             }
         });
+        btnToMenuPressed = new Event<EventArgs>();
         btnToMenu = new TextButton("Main Menu", skin);
         btnToMenu.addListener(new ClickListener(){
             @Override
             public void touchUp(InputEvent e, float x, float y, int point, int button){
-                btnToMenuPressed();
+                btnToMenuPressed.invoke(null);
             }
         });
 
