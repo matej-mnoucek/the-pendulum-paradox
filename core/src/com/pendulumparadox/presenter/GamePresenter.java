@@ -84,26 +84,10 @@ public class GamePresenter extends Game
         currentScreen.create();
         //currentScreen.btnNewGameClicked();
 
-        initFonts();
-
         //currentScreen.btnNewGamePressed.addHandler(args -> {StateMachine});
 
     }
 
-    private void initFonts(){
-        FreeTypeFontGenerator generator =
-                new FreeTypeFontGenerator(Gdx.files.internal("fonts.freeagentbold.ttf"));
-        FreeTypeFontGenerator.FreeTypeFontParameter params =
-                new FreeTypeFontGenerator.FreeTypeFontParameter();
-
-        params.size = 24;
-        params.color = Color.WHITE;
-        this.font24 = generator.generateFont(params);
-    }
-
-    public BitmapFont getFont24(){
-        return this.font24;
-    }
 
     public void update(float delta)
     {

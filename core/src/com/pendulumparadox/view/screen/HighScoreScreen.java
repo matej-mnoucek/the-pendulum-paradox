@@ -61,7 +61,9 @@ public class HighScoreScreen extends Screen
     private Label tenthName;
     private Label tenthScore;
 
-    private Table table;
+    private Table highScoreTable;
+    private Table headLineTable;
+    private Table buttonTable;
 
     private BitmapFont font24;
 
@@ -73,31 +75,35 @@ public class HighScoreScreen extends Screen
         this.names = new String[10];
         this.score = new Integer[10];
 
+        //populate highscore table upon opening screen
         populateHighscoreList();
 
-        /*
+        //create font and set labelstyle and labelstyle color
         initFont();
         Label.LabelStyle labelStyle = new Label.LabelStyle();
         labelStyle.font = font24;
-        */
-        BitmapFont font = new BitmapFont();
-        font.getData().scale(0.2f);
-        Label.LabelStyle labelStyle = new Label.LabelStyle();
-        labelStyle.font = font;
         labelStyle.fontColor = Color.WHITE;
 
+        //set input processor
         Gdx.input.setInputProcessor(stage);
         this.skin = new Skin(Gdx.files.internal("uiskin.json"));
 
-        Table headLineTable = new Table();
-        headLineTable.top();
+        //create table for headline
+        headLineTable = new Table();
+        headLineTable.top().center();
         headLineTable.setFillParent(true);
 
+        //create table for high score
+        highScoreTable = new Table();
+        highScoreTable.center();
+        highScoreTable.setFillParent(true);
 
-        table = new Table();
-        table.center();
-        table.setFillParent(true);
+        //create button Table
+        buttonTable = new Table();
+        buttonTable.center().bottom();
+        buttonTable.setFillParent(true);
 
+        //add labels to highscoreTable and headLineTable
         headLine = new Label("HIGHSCORES", labelStyle);
         placeLabel = new Label("Place", labelStyle);
         nameLabel = new Label("Name", labelStyle);
@@ -106,104 +112,102 @@ public class HighScoreScreen extends Screen
         firstName = new Label(names[0], labelStyle);
         firstScore = new Label(String.format("%06d",score[0]), labelStyle);
         second = new Label("2",labelStyle);
-        secondName = new Label(names[0], labelStyle);
-        secondScore = new Label(String.format("%06d",score[0]), labelStyle);
+        secondName = new Label(names[1], labelStyle);
+        secondScore = new Label(String.format("%06d",score[1]), labelStyle);
         third = new Label("3",labelStyle);
-        thirdName = new Label(names[0], labelStyle);
-        thirdScore = new Label(String.format("%06d",score[0]), labelStyle);
+        thirdName = new Label(names[2], labelStyle);
+        thirdScore = new Label(String.format("%06d",score[2]), labelStyle);
         fourth = new Label("4",labelStyle);
-        fourthName = new Label(names[0], labelStyle);
-        fourthScore = new Label(String.format("%06d",score[0]), labelStyle);
+        fourthName = new Label(names[3], labelStyle);
+        fourthScore = new Label(String.format("%06d",score[3]), labelStyle);
         fifth = new Label("5",labelStyle);
-        fifthName = new Label(names[0], labelStyle);
-        fifthScore = new Label(String.format("%06d",score[0]), labelStyle);
+        fifthName = new Label(names[4], labelStyle);
+        fifthScore = new Label(String.format("%06d",score[4]), labelStyle);
         sixth = new Label("6",labelStyle);
-        sixthName = new Label(names[0], labelStyle);
-        sixthScore = new Label(String.format("%06d",score[0]), labelStyle);
+        sixthName = new Label(names[5], labelStyle);
+        sixthScore = new Label(String.format("%06d",score[5]), labelStyle);
         seventh = new Label("7",labelStyle);
-        seventhName = new Label(names[0], labelStyle);
-        seventhScore = new Label(String.format("%06d",score[0]), labelStyle);
+        seventhName = new Label(names[6], labelStyle);
+        seventhScore = new Label(String.format("%06d",score[6]), labelStyle);
         eighth = new Label("8",labelStyle);
-        eighthName = new Label(names[0], labelStyle);
-        eighthScore = new Label(String.format("%06d",score[0]), labelStyle);
+        eighthName = new Label(names[7], labelStyle);
+        eighthScore = new Label(String.format("%06d",score[7]), labelStyle);
         ninth = new Label("9",labelStyle);
-        ninthName = new Label(names[0], labelStyle);
-        ninthScore = new Label(String.format("%06d",score[0]), labelStyle);
+        ninthName = new Label(names[8], labelStyle);
+        ninthScore = new Label(String.format("%06d",score[8]), labelStyle);
         tenth = new Label("10",labelStyle);
-        tenthName = new Label(names[0], labelStyle);
-        tenthScore = new Label(String.format("%06d",score[0]), labelStyle);
+        tenthName = new Label(names[9], labelStyle);
+        tenthScore = new Label(String.format("%06d",score[9]), labelStyle);
 
-        btnBack = new TextButton("BACK", skin);
-        btnBack.setSize(200, 60);
-        btnBack.setPosition(GamePresenter.V_WIDTH / 2 - btnBack.getWidth() / 2,
-                Align.bottom + (GamePresenter.V_HEIGHT / 10));
-        btnBack.addListener(new ClickListener(){
-            @Override
-            public void touchUp(InputEvent e, float x, float y, int point, int button){
-                btnBackClicked();
-            }
-        });
 
+        //put headline label in headline table
         headLineTable.add(headLine).expandX().padTop(20).padBottom(20);
-        table.add(placeLabel);
-        table.add(nameLabel);
-        table.add(scoreLabel);
-        table.row();
-        table.add(first).expandX();
-        table.add(firstName).expandX();
-        table.add(firstScore).expandX();
-        table.row();
-        table.add(second).expandX();
-        table.add(secondName).expandX();
-        table.add(secondScore).expandX();
-        table.row();
-        table.add(third).expandX();
-        table.add(thirdName).expandX();
-        table.add(thirdScore).expandX();
-        table.row();
-        table.add(fourth).expandX();
-        table.add(fourthName).expandX();
-        table.add(fourthScore).expandX();
-        table.row();
-        table.add(fifth).expandX();
-        table.add(fifthName).expandX();
-        table.add(fifthScore).expandX();
-        table.row();
-        table.add(sixth).expandX();
-        table.add(sixthName).expandX();
-        table.add(sixthScore).expandX();
-        table.row();
-        table.add(seventh).expandX();
-        table.add(seventhName).expandX();
-        table.add(seventhScore).expandX();
-        table.row();
-        table.add(eighth).expandX();
-        table.add(eighthName).expandX();
-        table.add(eighthScore).expandX();
-        table.row();
-        table.add(ninth).expandX();
-        table.add(ninthName).expandX();
-        table.add(ninthScore).expandX();
-        table.row();
-        table.add(tenth).expandX();
-        table.add(tenthName).expandX();
-        table.add(tenthScore).expandX();
-        table.row();
 
-        stage.addActor(table);
+        //put button in button table
+        buttonTable.add(btnBack).expandX().padBottom(20).size(300,60);
+
+        //pubt high score labels in high score table
+        highScoreTable.add(placeLabel).expandX();
+        highScoreTable.add(nameLabel).expandX();
+        highScoreTable.add(scoreLabel).expandX();
+        highScoreTable.row();
+        highScoreTable.add(first).expandX();
+        highScoreTable.add(firstName).expandX();
+        highScoreTable.add(firstScore).expandX();
+        highScoreTable.row();
+        highScoreTable.add(second).expandX();
+        highScoreTable.add(secondName).expandX();
+        highScoreTable.add(secondScore).expandX();
+        highScoreTable.row();
+        highScoreTable.add(third).expandX();
+        highScoreTable.add(thirdName).expandX();
+        highScoreTable.add(thirdScore).expandX();
+        highScoreTable.row();
+        highScoreTable.add(fourth).expandX();
+        highScoreTable.add(fourthName).expandX();
+        highScoreTable.add(fourthScore).expandX();
+        highScoreTable.row();
+        highScoreTable.add(fifth).expandX();
+        highScoreTable.add(fifthName).expandX();
+        highScoreTable.add(fifthScore).expandX();
+        highScoreTable.row();
+        highScoreTable.add(sixth).expandX();
+        highScoreTable.add(sixthName).expandX();
+        highScoreTable.add(sixthScore).expandX();
+        highScoreTable.row();
+        highScoreTable.add(seventh).expandX();
+        highScoreTable.add(seventhName).expandX();
+        highScoreTable.add(seventhScore).expandX();
+        highScoreTable.row();
+        highScoreTable.add(eighth).expandX();
+        highScoreTable.add(eighthName).expandX();
+        highScoreTable.add(eighthScore).expandX();
+        highScoreTable.row();
+        highScoreTable.add(ninth).expandX();
+        highScoreTable.add(ninthName).expandX();
+        highScoreTable.add(ninthScore).expandX();
+        highScoreTable.row();
+        highScoreTable.add(tenth).expandX();
+        highScoreTable.add(tenthName).expandX();
+        highScoreTable.add(tenthScore).expandX();
+        highScoreTable.row();
+
+        stage.addActor(highScoreTable);
         stage.addActor(headLineTable);
         stage.addActor(btnBack);
 
     }
 
+    //initialize TrueTypeFont
     private void initFont(){
-        FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("fonts/freeagentboldi.ttf"));
+        FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("fonts/freeagentbold.ttf"));
         FreeTypeFontGenerator.FreeTypeFontParameter params = new FreeTypeFontGenerator.FreeTypeFontParameter();
         params.size = 24;
         params.color = Color.WHITE;
         font24 = generator.generateFont(params);
     }
 
+    //method used to populate highscorelist with correct scores and names
     private void populateHighscoreList(){
         for(int i = 0; i<10; i++){
             score[i] = 0;
