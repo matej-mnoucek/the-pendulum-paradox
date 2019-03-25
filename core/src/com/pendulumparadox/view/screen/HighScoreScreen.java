@@ -78,10 +78,12 @@ public class HighScoreScreen extends Screen
         //populate highscore table upon opening screen
         populateHighscoreList();
 
+
         //create font and set labelstyle and labelstyle color
         initFont();
         Label.LabelStyle labelStyle = new Label.LabelStyle();
         labelStyle.font = font24;
+
         labelStyle.fontColor = Color.WHITE;
 
         //set input processor
@@ -198,6 +200,7 @@ public class HighScoreScreen extends Screen
 
     }
 
+
     //initialize TrueTypeFont
     private void initFont(){
         FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("fonts/freeagentbold.ttf"));
@@ -206,6 +209,7 @@ public class HighScoreScreen extends Screen
         params.color = Color.WHITE;
         font24 = generator.generateFont(params);
     }
+
 
     //method used to populate highscorelist with correct scores and names
     private void populateHighscoreList(){

@@ -41,6 +41,7 @@ public class InGameScreen extends Screen
     private Table moveBtnTable;
     private Table actionBtnTable;
 
+
     @Override
     public void create()
     {

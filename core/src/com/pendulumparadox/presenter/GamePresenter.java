@@ -20,15 +20,17 @@ import com.pendulumparadox.model.component.ComponentFactory;
 import com.pendulumparadox.model.entity.EntityBuilder;
 import com.pendulumparadox.model.entity.IEntityBuilder;
 import com.pendulumparadox.model.system.GraphicsSystem;
+import com.pendulumparadox.model.system.PhysicsSystem;
 import com.pendulumparadox.state.IStateMachine;
 import com.pendulumparadox.state.StateMachine;
 import com.pendulumparadox.view.scene.GameScene;
-import com.pendulumparadox.view.screen.GameOverScreen;
+import com.pendulumparadox.view.screen.GameOverS
 import com.pendulumparadox.view.screen.HighScoreScreen;
 import com.pendulumparadox.view.screen.InGameScreen;
 import com.pendulumparadox.view.screen.MenuScreen;
 import com.pendulumparadox.view.screen.Screen;
 import com.pendulumparadox.view.screen.SettingsScreen;
+
 
 
 /**
@@ -55,7 +57,7 @@ public class GamePresenter extends Game
 
 
     // Physics world
-    World physics = new World(new Vector2(0, -10), true);
+    World world = new World(new Vector2(0, -10), true);
 
     // MVP view state machine
     IStateMachine viewMachine = new StateMachine();
@@ -72,6 +74,7 @@ public class GamePresenter extends Game
     GameScene currentScene;
     //Current Screen
     Screen currentScreen = new HighScoreScreen();
+
     @Override
     public void create()
     {
@@ -85,8 +88,10 @@ public class GamePresenter extends Game
         currentScreen.create();
         //currentScreen.btnNewGameClicked();
 
-        //currentScreen.btnNewGamePressed.addHandler(args -> {StateMachine});
 
+        // Physics
+        PhysicsSystem physics = new PhysicsSystem(world);
+        ecs.addSystem(physics);
     }
 
 
@@ -96,7 +101,7 @@ public class GamePresenter extends Game
         ecs.update(delta);
 
         // Update physics
-        physics.step(1/60f, 6, 2);
+        world.step(1/60f, 6, 2);
     }
 
     @Override
