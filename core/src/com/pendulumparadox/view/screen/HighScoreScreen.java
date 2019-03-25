@@ -90,7 +90,7 @@ public class HighScoreScreen extends Screen
 
         //create table for headline
         headLineTable = new Table();
-        headLineTable.top().center();
+        headLineTable.center().top();
         headLineTable.setFillParent(true);
 
         //create table for high score
@@ -194,7 +194,7 @@ public class HighScoreScreen extends Screen
 
         stage.addActor(highScoreTable);
         stage.addActor(headLineTable);
-        stage.addActor(btnBack);
+        stage.addActor(buttonTable);
 
     }
 

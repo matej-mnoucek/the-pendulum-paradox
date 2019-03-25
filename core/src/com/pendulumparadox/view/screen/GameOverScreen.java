@@ -115,7 +115,7 @@ public class GameOverScreen extends Screen{
         FreeTypeFontGenerator.FreeTypeFontParameter params =
                 new FreeTypeFontGenerator.FreeTypeFontParameter();
 
-        params.size = 24;
+        params.size = 40;
         params.color = Color.WHITE;
         this.font24 = generator.generateFont(params);
     }
