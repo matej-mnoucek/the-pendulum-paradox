@@ -19,7 +19,7 @@ public class MainMenuScene extends Scene
     @Override
     public void render(float delta)
     {
-
+        super.renderer.render();
     }
 
     @Override

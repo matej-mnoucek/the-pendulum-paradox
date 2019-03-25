@@ -5,13 +5,9 @@ import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.assets.AssetManager;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
-import com.badlogic.gdx.maps.MapRenderer;
-import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
@@ -25,16 +21,20 @@ import com.pendulumparadox.model.system.PhysicsSystem;
 import com.pendulumparadox.state.EInvalidTransition;
 import com.pendulumparadox.state.EStateNotAvailable;
 import com.pendulumparadox.state.IStateMachine;
-import com.pendulumparadox.state.ITransition;
 import com.pendulumparadox.state.StateMachine;
 import com.pendulumparadox.state.Transition;
 import com.pendulumparadox.view.ViewState;
 import com.pendulumparadox.view.scene.GameScene;
+import com.pendulumparadox.view.scene.MainMenuScene;
 import com.pendulumparadox.view.screen.BaseScreen;
 import com.pendulumparadox.view.screen.GameOverScreen;
-
 import com.pendulumparadox.view.screen.HighScoreScreen;
 import com.pendulumparadox.view.screen.InGameScreen;
+import com.pendulumparadox.view.screen.MenuScreen;
+import com.pendulumparadox.view.screen.SettingsScreen;
+import com.pendulumparadox.view.screen.TutorialScreen;
+
+import javax.swing.text.View;
 
 
 /**
@@ -74,8 +74,17 @@ public class GamePresenter extends Game
 
     // Predefined view states (composed of one screen and one scene)
     ViewState viewStateInGame;
+    ViewState viewStateGameOver;
+    ViewState viewStateMenu;
     ViewState viewStateHighScore;
-
+    ViewState viewStateSettings;
+    ViewState viewStateTutorial;
+    BaseScreen inGameScreen;
+    BaseScreen highScoreScreen;
+    BaseScreen GameOverScreen;
+    BaseScreen menuScreen;
+    BaseScreen settingsScreen;
+    BaseScreen tutorialScreen;
 
     @Override
     public void create()
@@ -93,32 +102,93 @@ public class GamePresenter extends Game
 
 
         // Create screen and scene for future view state assembly
-        GameScene levelScene = new GameScene(new TmxMapLoader().load("level1.tmx"), mainCamera);
-        BaseScreen inGameScreen = new InGameScreen();
-        BaseScreen highScoreScreen = new HighScoreScreen();
-        viewStateInGame = new ViewState(levelScene, inGameScreen);
-        viewStateHighScore = new ViewState(levelScene, highScoreScreen);
+        GameScene levelOneScene = new GameScene(new TmxMapLoader().load("level1.tmx"), mainCamera);
+        MainMenuScene menuScene = new MainMenuScene(new TmxMapLoader().load("level1.tmx"), mainCamera);
+        inGameScreen = new InGameScreen();
+        GameOverScreen = new GameOverScreen();
+        menuScreen = new MenuScreen();
+        highScoreScreen = new HighScoreScreen();
+        settingsScreen = new SettingsScreen();
+        tutorialScreen = new TutorialScreen();
+        viewStateInGame = new ViewState(levelOneScene, inGameScreen);
+        viewStateGameOver = new ViewState(levelOneScene, GameOverScreen);
+        viewStateMenu = new ViewState(menuScene, menuScreen);
+        viewStateHighScore = new ViewState(menuScene, highScoreScreen);
+        viewStateSettings = new ViewState(menuScene, settingsScreen);
+        viewStateTutorial = new ViewState(menuScene, tutorialScreen);
 
         // Add state to the state machine
         viewMachine.addState(viewStateInGame);
+        viewMachine.addState(viewStateGameOver);
+        viewMachine.addState(viewStateMenu);
         viewMachine.addState(viewStateHighScore);
+        viewMachine.addState(viewStateSettings);
+        viewMachine.addState(viewStateTutorial);
 
         // Define transition
+        Transition menuToHighScore = new Transition(viewStateMenu, viewStateHighScore);
+        Transition menuToInGame = new Transition(viewStateMenu, viewStateInGame);
+        Transition menuToSettings = new Transition(viewStateMenu, viewStateSettings);
+        Transition menuToTutorial = new Transition(viewStateMenu, viewStateTutorial);
+        Transition tutorialToMenu = new Transition(viewStateTutorial, viewStateMenu);
+        Transition settingsToMenu = new Transition(viewStateSettings, viewStateMenu);
+        Transition inGameToGameOver = new Transition(viewStateInGame, viewStateGameOver);
+        Transition gameOverToHighScore = new Transition(viewStateGameOver, viewStateHighScore);
+        Transition gameOverToMenu = new Transition(viewStateGameOver, viewStateMenu);
+        Transition highScoreToMenu = new Transition(viewStateHighScore, viewStateMenu);
         Transition inGameToHighScore = new Transition(viewStateInGame, viewStateHighScore);
 
         // Add transition to the state machine
+        viewMachine.addTransition(menuToHighScore);
+        viewMachine.addTransition(menuToInGame);
+        viewMachine.addTransition(menuToSettings);
+        viewMachine.addTransition(settingsToMenu);
+        viewMachine.addTransition(inGameToGameOver);
+        viewMachine.addTransition(gameOverToHighScore);
+        viewMachine.addTransition(gameOverToMenu);
+        viewMachine.addTransition(highScoreToMenu);
         viewMachine.addTransition(inGameToHighScore);
+        viewMachine.addTransition(menuToTutorial);
+        viewMachine.addTransition(tutorialToMenu);
 
         // Setting the entry point == initial state
         try {
-            viewMachine.setInitialState(viewStateInGame);
+            viewMachine.setInitialState(viewStateMenu);
         } catch (EStateNotAvailable eStateNotAvailable) {
             eStateNotAvailable.printStackTrace();
         }
+        // Set inputProcessor to entry point's BaseScreen's Stage
+        Gdx.input.setInputProcessor(this.menuScreen.getStage());
+
+
 
         // Registering event handler == a piece of code that runs everytime the event is invoked
-        ((InGameScreen) inGameScreen).getJumpEvent().addHandler((args) -> {
-            // Test of state transition
+        ((MenuScreen) menuScreen).getNewGameEvent().addHandler((args) -> {
+            // call on state machine to change state
+            try {
+                viewMachine.nextState(viewStateInGame);
+            } catch (EInvalidTransition eInvalidTransition) {
+                eInvalidTransition.printStackTrace();
+            } catch (EStateNotAvailable eStateNotAvailable) {
+                eStateNotAvailable.printStackTrace();
+            }
+            // set input processor to new State's BaseScreen stage
+            Gdx.input.setInputProcessor(this.inGameScreen.getStage());
+        });
+        ((MenuScreen) menuScreen).getSettingsEvent().addHandler((args) -> {
+            // call on state machine to change state
+            try {
+                viewMachine.nextState(viewStateSettings);
+            } catch (EInvalidTransition eInvalidTransition) {
+                eInvalidTransition.printStackTrace();
+            } catch (EStateNotAvailable eStateNotAvailable) {
+                eStateNotAvailable.printStackTrace();
+            }
+            // set input processor to new State's BaseScreen stage
+            Gdx.input.setInputProcessor(this.settingsScreen.getStage());
+        });
+        ((MenuScreen) menuScreen).getHighScoreEvent().addHandler((args) -> {
+            // call on state machine to change state
             try {
                 viewMachine.nextState(viewStateHighScore);
             } catch (EInvalidTransition eInvalidTransition) {
@@ -126,8 +196,24 @@ public class GamePresenter extends Game
             } catch (EStateNotAvailable eStateNotAvailable) {
                 eStateNotAvailable.printStackTrace();
             }
+            // set input processor to new State's BaseScreen stage
+            Gdx.input.setInputProcessor(this.highScoreScreen.getStage());
+        });
+        ((MenuScreen) menuScreen).getTutorialEvent().addHandler((args) -> {
+            // call on state machine to change state
+            try {
+                viewMachine.nextState(viewStateTutorial);
+            } catch (EInvalidTransition eInvalidTransition) {
+                eInvalidTransition.printStackTrace();
+            } catch (EStateNotAvailable eStateNotAvailable) {
+                eStateNotAvailable.printStackTrace();
+            }
+            // set input processor to new State's BaseScreen stage
+            Gdx.input.setInputProcessor(this.tutorialScreen.getStage());
         });
     }
+
+
 
 
     public void update(float delta)

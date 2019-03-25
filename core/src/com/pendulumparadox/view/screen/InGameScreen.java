@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
@@ -79,9 +80,6 @@ public class InGameScreen extends BaseScreen
         actionBtnTable.bottom().right();
         actionBtnTable.setFillParent(true);
         actionBtnTable.setDebug(true);
-
-        //set input processor
-        Gdx.input.setInputProcessor(stage);
 
 
         lifeCounter = 3;
@@ -177,6 +175,10 @@ public class InGameScreen extends BaseScreen
     @Override
     public void resize(int width, int height) {
 
+    }
+
+    public Stage getStage(){
+        return this.stage;
     }
 
     public Event<EventArgs> getShootEvent() {

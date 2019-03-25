@@ -5,11 +5,14 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.pendulumparadox.observer.Event;
+import com.pendulumparadox.observer.EventArgs;
 import com.pendulumparadox.presenter.GamePresenter;
 
 public class MenuScreen extends BaseScreen
@@ -24,6 +27,11 @@ public class MenuScreen extends BaseScreen
 
     private BitmapFont font24;
 
+    Event<EventArgs> newGameEvent = new Event<>();
+    Event<EventArgs> settingsEvent = new Event<>();
+    Event<EventArgs> highScoreEvent = new Event<>();
+    Event<EventArgs> tutorialEvent = new Event<>();
+
     // Setup the whole layout here
     public MenuScreen()
     {
@@ -36,7 +44,6 @@ public class MenuScreen extends BaseScreen
         labelStyle.font = font24;
         labelStyle.fontColor = Color.WHITE;
 
-        Gdx.input.setInputProcessor(stage);
 
         Table table = new Table();
         table.center();
@@ -48,7 +55,7 @@ public class MenuScreen extends BaseScreen
         btnNewGame.addListener(new ClickListener(){
             @Override
             public void touchUp(InputEvent e, float x, float y, int point, int button){
-                btnNewGameClicked();
+                newGameEvent.invoke(null);
             }
         });
 
@@ -56,7 +63,7 @@ public class MenuScreen extends BaseScreen
         btnTutorial.addListener(new ClickListener(){
             @Override
             public void touchUp(InputEvent e, float x, float y, int point, int button){
-                btnTutorialClicked();
+                tutorialEvent.invoke(null);
             }
         });
 
@@ -64,7 +71,7 @@ public class MenuScreen extends BaseScreen
         btnHighScore.addListener(new ClickListener(){
             @Override
             public void touchUp(InputEvent e, float x, float y, int point, int button){
-                btnHighScoreClicked();
+                highScoreEvent.invoke(null);
             }
         });
 
@@ -72,7 +79,7 @@ public class MenuScreen extends BaseScreen
         btnSettings.addListener(new ClickListener(){
             @Override
             public void touchUp(InputEvent e, float x, float y, int point, int button){
-                btnSettingsClicked();
+                settingsEvent.invoke(null);
             }
         });
 
@@ -97,6 +104,10 @@ public class MenuScreen extends BaseScreen
         stage.addActor(table);
     }
 
+    public Stage getStage(){
+        return this.stage;
+    }
+
 
     private void initFonts(){
         FreeTypeFontGenerator generator =
@@ -109,21 +120,22 @@ public class MenuScreen extends BaseScreen
         this.font24 = generator.generateFont(params);
     }
 
-    public void btnTutorialClicked(){
-        btnTutorial.setText("YAY!");
+    public Event<EventArgs> getNewGameEvent() {
+        return newGameEvent;
     }
 
-    public void btnNewGameClicked(){
-        btnNewGame.setText("YAY!");
+    public Event<EventArgs> getSettingsEvent() {
+        return settingsEvent;
     }
 
-    public void btnHighScoreClicked(){
-        btnHighScore.setText("YAY!");
+    public Event<EventArgs> getHighScoreEvent() {
+        return highScoreEvent;
     }
 
-    public void btnSettingsClicked(){
-        btnSettings.setText("YAY!");
+    public Event<EventArgs> getTutorialEvent() {
+        return tutorialEvent;
     }
+
     public void btnGoogleLoginClicked(){
         btnGoogleLogin.setText("YAY!");
     }

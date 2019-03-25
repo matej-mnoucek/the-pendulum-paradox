@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
@@ -80,7 +81,6 @@ public class HighScoreScreen extends BaseScreen
         labelStyle.font = font;
         labelStyle.fontColor = Color.WHITE;
 
-        //Gdx.input.setInputProcessor(stage);
         this.skin = new Skin(Gdx.files.internal("uiskin.json"));
 
         Table headLineTable = new Table();
@@ -188,6 +188,10 @@ public class HighScoreScreen extends BaseScreen
         stage.addActor(headLineTable);
         stage.addActor(btnBack);
 
+    }
+
+    public Stage getStage(){
+        return this.stage;
     }
 
 

@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
@@ -13,6 +14,8 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.pendulumparadox.observer.Event;
 import com.pendulumparadox.observer.EventArgs;
 import com.pendulumparadox.presenter.GamePresenter;
+
+import javax.management.StandardEmitterMBean;
 
 
 public class GameOverScreen extends BaseScreen{
@@ -37,8 +40,7 @@ public class GameOverScreen extends BaseScreen{
         labelStyle.font = font24;
         labelStyle.fontColor = Color.WHITE;
 
-        //set stage as input processor
-        Gdx.input.setInputProcessor(stage);
+        // declare skin
         this.skin = new Skin(Gdx.files.internal("uiskin.json"));
 
         //create table for buttons. place in center of stage. size root of table to stage
@@ -96,6 +98,10 @@ public class GameOverScreen extends BaseScreen{
         stage.addActor(buttonTable);
         stage.addActor(headLineTable);
 
+    }
+
+    public Stage getStage(){
+        return this.stage;
     }
 
     public void btnNewGamePressed(){
