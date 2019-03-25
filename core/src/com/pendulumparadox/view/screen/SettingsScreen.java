@@ -3,6 +3,7 @@ package com.pendulumparadox.view.screen;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
@@ -15,8 +16,10 @@ public class SettingsScreen extends BaseScreen{
 
     private TextButton btnSound;
     private Label headLine;
-    private BitmapFont font;
+    private BitmapFont font24;
     private Skin skin;
+    private Table table;
+    private Table headlineTable;
 
     boolean soundOn;
 
@@ -25,22 +28,22 @@ public class SettingsScreen extends BaseScreen{
     {
         super();
 
-        this.soundOn = true;
-
-        this.font = new BitmapFont();
-        font.getData().scale(0.2f);
+        //set font and labelstyle
+        initFonts();
         Label.LabelStyle labelStyle = new Label.LabelStyle();
-        labelStyle.font = this.font;
+        labelStyle.font = this.font24;
         labelStyle.fontColor = Color.WHITE;
 
+        //set input processor
         Gdx.input.setInputProcessor(stage);
         this.skin = new Skin(Gdx.files.internal("uiskin.json"));
 
-        Table headlineTable = new Table();
+        //create Table
+        headlineTable = new Table();
         headlineTable.top();
         headlineTable.setFillParent(true);
 
-        Table table = new Table();
+        table = new Table();
         table.center();
         table.setFillParent(true);
 
@@ -59,6 +62,17 @@ public class SettingsScreen extends BaseScreen{
         stage.addActor(table);
         stage.addActor(headlineTable);
 
+    }
+
+    private void initFonts(){
+        FreeTypeFontGenerator generator =
+                new FreeTypeFontGenerator(Gdx.files.internal("fonts/freeagentbold.ttf"));
+        FreeTypeFontGenerator.FreeTypeFontParameter params =
+                new FreeTypeFontGenerator.FreeTypeFontParameter();
+
+        params.size = 24;
+        params.color = Color.WHITE;
+        this.font24 = generator.generateFont(params);
     }
 
     private void btnSoundClicked(){
@@ -98,6 +112,7 @@ public class SettingsScreen extends BaseScreen{
 
     @Override
     public void dispose() {
+        font24.dispose();
 
     }
 }
