@@ -2,7 +2,6 @@ package com.pendulumparadox.view.screen;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
@@ -11,7 +10,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
-import com.badlogic.gdx.utils.Align;
 import com.pendulumparadox.presenter.GamePresenter;
 
 public class MenuScreen extends Screen
@@ -24,7 +22,7 @@ public class MenuScreen extends Screen
     private TextButton btnGoogleLogin;
     private Skin skin;
 
-    BitmapFont font;
+    private BitmapFont font24;
 
     // Setup the whole layout here
     public void create()
@@ -33,10 +31,9 @@ public class MenuScreen extends Screen
 
         this.skin = new Skin(Gdx.files.internal("uiskin.json"));
 
-        font = new BitmapFont();
-        font.getData().scale(0.2f);
+        initFonts();
         Label.LabelStyle labelStyle = new Label.LabelStyle();
-        labelStyle.font = font;
+        labelStyle.font = font24;
         labelStyle.fontColor = Color.WHITE;
 
         Gdx.input.setInputProcessor(stage);
@@ -87,7 +84,7 @@ public class MenuScreen extends Screen
             }
         });
 
-        //table.add(btnNewGame).center().size(300,60).padTop(GamePresenter.V_HEIGHT / 5);
+        table.add(btnNewGame).center().size(300,60).padTop(GamePresenter.V_HEIGHT / 5f);
         table.row();
         table.add(btnHighScore).center().size(300,60).padTop(20);
         table.row();
@@ -98,7 +95,18 @@ public class MenuScreen extends Screen
         table.add(btnGoogleLogin).center().size(300,60).padTop(20);
 
         stage.addActor(table);
-        stage.addActor(btnNewGame);
+    }
+
+
+    private void initFonts(){
+        FreeTypeFontGenerator generator =
+                new FreeTypeFontGenerator(Gdx.files.internal("fonts/freeagentbold.ttf"));
+        FreeTypeFontGenerator.FreeTypeFontParameter params =
+                new FreeTypeFontGenerator.FreeTypeFontParameter();
+
+        params.size = 24;
+        params.color = Color.WHITE;
+        this.font24 = generator.generateFont(params);
     }
 
     public void btnTutorialClicked(){
@@ -119,6 +127,7 @@ public class MenuScreen extends Screen
     public void btnGoogleLoginClicked(){
         btnGoogleLogin.setText("YAY!");
     }
+
 
 
     @Override
@@ -146,7 +155,7 @@ public class MenuScreen extends Screen
 
     @Override
     public void dispose() {
-        font.dispose();
+        font24.dispose();
 
     }
 }

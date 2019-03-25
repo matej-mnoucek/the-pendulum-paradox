@@ -3,7 +3,6 @@ package com.pendulumparadox.presenter;
 import com.badlogic.ashley.core.Engine;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
@@ -25,9 +24,12 @@ import com.pendulumparadox.model.system.PhysicsSystem;
 import com.pendulumparadox.state.IStateMachine;
 import com.pendulumparadox.state.StateMachine;
 import com.pendulumparadox.view.scene.GameScene;
-import com.pendulumparadox.view.screen.GameOverScreen;
-
+import com.pendulumparadox.view.screen.GameOverS
+import com.pendulumparadox.view.screen.HighScoreScreen;
+import com.pendulumparadox.view.screen.InGameScreen;
 import com.pendulumparadox.view.screen.MenuScreen;
+import com.pendulumparadox.view.screen.Screen;
+import com.pendulumparadox.view.screen.SettingsScreen;
 
 
 
@@ -71,8 +73,7 @@ public class GamePresenter extends Game
     //Current Scene
     GameScene currentScene;
     //Current Screen
-
-    MenuScreen currentScreen = new MenuScreen();
+    Screen currentScreen = new HighScoreScreen();
 
     @Override
     public void create()
@@ -85,6 +86,8 @@ public class GamePresenter extends Game
         ecs.addSystem(graphicsSystem);
         currentScene = new GameScene(new TmxMapLoader().load("level1.tmx"), mainCamera);
         currentScreen.create();
+        //currentScreen.btnNewGameClicked();
+
 
         // Physics
         PhysicsSystem physics = new PhysicsSystem(world);
@@ -110,6 +113,7 @@ public class GamePresenter extends Game
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
         currentScene.render(Gdx.graphics.getDeltaTime());
+        System.out.println(Gdx.graphics.getDeltaTime());
         // Update
         update(Gdx.graphics.getDeltaTime());
 
