@@ -11,7 +11,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.pendulumparadox.presenter.GamePresenter;
 
-public class SettingsScreen extends Screen{
+public class SettingsScreen extends BaseScreen{
 
     private TextButton btnSound;
     private Label headLine;
@@ -21,8 +21,9 @@ public class SettingsScreen extends Screen{
     boolean soundOn;
 
 
-    public void create(){
-        super.create();
+    public SettingsScreen()
+    {
+        super();
 
         this.soundOn = true;
 
@@ -63,14 +64,19 @@ public class SettingsScreen extends Screen{
     private void btnSoundClicked(){
             btnSound.setText("Sound: OFF");
     }
+
+    @Override
+    public void show() {
+
+    }
+
     @Override
     public void resize(int width, int height) {
 
     }
 
     @Override
-    public void render() {
-        float delta = Gdx.graphics.getDeltaTime();
+    public void render(float delta) {
         stage.act(delta);
         stage.draw();
     }
@@ -82,6 +88,11 @@ public class SettingsScreen extends Screen{
 
     @Override
     public void resume() {
+
+    }
+
+    @Override
+    public void hide() {
 
     }
 

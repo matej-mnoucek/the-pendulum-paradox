@@ -7,12 +7,12 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 
-public class PauseScreen extends Screen
+public class PauseScreen extends BaseScreen
 {
 
-    @Override
-    public void create(){
-
+    public PauseScreen()
+    {
+        super();
     }
 
     @Override
@@ -21,7 +21,12 @@ public class PauseScreen extends Screen
     }
 
     @Override
-    public void render() {
+    public void show() {
+
+    }
+
+    @Override
+    public void render(float delta) {
 
     }
 
@@ -32,6 +37,11 @@ public class PauseScreen extends Screen
 
     @Override
     public void resume() {
+
+    }
+
+    @Override
+    public void hide() {
 
     }
 

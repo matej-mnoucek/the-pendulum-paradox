@@ -1,13 +1,13 @@
 package com.pendulumparadox.view.screen;
 
-public class LobbyScreen extends Screen
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
+
+public class LobbyScreen extends BaseScreen
 {
 
     @Override
-    public void create()
-    {
-        super.create();
-
+    public void show() {
+        throw new NotImplementedException();
     }
 
     @Override
@@ -16,8 +16,9 @@ public class LobbyScreen extends Screen
     }
 
     @Override
-    public void render() {
-
+    public void render(float delta) {
+        stage.act(delta);
+        stage.draw();
     }
 
     @Override
@@ -27,6 +28,11 @@ public class LobbyScreen extends Screen
 
     @Override
     public void resume() {
+
+    }
+
+    @Override
+    public void hide() {
 
     }
 

@@ -11,7 +11,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 
 
-public class GameOverScreen extends Screen{
+public class GameOverScreen extends BaseScreen{
 
     private Label headLine;
     TextButton btnNewGame;
@@ -20,8 +20,9 @@ public class GameOverScreen extends Screen{
 
     private Skin skin;
 
-    public void create(){
-        super.create();
+    public GameOverScreen()
+    {
+        super();
 
         BitmapFont font = new BitmapFont();
         font.getData().scale(0.2f);
@@ -88,15 +89,22 @@ public class GameOverScreen extends Screen{
     }
 
     @Override
-    public void resize(int width, int height) {
+    public void show()
+    {
 
     }
 
     @Override
-    public void render() {
-        float delta = Gdx.graphics.getDeltaTime();
+    public void render(float delta)
+    {
         stage.act(delta);
         stage.draw();
+    }
+
+    @Override
+    public void resize(int width, int height)
+    {
+
     }
 
     @Override
@@ -106,6 +114,11 @@ public class GameOverScreen extends Screen{
 
     @Override
     public void resume() {
+
+    }
+
+    @Override
+    public void hide() {
 
     }
 

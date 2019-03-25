@@ -14,7 +14,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
 import com.pendulumparadox.presenter.GamePresenter;
 
-public class MenuScreen extends Screen
+public class MenuScreen extends BaseScreen
 {
 
     private TextButton btnNewGame;
@@ -27,9 +27,9 @@ public class MenuScreen extends Screen
     BitmapFont font;
 
     // Setup the whole layout here
-    public void create()
+    public MenuScreen()
     {
-        super.create();
+        super();
 
         this.skin = new Skin(Gdx.files.internal("uiskin.json"));
 
@@ -122,14 +122,17 @@ public class MenuScreen extends Screen
 
 
     @Override
+    public void show() {
+
+    }
+
+    @Override
     public void resize(int width, int height) {
 
     }
 
-    public void render ()
-    {
-        float delta = Gdx.graphics.getDeltaTime();
-        //Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+    @Override
+    public void render(float delta) {
         stage.act(delta);
         stage.draw();
     }
@@ -141,6 +144,11 @@ public class MenuScreen extends Screen
 
     @Override
     public void resume() {
+
+    }
+
+    @Override
+    public void hide() {
 
     }
 

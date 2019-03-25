@@ -1,18 +1,18 @@
 package com.pendulumparadox.view.screen;
 
 import com.badlogic.gdx.ApplicationListener;
+import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
 /**
  * This class represents an UI layer (HUD, menu, high score table...)
  */
-public abstract class Screen implements ApplicationListener
+public abstract class BaseScreen implements Screen
 {
     protected Stage stage;
 
-    @Override
-    public void create()
+    public BaseScreen()
     {
         stage = new Stage(new ScreenViewport());
     }

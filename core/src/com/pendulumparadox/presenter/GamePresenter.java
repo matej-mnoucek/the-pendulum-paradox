@@ -22,13 +22,19 @@ import com.pendulumparadox.model.entity.EntityBuilder;
 import com.pendulumparadox.model.entity.IEntityBuilder;
 import com.pendulumparadox.model.system.GraphicsSystem;
 import com.pendulumparadox.model.system.PhysicsSystem;
+import com.pendulumparadox.state.EInvalidTransition;
+import com.pendulumparadox.state.EStateNotAvailable;
 import com.pendulumparadox.state.IStateMachine;
+import com.pendulumparadox.state.ITransition;
 import com.pendulumparadox.state.StateMachine;
+import com.pendulumparadox.state.Transition;
+import com.pendulumparadox.view.ViewState;
 import com.pendulumparadox.view.scene.GameScene;
+import com.pendulumparadox.view.screen.BaseScreen;
 import com.pendulumparadox.view.screen.GameOverScreen;
 
-import com.pendulumparadox.view.screen.MenuScreen;
-
+import com.pendulumparadox.view.screen.HighScoreScreen;
+import com.pendulumparadox.view.screen.InGameScreen;
 
 
 /**
@@ -66,29 +72,61 @@ public class GamePresenter extends Game
     // Camera
     OrthographicCamera mainCamera = new OrthographicCamera();
 
-    GameOverScreen screen = new GameOverScreen();
+    // Predefined view states (composed of one screen and one scene)
+    ViewState viewStateInGame;
+    ViewState viewStateHighScore;
 
-    //Current Scene
-    GameScene currentScene;
-    //Current Screen
-
-    MenuScreen currentScreen = new MenuScreen();
 
     @Override
     public void create()
     {
+        // Physics
+        PhysicsSystem physics = new PhysicsSystem(world);
+        ecs.addSystem(physics);
+
         GraphicsSystem graphicsSystem = new GraphicsSystem();
         mainCamera.position.set(new Vector3(400,600,0));
         mainCamera.viewportWidth = 960;
         mainCamera.viewportHeight = 540;
         mainCamera.update();
         ecs.addSystem(graphicsSystem);
-        currentScene = new GameScene(new TmxMapLoader().load("level1.tmx"), mainCamera);
-        currentScreen.create();
 
-        // Physics
-        PhysicsSystem physics = new PhysicsSystem(world);
-        ecs.addSystem(physics);
+
+        // Create screen and scene for future view state assembly
+        GameScene levelScene = new GameScene(new TmxMapLoader().load("level1.tmx"), mainCamera);
+        BaseScreen inGameScreen = new InGameScreen();
+        BaseScreen highScoreScreen = new HighScoreScreen();
+        viewStateInGame = new ViewState(levelScene, inGameScreen);
+        viewStateHighScore = new ViewState(levelScene, highScoreScreen);
+
+        // Add state to the state machine
+        viewMachine.addState(viewStateInGame);
+        viewMachine.addState(viewStateHighScore);
+
+        // Define transition
+        Transition inGameToHighScore = new Transition(viewStateInGame, viewStateHighScore);
+
+        // Add transition to the state machine
+        viewMachine.addTransition(inGameToHighScore);
+
+        // Setting the entry point == initial state
+        try {
+            viewMachine.setInitialState(viewStateInGame);
+        } catch (EStateNotAvailable eStateNotAvailable) {
+            eStateNotAvailable.printStackTrace();
+        }
+
+        // Registering event handler == a piece of code that runs everytime the event is invoked
+        ((InGameScreen) inGameScreen).getJumpEvent().addHandler((args) -> {
+            // Test of state transition
+            try {
+                viewMachine.nextState(viewStateHighScore);
+            } catch (EInvalidTransition eInvalidTransition) {
+                eInvalidTransition.printStackTrace();
+            } catch (EStateNotAvailable eStateNotAvailable) {
+                eStateNotAvailable.printStackTrace();
+            }
+        });
     }
 
 
@@ -109,11 +147,14 @@ public class GamePresenter extends Game
         Gdx.gl.glClearColor(0.0f, 0.4f, 0.4f, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-        currentScene.render(Gdx.graphics.getDeltaTime());
-        // Update
-        update(Gdx.graphics.getDeltaTime());
+        // Get delta time value for current frame
+        float delta = Gdx.graphics.getDeltaTime();
 
-        currentScreen.render();
+        // Get current view state and render it
+        ((Screen)viewMachine.getCurrentState()).render(delta);
+
+        // Update method
+        update(delta);
     }
 
     @Override

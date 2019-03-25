@@ -1,24 +1,24 @@
 package com.pendulumparadox.state;
 
-public class Transition<T extends IState,U extends IState> implements ITransition<T,U>
+public class Transition implements ITransition
 {
-    private final T from;
-    private final U to;
+    private final IState from;
+    private final IState to;
 
-    public Transition(T from, U to)
+    public Transition(IState from, IState to)
     {
         this.from = from;
         this.to = to;
     }
 
     @Override
-    public T getFrom()
+    public IState getFrom()
     {
         return from;
     }
 
     @Override
-    public U getTo()
+    public IState getTo()
     {
         return to;
     }

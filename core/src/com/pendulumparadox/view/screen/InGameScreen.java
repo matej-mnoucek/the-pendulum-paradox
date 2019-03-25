@@ -16,10 +16,12 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.utils.Align;
+import com.pendulumparadox.observer.Event;
+import com.pendulumparadox.observer.EventArgs;
 
 import java.util.BitSet;
 
-public class InGameScreen extends Screen
+public class InGameScreen extends BaseScreen
 {
     Label lifeLabel;
     Label lifeCount;
@@ -36,10 +38,17 @@ public class InGameScreen extends Screen
     int lifeCounter;
     int ammoCounter;
 
-    @Override
-    public void create()
+    // Button events
+    // EventArgs == no parameters sent with the message
+    // Subclassing EventArgs == a way how to pass custom data
+    Event<EventArgs> shootEvent = new Event<>();
+    Event<EventArgs> jumpEvent = new Event<>();
+    Event<EventArgs> leftEvent = new Event<>();
+    Event<EventArgs> rightEvent = new Event<>();
+
+    public InGameScreen()
     {
-        super.create();
+        super();
 
         BitmapFont font = new BitmapFont();
         font.getData().scale(0.2f);
@@ -82,25 +91,27 @@ public class InGameScreen extends Screen
         leftImg.addListener(new ClickListener(){
             @Override
             public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
-                btnLeftTouched();
+                // This is just invoking the already defined event
+                // We are not passing any data == null for EventArgs argument
+                leftEvent.invoke(null);
             }
         });
         rightImg.addListener(new ClickListener(){
             @Override
             public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
-                btnRightTouched();
+                rightEvent.invoke(null);
             }
         });
         jumpImg.addListener(new ClickListener(){
             @Override
             public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
-                btnJumpTouched();
+                jumpEvent.invoke(null);
             }
         });
         shootImg.addListener(new ClickListener(){
             @Override
             public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
-                btnShootTouched();
+                shootEvent.invoke(null);
             }
         });
 
@@ -121,27 +132,33 @@ public class InGameScreen extends Screen
     }
 
     @Override
+    public void show() {
+
+    }
+
+    @Override
     public void resize(int width, int height) {
 
     }
 
-    public void btnShootTouched(){
-        assert true;
+    public Event<EventArgs> getShootEvent() {
+        return shootEvent;
     }
-    public void btnJumpTouched(){
-        assert true;
+
+    public Event<EventArgs> getJumpEvent() {
+        return jumpEvent;
     }
-    public void btnRightTouched(){
-        assert true;
+
+    public Event<EventArgs> getLeftEvent() {
+        return leftEvent;
     }
-    public void btnLeftTouched(){
-        assert true;
+
+    public Event<EventArgs> getRightEvent() {
+        return rightEvent;
     }
 
     @Override
-    public void render() {
-        float delta = Gdx.graphics.getDeltaTime();
-        //Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+    public void render(float delta) {
         stage.act(delta);
         stage.draw();
     }
@@ -153,6 +170,11 @@ public class InGameScreen extends Screen
 
     @Override
     public void resume() {
+
+    }
+
+    @Override
+    public void hide() {
 
     }
 

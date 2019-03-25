@@ -17,7 +17,7 @@ import com.pendulumparadox.presenter.GamePresenter;
 
 
 
-public class HighScoreScreen extends Screen
+public class HighScoreScreen extends BaseScreen
 {
     private String[] names;
     private Integer[] score;
@@ -63,10 +63,10 @@ public class HighScoreScreen extends Screen
 
     private BitmapFont font24;
 
-    @Override
-    public void create()
+
+    public HighScoreScreen()
     {
-        super.create();
+        super();
 
         this.names = new String[10];
         this.score = new Integer[10];
@@ -80,7 +80,7 @@ public class HighScoreScreen extends Screen
         labelStyle.font = font;
         labelStyle.fontColor = Color.WHITE;
 
-        Gdx.input.setInputProcessor(stage);
+        //Gdx.input.setInputProcessor(stage);
         this.skin = new Skin(Gdx.files.internal("uiskin.json"));
 
         Table headLineTable = new Table();
@@ -203,16 +203,19 @@ public class HighScoreScreen extends Screen
     }
 
     @Override
-    public void resize(int width, int height) {
+    public void show() {
 
     }
 
     @Override
-    public void render() {
-        float delta = Gdx.graphics.getDeltaTime();
-        //Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+    public void render(float delta) {
         stage.act(delta);
         stage.draw();
+    }
+
+    @Override
+    public void resize(int width, int height) {
+
     }
 
     @Override
@@ -222,6 +225,11 @@ public class HighScoreScreen extends Screen
 
     @Override
     public void resume() {
+
+    }
+
+    @Override
+    public void hide() {
 
     }
 
