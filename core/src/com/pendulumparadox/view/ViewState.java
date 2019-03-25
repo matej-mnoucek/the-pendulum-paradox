@@ -11,8 +11,8 @@ import com.pendulumparadox.view.screen.Screen;
  */
 public class ViewState implements IState
 {
-    private Screen screen;
-    private Scene scene;
+    public Screen screen;
+    public Scene scene;
 
     @Override
     public void execute()

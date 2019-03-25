@@ -16,6 +16,7 @@ import com.pendulumparadox.model.component.ComponentFactory;
 import com.pendulumparadox.model.entity.EntityBuilder;
 import com.pendulumparadox.model.entity.IEntityBuilder;
 import com.pendulumparadox.model.system.GraphicsSystem;
+import com.pendulumparadox.state.EStateNotAvailable;
 import com.pendulumparadox.state.IStateMachine;
 import com.pendulumparadox.state.MenuState;
 import com.pendulumparadox.state.MenuToGameTansition;
@@ -80,7 +81,15 @@ public class GamePresenter extends Game
         currentScene = new GameScene(new TmxMapLoader().load("level1.tmx"), mainCamera);
         currentScreen.create();
 
-        viewMachine.setInitialState(new MenuState);
+
+        MenuState menuState = new MenuState();
+        viewMachine.addState(menuState);
+        try {
+            viewMachine.setInitialState(menuState);
+        }catch(EStateNotAvailable e) {
+
+        }
+
     }
 
 
@@ -105,7 +114,7 @@ public class GamePresenter extends Game
         // Update
         update(Gdx.graphics.getDeltaTime());
 
-        currentScreen.render();
+        viewMachine.getCurrentState().
     }
 
     @Override

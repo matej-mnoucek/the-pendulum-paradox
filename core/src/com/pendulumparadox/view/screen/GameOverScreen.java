@@ -52,7 +52,6 @@ public class GameOverScreen extends Screen{
         headLine = new Label("GAME OVER!", labelStyle);
 
         btnNewGamePressed = new Event<EventArgs>();
-        btnNewGamePressed.addHandler();
         //create button for starting new game
         btnNewGame = new TextButton("New Game", skin);
         btnNewGame.addListener(new ClickListener(){
