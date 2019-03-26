@@ -2,6 +2,7 @@ package com.pendulumparadox.view.screen;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
@@ -55,7 +56,7 @@ public class InGameScreen extends BaseScreen
 
     public InGameScreen()
     {
-        super();
+        //super(camera);
 
         initFonts();
         Label.LabelStyle labelStyle = new Label.LabelStyle();
@@ -199,8 +200,10 @@ public class InGameScreen extends BaseScreen
 
     @Override
     public void render(float delta) {
-        stage.act(delta);
-        stage.draw();
+
+        super.render(delta);
+        //stage.act(delta);
+        //stage.draw();
     }
 
     @Override

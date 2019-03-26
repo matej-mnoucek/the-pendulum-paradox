@@ -94,22 +94,23 @@ public class GamePresenter extends Game
         ecs.addSystem(physics);
 
         GraphicsSystem graphicsSystem = new GraphicsSystem();
-        mainCamera.position.set(new Vector3(400,600,0));
         mainCamera.viewportWidth = 960;
         mainCamera.viewportHeight = 540;
-        mainCamera.update();
+
         ecs.addSystem(graphicsSystem);
 
 
         // Create screen and scene for future view state assembly
         GameScene levelOneScene = new GameScene(new TmxMapLoader().load("level1.tmx"), mainCamera);
-        MainMenuScene menuScene = new MainMenuScene(new TmxMapLoader().load("level1.tmx"), mainCamera);
+        GameScene menuScene = new GameScene(new TmxMapLoader().load("level1.tmx"), mainCamera);
+        
         inGameScreen = new InGameScreen();
         GameOverScreen = new GameOverScreen();
         menuScreen = new MenuScreen();
         highScoreScreen = new HighScoreScreen();
         settingsScreen = new SettingsScreen();
         tutorialScreen = new TutorialScreen();
+        
         viewStateInGame = new ViewState(levelOneScene, inGameScreen);
         viewStateGameOver = new ViewState(levelOneScene, GameOverScreen);
         viewStateMenu = new ViewState(menuScene, menuScreen);
@@ -213,9 +214,6 @@ public class GamePresenter extends Game
         });
     }
 
-
-
-
     public void update(float delta)
     {
         // Update ECS
@@ -223,6 +221,11 @@ public class GamePresenter extends Game
 
         // Update physics
         world.step(1/60f, 6, 2);
+
+        // Test camera move (continuous move to the left)
+        mainCamera.position.y = 600;
+        mainCamera.translate(1,0);
+        mainCamera.update();
     }
 
     @Override

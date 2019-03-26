@@ -16,7 +16,7 @@ import com.pendulumparadox.observer.EventArgs;
 import com.pendulumparadox.presenter.GamePresenter;
 
 import javax.management.StandardEmitterMBean;
-
+import com.badlogic.gdx.graphics.OrthographicCamera;
 
 public class GameOverScreen extends BaseScreen{
 
@@ -32,7 +32,7 @@ public class GameOverScreen extends BaseScreen{
 
     public GameOverScreen()
     {
-        super();
+        //super(camera);
 
         //set font and labelStyle
         initFonts();

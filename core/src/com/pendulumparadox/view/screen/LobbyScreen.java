@@ -1,5 +1,7 @@
 package com.pendulumparadox.view.screen;
 
+import com.badlogic.gdx.graphics.OrthographicCamera;
+
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 public class LobbyScreen extends BaseScreen

@@ -2,6 +2,7 @@ package com.pendulumparadox.view.screen;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
@@ -35,7 +36,7 @@ public class MenuScreen extends BaseScreen
     // Setup the whole layout here
     public MenuScreen()
     {
-        super();
+        //super(camera);
 
         this.skin = new Skin(Gdx.files.internal("uiskin.json"));
 
