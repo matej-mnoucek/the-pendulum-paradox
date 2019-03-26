@@ -84,4 +84,9 @@ public class StateMachine implements IStateMachine
     {
         return currentState;
     }
+
+    @Override
+    public List<ITransition> getTransitions(){
+        return transitions;
+    }
 }

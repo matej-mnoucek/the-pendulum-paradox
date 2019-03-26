@@ -17,6 +17,7 @@ import com.pendulumparadox.model.component.ComponentFactory;
 import com.pendulumparadox.model.entity.EntityBuilder;
 import com.pendulumparadox.model.entity.IEntityBuilder;
 import com.pendulumparadox.model.system.AnimationSystem;
+import com.pendulumparadox.model.system.EntityStateSystem;
 import com.pendulumparadox.model.system.GraphicsSystem;
 import com.pendulumparadox.state.IStateMachine;
 import com.pendulumparadox.state.StateMachine;
@@ -57,12 +58,14 @@ public class GamePresenter extends Game
     {
         GraphicsSystem graphicsSystem = new GraphicsSystem();
         AnimationSystem animationSystem = new AnimationSystem();
+        EntityStateSystem entityStateSystem = new EntityStateSystem();
         mainCamera.position.set(new Vector3(400,600,0));
         mainCamera.viewportWidth = 960;
         mainCamera.viewportHeight = 540;
         mainCamera.update();
         ecs.addSystem(graphicsSystem);
         ecs.addSystem(animationSystem);
+        ecs.addSystem(entityStateSystem);
         //TODO: I pass ecs here for testing. Find better solution?
         currentScene = new GameScene(new TmxMapLoader().load("level1.tmx"), mainCamera, ecs);
     }

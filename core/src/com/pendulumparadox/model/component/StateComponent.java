@@ -1,12 +1,13 @@
 package com.pendulumparadox.model.component;
 
 import com.badlogic.ashley.core.Component;
-import com.badlogic.ashley.core.Entity;
-import com.badlogic.ashley.utils.ImmutableArray;
 import com.badlogic.gdx.math.Vector2;
 import com.pendulumparadox.state.EntityTransition;
 import com.pendulumparadox.state.IState;
 import com.pendulumparadox.state.StateMachine;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class StateComponent implements Component
 {
@@ -90,9 +91,9 @@ public class StateComponent implements Component
     private Dead dead;
 
     private StateMachine stateMachine = new StateMachine();
-    private ImmutableArray<EntityTransition> transitions;
+    private List<EntityTransition> transitions;
     public StateComponent(){
-        transitions = new ImmutableArray<EntityTransition>();
+        transitions = new ArrayList<>();
         idle = new Idle();
         walking = new Walking();
         shooting = new Shooting();

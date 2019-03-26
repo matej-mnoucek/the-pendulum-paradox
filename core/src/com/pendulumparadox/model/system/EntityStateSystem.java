@@ -29,7 +29,7 @@ public class EntityStateSystem extends EntitySystem {
     @Override
     public void update(float dt) {
         for (Entity e : entities) {
-            sm.get(e).getStateMachine().
+            //sm.get(e).getStateMachine().
         }
     }
 }
