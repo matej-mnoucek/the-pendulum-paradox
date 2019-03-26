@@ -33,7 +33,6 @@ public class AnimationSystem extends EntitySystem {
 
     @Override
     public void addedToEngine(Engine engine) {
-        //System.out.print("added");
         entities = engine.getEntitiesFor(Family.all(AnimationComponent.class).get());
 
     }
@@ -42,9 +41,6 @@ public class AnimationSystem extends EntitySystem {
     public void update(float dt) {
         batch.begin();
         float elapsedTime = TimeUtils.timeSinceMillis(startTime) / 1000.0f;
-        //double elapsedDouble = TimeUtils.timeSinceMillis(startTime) / 1000.0f;
-        System.out.print(entities.size());
-        System.out.print("\n");
         for (Entity e : entities) {
             TransformComponent transformComponent = tm.get(e);
 

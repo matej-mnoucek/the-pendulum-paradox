@@ -9,6 +9,7 @@ import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Vector2;
 import com.pendulumparadox.model.component.AnimationComponent;
+import com.pendulumparadox.model.component.StateComponent;
 import com.pendulumparadox.model.component.TransformComponent;
 
 public class OrthogonalTiledMapObjectHandler extends OrthogonalTiledMapRenderer {
@@ -46,6 +47,7 @@ public class OrthogonalTiledMapObjectHandler extends OrthogonalTiledMapRenderer 
                         ((RectangleMapObject)object).getRectangle().getPosition(position);
                         player.add(new TransformComponent(position));
                         player.add(new AnimationComponent());
+                        player.add(new StateComponent());
                         ecs.addEntity(player);
                         //Create player character(s)
                         break;
