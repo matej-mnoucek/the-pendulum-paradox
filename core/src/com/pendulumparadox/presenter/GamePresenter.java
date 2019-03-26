@@ -1,22 +1,31 @@
 package com.pendulumparadox.presenter;
 
 import com.badlogic.ashley.core.Engine;
+import com.badlogic.ashley.core.Entity;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.World;
 import com.pendulumparadox.model.component.AbstractComponentFactory;
+import com.pendulumparadox.model.component.AnimatedSpriteComponent;
+import com.pendulumparadox.model.component.CameraComponent;
 import com.pendulumparadox.model.component.ComponentFactory;
+import com.pendulumparadox.model.component.DynamicBodyComponent;
+import com.pendulumparadox.model.component.TransformComponent;
 import com.pendulumparadox.model.entity.EntityBuilder;
 import com.pendulumparadox.model.entity.IEntityBuilder;
-import com.pendulumparadox.model.system.GraphicsSystem;
+import com.pendulumparadox.model.system.CameraFollowSystem;
+import com.pendulumparadox.model.system.RenderingSystem;
 import com.pendulumparadox.model.system.PhysicsSystem;
 import com.pendulumparadox.state.EInvalidTransition;
 import com.pendulumparadox.state.EStateNotAvailable;
@@ -25,7 +34,6 @@ import com.pendulumparadox.state.StateMachine;
 import com.pendulumparadox.state.Transition;
 import com.pendulumparadox.view.ViewState;
 import com.pendulumparadox.view.scene.GameScene;
-import com.pendulumparadox.view.scene.MainMenuScene;
 import com.pendulumparadox.view.screen.BaseScreen;
 import com.pendulumparadox.view.screen.GameOverScreen;
 import com.pendulumparadox.view.screen.HighScoreScreen;
@@ -33,9 +41,7 @@ import com.pendulumparadox.view.screen.InGameScreen;
 import com.pendulumparadox.view.screen.MenuScreen;
 import com.pendulumparadox.view.screen.SettingsScreen;
 import com.pendulumparadox.view.screen.TutorialScreen;
-
-import javax.swing.text.View;
-
+import com.badlogic.gdx.tools.texturepacker.*;
 
 /**
  * The main control class of the whole game.
@@ -86,23 +92,69 @@ public class GamePresenter extends Game
     BaseScreen settingsScreen;
     BaseScreen tutorialScreen;
 
+
+    // TEST ANIMATION
+    public Animation<TextureRegion> bulletAnimation;
+    public TextureAtlas atlas;
+    public SpriteBatch spriteBatch;
+    float stateTime = 0.0001f;
+
     @Override
     public void create()
     {
+
+        // TEST ANIMATION
+        /*
+        TexturePacker.process("animations/hero/idle", "packed", "idle");
+        atlas = new TextureAtlas("packed/idle.atlas");
+        bulletAnimation = new Animation<TextureRegion>(0.1f,
+                atlas.findRegions("idle"), Animation.PlayMode.LOOP);
+        spriteBatch = new SpriteBatch();
+        */
+
+        // TEST RENDERING SYSTEM
+        Entity player = new Entity();
+        TransformComponent transform = new TransformComponent();
+        transform.position = new Vector2(300,800);
+        player.add(transform);
+        AnimatedSpriteComponent animated = new AnimatedSpriteComponent();
+        animated.frameDuration = 0.1f;
+        animated.height = 200;
+        animated.width = 200;
+        animated.atlasPath = "packed/idle.atlas";
+        animated.region = "idle";
+        player.add(animated);
+        DynamicBodyComponent dynamicBodyComponent = new DynamicBodyComponent();
+        dynamicBodyComponent.center = transform.position;
+        dynamicBodyComponent.height = animated.height;
+        dynamicBodyComponent.width = animated.width;
+        player.add(dynamicBodyComponent);
+        CameraComponent cameraComponent = new CameraComponent();
+        player.add(cameraComponent);
+        ecs.addEntity(player);
+
+        // Camera follow
+        CameraFollowSystem cameraFollowSystem = new CameraFollowSystem(mainCamera);
+        ecs.addSystem(cameraFollowSystem);
+
+        // Rendering
+        RenderingSystem renderingSystem = new RenderingSystem();
+        ecs.addSystem(renderingSystem);
+
         // Physics
         PhysicsSystem physics = new PhysicsSystem(world);
         ecs.addSystem(physics);
 
-        GraphicsSystem graphicsSystem = new GraphicsSystem();
+        //RenderingSystem graphicsSystem = new RenderingSystem();
         mainCamera.viewportWidth = 960;
         mainCamera.viewportHeight = 540;
 
-        ecs.addSystem(graphicsSystem);
+        //ecs.addSystem(graphicsSystem);
 
 
         // Create screen and scene for future view state assembly
-        GameScene levelOneScene = new GameScene(new TmxMapLoader().load("level1.tmx"), mainCamera);
-        GameScene menuScene = new GameScene(new TmxMapLoader().load("level1.tmx"), mainCamera);
+        GameScene levelOneScene = new GameScene(new TmxMapLoader().load("levels/level1.tmx"), mainCamera);
+        GameScene menuScene = new GameScene(new TmxMapLoader().load("levels/level1.tmx"), mainCamera);
         
         inGameScreen = new InGameScreen();
         GameOverScreen = new GameOverScreen();
@@ -223,8 +275,8 @@ public class GamePresenter extends Game
         world.step(1/60f, 6, 2);
 
         // Test camera move (continuous move to the left)
-        mainCamera.position.y = 600;
-        mainCamera.translate(1,0);
+        //mainCamera.position
+        //mainCamera.translate(1,0);
         mainCamera.update();
     }
 
@@ -241,6 +293,16 @@ public class GamePresenter extends Game
 
         // Get current view state and render it
         ((Screen)viewMachine.getCurrentState()).render(delta);
+
+        // TEST ANIMATION
+        /*
+        stateTime += delta;
+        TextureRegion currentFrame = bulletAnimation.getKeyFrame(stateTime);
+        spriteBatch.begin();
+        spriteBatch.draw(currentFrame, 20, 20, 200, 200);
+        spriteBatch.end();
+        */
+
 
         // Update method
         update(delta);

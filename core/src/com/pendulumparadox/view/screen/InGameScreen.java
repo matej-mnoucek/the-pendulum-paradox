@@ -93,11 +93,11 @@ public class InGameScreen extends BaseScreen
         ammoCount = new Label(String.format("%03d", ammoCounter), labelStyle);
 
         //HUD Texture for weapon, move buttons and action buttons
-        weaponTexture = new Texture("ak47.png");
-        leftTexture = new Texture("leftArrow.png");
-        rightTexture = new Texture("rightArrow.png");
-        jumpTexture = new Texture("jumpButton.png");
-        shootTexture = new Texture("shootButton.png");
+        weaponTexture = new Texture("sprites/ak47.png");
+        leftTexture = new Texture("sprites/leftArrow.png");
+        rightTexture = new Texture("sprites/rightArrow.png");
+        jumpTexture = new Texture("sprites/jumpButton.png");
+        shootTexture = new Texture("sprites/shootButton.png");
 
         //image for weapon button, move button action button
         weapon = new Image(weaponTexture);

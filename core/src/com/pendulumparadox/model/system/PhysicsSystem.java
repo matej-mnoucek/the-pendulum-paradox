@@ -11,9 +11,11 @@ import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
+import com.badlogic.gdx.physics.box2d.Transform;
 import com.badlogic.gdx.physics.box2d.World;
 import com.pendulumparadox.model.component.DynamicBodyComponent;
 import com.pendulumparadox.model.component.StaticBodyComponent;
+import com.pendulumparadox.model.component.TransformComponent;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,6 +32,8 @@ public class PhysicsSystem extends EntitySystem
             = ComponentMapper.getFor(StaticBodyComponent.class);
     private ComponentMapper<DynamicBodyComponent> dynamicBodyComponentComponentMapper
             = ComponentMapper.getFor(DynamicBodyComponent.class);
+    private ComponentMapper<TransformComponent> transformComponentMapper
+            = ComponentMapper.getFor(TransformComponent.class);
 
     private List<Body> staticBodies = new ArrayList<>();
     private List<Body> dynamicBodies = new ArrayList<>();
@@ -40,8 +44,10 @@ public class PhysicsSystem extends EntitySystem
 
     public void addedToEngine(Engine engine)
     {
-        staticBodyEntities = engine.getEntitiesFor(Family.all(StaticBodyComponent.class).get());
-        dynamicBodyEntities = engine.getEntitiesFor(Family.all(DynamicBodyComponent.class).get());
+        staticBodyEntities = engine.getEntitiesFor(Family.all(StaticBodyComponent.class,
+                TransformComponent.class).get());
+        dynamicBodyEntities = engine.getEntitiesFor(Family.all(DynamicBodyComponent.class,
+                TransformComponent.class).get());
 
         for (int i = 0; i < staticBodyEntities.size(); i++)
         {
@@ -133,6 +139,15 @@ public class PhysicsSystem extends EntitySystem
 
     public void update(float deltaTime)
     {
-        // No updating needed so far
+        // Update positions of dynamic bodies
+        for (int i = 0; i < dynamicBodyEntities.size(); i++)
+        {
+            Entity entity = dynamicBodyEntities.get(i);
+            TransformComponent transformComponent
+                    = transformComponentMapper.get(entity);
+
+            Body body = dynamicBodies.get(i);
+            transformComponent.position = body.getPosition();
+        }
     }
 }
