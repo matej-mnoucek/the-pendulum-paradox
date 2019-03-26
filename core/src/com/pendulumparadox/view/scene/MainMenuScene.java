@@ -1,13 +1,14 @@
 package com.pendulumparadox.view.scene;
 
+import com.badlogic.ashley.core.Engine;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 
 public class MainMenuScene extends Scene
 {
-    public MainMenuScene(TiledMap level, OrthographicCamera camera)
+    public MainMenuScene(TiledMap level, OrthographicCamera camera, Engine esc)
     {
-        super(level, camera);
+        super(level, camera, esc);
     }
 
     @Override

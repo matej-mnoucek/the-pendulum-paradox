@@ -23,29 +23,30 @@ public class AnimationComponent implements Component//, ApplicationListener
     }
 
     public Animation [] animations;
-
-
+    private animationTypes currentAnimation;
+    private int animationFps = 30;
     public AnimationComponent(){
         //TODO: make this dynamic
         int animationCount = animationTypes.ANIMATION_COUNT.ordinal();
         animations = new Animation[animationCount];
 
-        TextureAtlas atlas = new TextureAtlas(Gdx.files.internal("game-android/pack.atlas"));
-
-        animations[animationTypes.DEATH.ordinal()] = new Animation<TextureRegion>(0.033f,atlas.findRegion("Dead"));
-        animations[animationTypes.RUNNING.ordinal()] = new Animation<TextureRegion>(0.033f,atlas.findRegion("Run"));
-        animations[animationTypes.SHOOTING.ordinal()] = new Animation<TextureRegion>(0.033f,atlas.findRegion("Shoot"));
-        animations[animationTypes.IDLE.ordinal()] = new Animation<TextureRegion>(0.033f,atlas.findRegion("Idle"));
-        animations[animationTypes.JUMPING.ordinal()] = new Animation<TextureRegion>(0.033f,atlas.findRegion("Jump"));
-
+        //TODO: Find proper way to enter path. I'm certain there is a better way, and this might not work on mobile
+        TextureAtlas atlas = new TextureAtlas(Gdx.files.local("..\\game-android\\assets\\robot.atlas"));
+        float frameDuration = 1.0f/animationFps;
+        animations[animationTypes.DEATH.ordinal()]    =  new Animation<TextureRegion>(frameDuration,atlas.findRegions("Dead"));
+        animations[animationTypes.RUNNING.ordinal()]  =  new Animation<TextureRegion>(frameDuration,atlas.findRegions("Run"));
+        animations[animationTypes.SHOOTING.ordinal()] =  new Animation<TextureRegion>(frameDuration,atlas.findRegions("Shoot"));
+        animations[animationTypes.IDLE.ordinal()]     =  new Animation<TextureRegion>(frameDuration,atlas.findRegions("Idle"));
+        animations[animationTypes.JUMPING.ordinal()]  =  new Animation<TextureRegion>(frameDuration,atlas.findRegions("Jump"));
+        currentAnimation = animationTypes.IDLE;
     }
 
     public TextureRegion getCurrentFrame(float time){
-        return (TextureRegion)animations[1].getKeyFrame(time);
+        return (TextureRegion)animations[currentAnimation.ordinal()].getKeyFrame(time);
     }
 
     public TextureRegion getCurrentFrame(float time, boolean looping){
-        return (TextureRegion)animations[1].getKeyFrame(time,looping);
+        return (TextureRegion)animations[currentAnimation.ordinal()].getKeyFrame(time,looping);
     }
 
 

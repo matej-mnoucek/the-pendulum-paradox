@@ -8,10 +8,12 @@ import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.utils.ImmutableArray;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.utils.TimeUtils;
 import com.pendulumparadox.model.component.AnimationComponent;
 import com.pendulumparadox.model.component.GraphicsComponent;
 import com.pendulumparadox.model.component.TransformComponent;
 
+import javax.xml.crypto.dsig.Transform;
 /**
  * All the logic for animated entities
  */
@@ -23,7 +25,7 @@ public class AnimationSystem extends EntitySystem {
     private ComponentMapper<TransformComponent> tm = ComponentMapper.getFor(TransformComponent.class);
 
     //TODO: find place for a global timer
-    float elapsedTime = 0;
+    long startTime = TimeUtils.millis();
 
     public AnimationSystem() {
         batch = new SpriteBatch();
@@ -31,18 +33,22 @@ public class AnimationSystem extends EntitySystem {
 
     @Override
     public void addedToEngine(Engine engine) {
-        entities = engine.getEntitiesFor(Family.all(GraphicsComponent.class).get());
+        //System.out.print("added");
+        entities = engine.getEntitiesFor(Family.all(AnimationComponent.class).get());
 
     }
 
     @Override
     public void update(float dt) {
         batch.begin();
-
-        elapsedTime+=dt;
+        float elapsedTime = TimeUtils.timeSinceMillis(startTime) / 1000.0f;
+        //double elapsedDouble = TimeUtils.timeSinceMillis(startTime) / 1000.0f;
+        System.out.print(entities.size());
+        System.out.print("\n");
         for (Entity e : entities) {
             TransformComponent transformComponent = tm.get(e);
-            batch.draw(am.get(e).getCurrentFrame(elapsedTime), transformComponent.position.x, transformComponent.position.y);
+
+            batch.draw(am.get(e).getCurrentFrame(elapsedTime,true), transformComponent.position.x+ (float)Math.cos((double)elapsedTime)*100, transformComponent.position.y);
         }
         batch.end();
     }
