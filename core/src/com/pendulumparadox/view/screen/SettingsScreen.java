@@ -43,7 +43,7 @@ public class SettingsScreen extends BaseScreen{
         labelStyle.fontColor = Color.WHITE;
 
 
-        this.skin = new Skin(Gdx.files.internal("ui/uiskin.json"));
+        this.skin = new Skin(Gdx.files.internal("skins/uiskin.json"));
 
         //create Table
         headlineTable = new Table();

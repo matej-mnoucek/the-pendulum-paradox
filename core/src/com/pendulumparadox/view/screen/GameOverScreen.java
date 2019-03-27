@@ -44,7 +44,7 @@ public class GameOverScreen extends BaseScreen{
         labelStyle.fontColor = Color.WHITE;
 
         // declare skin
-        this.skin = new Skin(Gdx.files.internal("ui/uiskin.json"));
+        this.skin = new Skin(Gdx.files.internal("skins/uiskin.json"));
 
         //create table for buttons. place in center of stage. size root of table to stage
         buttonTable = new Table();

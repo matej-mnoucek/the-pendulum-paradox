@@ -20,6 +20,5 @@ public abstract class Scene implements Screen
 
     @Override
     public void dispose() {
-        this.level.dispose();
     }
 }

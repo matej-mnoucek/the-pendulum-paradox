@@ -85,7 +85,7 @@ public class HighScoreScreen extends BaseScreen
         labelStyle.font = font24;
         labelStyle.fontColor = Color.WHITE;
 
-        this.skin = new Skin(Gdx.files.internal("ui/uiskin.json"));
+        this.skin = new Skin(Gdx.files.internal("skins/uiskin.json"));
 
         Table headLineTable = new Table();
         headLineTable.top();

@@ -38,7 +38,7 @@ public class MenuScreen extends BaseScreen
     {
         //super(camera);
 
-        this.skin = new Skin(Gdx.files.internal("ui/uiskin.json"));
+        this.skin = new Skin(Gdx.files.internal("skins/uiskin.json"));
 
         initFonts();
         Label.LabelStyle labelStyle = new Label.LabelStyle();
