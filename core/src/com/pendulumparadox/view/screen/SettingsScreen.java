@@ -7,23 +7,30 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
-import com.pendulumparadox.presenter.GamePresenter;
+import com.pendulumparadox.observer.Event;
+import com.pendulumparadox.observer.EventArgs;
 
 public class SettingsScreen extends BaseScreen{
 
-    private TextButton btnSound;
+    private Button btnSound;
+    private TextButton btnMenu;
     private Label headLine;
     private BitmapFont font24;
     private Skin skin;
-    private Table table;
+    private Table settingsTable;
     private Table headlineTable;
+    private Table backTable;
 
-    boolean soundOn;
+    private boolean soundOn;
+
+    private Event<EventArgs> soundEvent = new Event<>();
+    private Event<EventArgs> menuEvent = new Event<>();
 
 
     public SettingsScreen()
@@ -36,32 +43,58 @@ public class SettingsScreen extends BaseScreen{
         labelStyle.fontColor = Color.WHITE;
 
 
-        this.skin = new Skin(Gdx.files.internal("uiskin.json"));
+        this.skin = new Skin(Gdx.files.internal("skins/uiskin.json"));
 
         //create Table
         headlineTable = new Table();
         headlineTable.top();
         headlineTable.setFillParent(true);
 
-        table = new Table();
-        table.center();
-        table.setFillParent(true);
+        settingsTable = new Table();
+        settingsTable.center();
+        settingsTable.setFillParent(true);
+
+        backTable = new Table();
+        backTable.bottom();
+        backTable.setFillParent(true);
+
 
         this.headLine = new Label("SETTINGS", labelStyle);
-        this.btnSound = new TextButton("Sound: ON", skin);
+        this.btnSound = new Button(skin, "sound");
+        this.btnSound.setChecked(true);
         btnSound.addListener(new ClickListener(){
             @Override
             public void touchUp(InputEvent e, float x, float y, int point, int button){
-                btnSoundClicked();
+                if(btnSound.isChecked()){
+                    btnSound.setChecked(false);
+                } else {
+                    btnSound.setChecked(true);
+                }
+                soundEvent.invoke(null);
+            }
+        });
+        btnMenu = new TextButton("Menu", skin);
+        btnMenu.addListener(new ClickListener() {
+            @Override
+            public void touchUp(InputEvent e, float x, float y, int point, int button) {
+                menuEvent.invoke(null);
             }
         });
 
         headlineTable.add(headLine).center().padTop(60);
-        table.add(btnSound).center().size(300, 60);
-
-        stage.addActor(table);
+        settingsTable.add(btnSound).center();
+        backTable.add(btnMenu).center().size(300,60);
+        stage.addActor(settingsTable);
         stage.addActor(headlineTable);
+        stage.addActor(backTable);
+    }
 
+    public Event<EventArgs> getSoundEvent() {
+        return soundEvent;
+    }
+
+    public Event<EventArgs> getMenuEvent(){
+        return menuEvent;
     }
 
     private void initFonts(){
@@ -79,9 +112,6 @@ public class SettingsScreen extends BaseScreen{
         return this.stage;
     }
 
-    private void btnSoundClicked(){
-            btnSound.setText("Sound: OFF");
-    }
 
     @Override
     public void show() {
@@ -117,6 +147,6 @@ public class SettingsScreen extends BaseScreen{
     @Override
     public void dispose() {
         font24.dispose();
-
+        skin.dispose();
     }
 }

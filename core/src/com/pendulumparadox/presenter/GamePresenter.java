@@ -4,8 +4,11 @@ import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.assets.AssetManager;
+import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.FPSLogger;
 import com.badlogic.gdx.graphics.GL20;
@@ -73,18 +76,19 @@ public class GamePresenter extends Game
     OrthographicCamera mainCamera = new OrthographicCamera();
 
     // Predefined view states (composed of one screen and one scene)
-    ViewState viewStateInGame;
-    ViewState viewStateGameOver;
-    ViewState viewStateMenu;
-    ViewState viewStateHighScore;
-    ViewState viewStateSettings;
-    ViewState viewStateTutorial;
-    BaseScreen inGameScreen;
-    BaseScreen highScoreScreen;
-    BaseScreen GameOverScreen;
-    BaseScreen menuScreen;
-    BaseScreen settingsScreen;
-    BaseScreen tutorialScreen;
+    private ViewState viewStateInGame;
+    private ViewState viewStateGameOver;
+    private ViewState viewStateMenu;
+    private ViewState viewStateHighScore;
+    private ViewState viewStateSettings;
+    private ViewState viewStateTutorial;
+    private BaseScreen inGameScreen;
+    private BaseScreen highScoreScreen;
+    private BaseScreen gameOverScreen;
+    private BaseScreen menuScreen;
+    private BaseScreen settingsScreen;
+    private BaseScreen tutorialScreen;
+
 
     // DEBUG
     FPSLogger fpsLogger;
@@ -139,10 +143,19 @@ public class GamePresenter extends Game
         // Control
         InputSystem input = new InputSystem();
 
+        //populate assetmanager with assets
+        assetManager.load("sounds/POL-galactic-trek-short.wav", Music.class);
+        assetManager.load("single_gunshot.mp3", Sound.class);
+        assetManager.load("menuMusic", Music.class);
+        assetManager.load("coin_collect.mp3", Sound.class);
+        assetManager.load("jump.mp3", Sound.class);
+        assetManager.load("die.mp3", Sound.class);
+        assetManager.load("GameOver.mp3", Sound.class);
+        assetManager.load("reload.mp3", Sound.class);
 
         // UI
         inGameScreen = new InGameScreen();
-        GameOverScreen = new GameOverScreen();
+        gameOverScreen = new GameOverScreen();
         menuScreen = new MenuScreen();
         highScoreScreen = new HighScoreScreen();
         settingsScreen = new SettingsScreen();
@@ -165,11 +178,24 @@ public class GamePresenter extends Game
                 world, mainCamera);
 
         viewStateInGame = new ViewState(levelOneScene, inGameScreen);
-        viewStateGameOver = new ViewState(levelOneScene, GameOverScreen);
+        viewStateGameOver = new ViewState(levelOneScene, gameOverScreen);
         viewStateMenu = new ViewState(menuScene, menuScreen);
         viewStateHighScore = new ViewState(menuScene, highScoreScreen);
         viewStateSettings = new ViewState(menuScene, settingsScreen);
         viewStateTutorial = new ViewState(menuScene, tutorialScreen);
+
+        /*create input multiplexer. Input multiplexer serves as the inputProcessor
+        for the whole game. When an input event is registered, it passes the input
+        event to the first inputprocessor added to it. If that processor returns false
+        input multiplexer passes the event on to the next processor that was added
+        to it and so forth*/
+        InputMultiplexer inputMultiplexer = new InputMultiplexer();
+        inputMultiplexer.addProcessor(inGameScreen.getStage());
+        inputMultiplexer.addProcessor(menuScreen.getStage());
+        inputMultiplexer.addProcessor(gameOverScreen.getStage());
+        inputMultiplexer.addProcessor(highScoreScreen.getStage());
+        inputMultiplexer.addProcessor(settingsScreen.getStage());
+        inputMultiplexer.addProcessor(tutorialScreen.getStage());
 
         // Add state to the state machine
         viewMachine.addState(viewStateInGame);
@@ -212,7 +238,7 @@ public class GamePresenter extends Game
             eStateNotAvailable.printStackTrace();
         }
         // Set inputProcessor to entry point's BaseScreen's Stage
-        Gdx.input.setInputProcessor(this.menuScreen.getStage());
+        Gdx.input.setInputProcessor(inputMultiplexer);
 
 
 
@@ -227,7 +253,6 @@ public class GamePresenter extends Game
                 eStateNotAvailable.printStackTrace();
             }
             // set input processor to new State's BaseScreen stage
-            Gdx.input.setInputProcessor(this.inGameScreen.getStage());
         });
         ((MenuScreen) menuScreen).getSettingsEvent().addHandler((args) -> {
             // call on state machine to change state
@@ -239,7 +264,6 @@ public class GamePresenter extends Game
                 eStateNotAvailable.printStackTrace();
             }
             // set input processor to new State's BaseScreen stage
-            Gdx.input.setInputProcessor(this.settingsScreen.getStage());
         });
         ((MenuScreen) menuScreen).getHighScoreEvent().addHandler((args) -> {
             // call on state machine to change state
@@ -251,7 +275,6 @@ public class GamePresenter extends Game
                 eStateNotAvailable.printStackTrace();
             }
             // set input processor to new State's BaseScreen stage
-            Gdx.input.setInputProcessor(this.highScoreScreen.getStage());
         });
         ((MenuScreen) menuScreen).getTutorialEvent().addHandler((args) -> {
             // call on state machine to change state
@@ -263,7 +286,95 @@ public class GamePresenter extends Game
                 eStateNotAvailable.printStackTrace();
             }
             // set input processor to new State's BaseScreen stage
-            Gdx.input.setInputProcessor(this.tutorialScreen.getStage());
+        });
+        ((InGameScreen) inGameScreen).getLeftEvent().addHandler((args) -> {
+            assert true;
+        });
+        ((InGameScreen) inGameScreen).getRightEvent().addHandler((args) -> {
+            assert true;
+        });
+        ((InGameScreen) inGameScreen).getShootEvent().addHandler((args) -> {
+            assert true;
+        });
+        ((InGameScreen) inGameScreen).getJumpEvent().addHandler((args) -> {
+            // call on state machine to change state
+            try {
+                viewMachine.nextState(viewStateGameOver);
+            } catch (EInvalidTransition eInvalidTransition) {
+                eInvalidTransition.printStackTrace();
+            } catch (EStateNotAvailable eStateNotAvailable) {
+                eStateNotAvailable.printStackTrace();
+            }
+            // set input processor to new State's BaseScreen stage
+        });
+        ((GameOverScreen) gameOverScreen).getNewGameEvent().addHandler((args) -> {
+            // call on state machine to change state
+            try{
+                viewMachine.nextState(viewStateInGame);
+            } catch (EInvalidTransition eInvalidTransition) {
+                eInvalidTransition.printStackTrace();
+            }catch (EStateNotAvailable eStateNotAvailable){
+                eStateNotAvailable.printStackTrace();
+            }
+            // set input processor to new State's BaseScreen stage
+        });
+        ((GameOverScreen) gameOverScreen).getHighScoreEvent().addHandler((args) -> {
+            // call on state machine to change state
+            try{
+                viewMachine.nextState(viewStateHighScore);
+            } catch (EInvalidTransition eInvalidTransition) {
+                eInvalidTransition.printStackTrace();
+            }catch (EStateNotAvailable eStateNotAvailable){
+                eStateNotAvailable.printStackTrace();
+            }
+            // set input processor to new State's BaseScreen stage
+        });
+        ((GameOverScreen) gameOverScreen).getMenuEvent().addHandler((args) -> {
+            // call on state machine to change state
+            try{
+                viewMachine.nextState(viewStateMenu);
+            } catch (EInvalidTransition eInvalidTransition) {
+                eInvalidTransition.printStackTrace();
+            }catch (EStateNotAvailable eStateNotAvailable){
+                eStateNotAvailable.printStackTrace();
+            }
+            // set input processor to new State's BaseScreen stage
+        });
+        ((HighScoreScreen) highScoreScreen).getMenuEvent().addHandler((args) -> {
+            // call on state machine to change state
+            try {
+                viewMachine.nextState(viewStateMenu);
+            } catch (EInvalidTransition eInvalidTransition) {
+                eInvalidTransition.printStackTrace();
+            } catch (EStateNotAvailable eStateNotAvailable) {
+                eStateNotAvailable.printStackTrace();
+            }
+            // set input processor to new State's BaseScreen stage
+        });
+        ((SettingsScreen) settingsScreen).getSoundEvent().addHandler((args) -> {
+            assert true;
+        });
+        ((SettingsScreen) settingsScreen).getMenuEvent().addHandler((args) -> {
+            // call on state machine to change state
+            try{
+                viewMachine.nextState(viewStateMenu);
+            } catch (EInvalidTransition eInvalidTransition) {
+                eInvalidTransition.printStackTrace();
+            }catch (EStateNotAvailable eStateNotAvailable){
+                eStateNotAvailable.printStackTrace();
+            }
+            // set input processor to new State's BaseScreen stage
+        });
+        ((TutorialScreen) tutorialScreen).getMenuEvent().addHandler((args) -> {
+            // call on state machine to change state
+            try{
+                viewMachine.nextState(viewStateMenu);
+            } catch (EInvalidTransition eInvalidTransition) {
+                eInvalidTransition.printStackTrace();
+            }catch (EStateNotAvailable eStateNotAvailable){
+                eStateNotAvailable.printStackTrace();
+            }
+            // set input processor to new State's BaseScreen stage
         });
     }
 

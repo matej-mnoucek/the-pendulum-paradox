@@ -22,6 +22,14 @@ public class ViewState implements IState, Screen
         this.screen = screen;
     }
 
+    public BaseScreen getScreen() {
+        return screen;
+    }
+
+    public Scene getScene() {
+        return scene;
+    }
+
     @Override
     public void execute()
     {
@@ -62,6 +70,7 @@ public class ViewState implements IState, Screen
 
     @Override
     public void dispose() {
-
+        this.scene.dispose();
+        this.screen.dispose();
     }
 }
