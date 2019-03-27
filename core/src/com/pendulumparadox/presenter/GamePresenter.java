@@ -7,6 +7,8 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.assets.AssetManager;
+import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.Animation;
@@ -80,18 +82,19 @@ public class GamePresenter extends Game
     OrthographicCamera mainCamera = new OrthographicCamera();
 
     // Predefined view states (composed of one screen and one scene)
-    ViewState viewStateInGame;
-    ViewState viewStateGameOver;
-    ViewState viewStateMenu;
-    ViewState viewStateHighScore;
-    ViewState viewStateSettings;
-    ViewState viewStateTutorial;
-    BaseScreen inGameScreen;
-    BaseScreen highScoreScreen;
-    BaseScreen gameOverScreen;
-    BaseScreen menuScreen;
-    BaseScreen settingsScreen;
-    BaseScreen tutorialScreen;
+    private ViewState viewStateInGame;
+    private ViewState viewStateGameOver;
+    private ViewState viewStateMenu;
+    private ViewState viewStateHighScore;
+    private ViewState viewStateSettings;
+    private ViewState viewStateTutorial;
+    private BaseScreen inGameScreen;
+    private BaseScreen highScoreScreen;
+    private BaseScreen gameOverScreen;
+    private BaseScreen menuScreen;
+    private BaseScreen settingsScreen;
+    private BaseScreen tutorialScreen;
+
 
 
     // TEST ANIMATION
@@ -152,6 +155,15 @@ public class GamePresenter extends Game
 
         //ecs.addSystem(graphicsSystem);
 
+        //populate assetmanager with assets
+        assetManager.load("sounds/POL-galactic-trek-short.wav", Music.class);
+        assetManager.load("single_gunshot.mp3", Sound.class);
+        assetManager.load("menuMusic", Music.class);
+        assetManager.load("coin_collect.mp3", Sound.class);
+        assetManager.load("jump.mp3", Sound.class);
+        assetManager.load("die.mp3", Sound.class);
+        assetManager.load("GameOver.mp3", Sound.class);
+        assetManager.load("reload.mp3", Sound.class);
 
         // Create screen and scene for future view state assembly
         GameScene levelOneScene = new GameScene(new TmxMapLoader().load("levels/level1.tmx"), mainCamera);

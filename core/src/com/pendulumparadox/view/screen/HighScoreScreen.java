@@ -221,9 +221,6 @@ public class HighScoreScreen extends BaseScreen
         }
     }
 
-    public void btnBackClicked(){
-        btnBack.setText("yay!");
-    }
 
     @Override
     public void show() {
