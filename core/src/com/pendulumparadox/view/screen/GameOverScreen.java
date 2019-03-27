@@ -30,6 +30,9 @@ public class GameOverScreen extends BaseScreen{
     private Table headLineTable;
     private Table buttonTable;
 
+    private Event<EventArgs> newGameEvent = new Event<>();
+    private Event<EventArgs> highScoreEvent = new Event<>();
+    private Event<EventArgs> menuEvent = new Event<>();
     public GameOverScreen()
     {
         //super(camera);
@@ -41,7 +44,7 @@ public class GameOverScreen extends BaseScreen{
         labelStyle.fontColor = Color.WHITE;
 
         // declare skin
-        this.skin = new Skin(Gdx.files.internal("uiskin.json"));
+        this.skin = new Skin(Gdx.files.internal("ui/uiskin.json"));
 
         //create table for buttons. place in center of stage. size root of table to stage
         buttonTable = new Table();
@@ -63,7 +66,7 @@ public class GameOverScreen extends BaseScreen{
         btnNewGame.addListener(new ClickListener(){
             @Override
             public void touchUp(InputEvent e, float x, float y, int point, int button){
-                btnNewGamePressed.invoke(null);
+                newGameEvent.invoke(null);
             }
         });
         //create button for going to highscore screen
@@ -71,7 +74,7 @@ public class GameOverScreen extends BaseScreen{
         btnToHighscores.addListener(new ClickListener(){
             @Override
             public void touchUp(InputEvent e, float x, float y, int point, int button){
-                btnToHighscoresPressed();
+                highScoreEvent.invoke(null);
             }
         });
 
@@ -80,7 +83,7 @@ public class GameOverScreen extends BaseScreen{
         btnToMenu.addListener(new ClickListener(){
             @Override
             public void touchUp(InputEvent e, float x, float y, int point, int button){
-                btnToMenuPressed();
+                menuEvent.invoke(null);
             }
         });
 
@@ -100,18 +103,20 @@ public class GameOverScreen extends BaseScreen{
 
     }
 
-    public Stage getStage(){
-        return this.stage;
+    public Event<EventArgs> getNewGameEvent() {
+        return newGameEvent;
     }
 
-    public void btnNewGamePressed(){
-        btnNewGame.setText("Yay!");
+    public Event<EventArgs> getHighScoreEvent() {
+        return highScoreEvent;
     }
-    public void btnToHighscoresPressed(){
-        btnToHighscores.setText("YAY!");
+
+    public Event<EventArgs> getMenuEvent() {
+        return menuEvent;
     }
-    public void btnToMenuPressed(){
-        btnToMenu.setText("YAY!");
+
+    public Stage getStage(){
+        return this.stage;
     }
 
 

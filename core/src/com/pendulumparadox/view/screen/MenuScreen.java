@@ -38,7 +38,7 @@ public class MenuScreen extends BaseScreen
     {
         //super(camera);
 
-        this.skin = new Skin(Gdx.files.internal("uiskin.json"));
+        this.skin = new Skin(Gdx.files.internal("ui/uiskin.json"));
 
         initFonts();
         Label.LabelStyle labelStyle = new Label.LabelStyle();
@@ -177,6 +177,6 @@ public class MenuScreen extends BaseScreen
     @Override
     public void dispose() {
         font24.dispose();
-
+        skin.dispose();
     }
 }

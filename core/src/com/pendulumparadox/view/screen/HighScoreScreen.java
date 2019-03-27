@@ -14,6 +14,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
+import com.pendulumparadox.observer.Event;
+import com.pendulumparadox.observer.EventArgs;
 import com.pendulumparadox.presenter.GamePresenter;
 
 
@@ -65,6 +67,8 @@ public class HighScoreScreen extends BaseScreen
 
     private BitmapFont font24;
 
+    private Event<EventArgs> menuEvent = new Event<>();
+
 
     public HighScoreScreen()
     {
@@ -76,13 +80,12 @@ public class HighScoreScreen extends BaseScreen
         populateHighscoreList();
 
 
-        BitmapFont font = new BitmapFont();
-        font.getData().scale(0.2f);
+        initFonts();
         Label.LabelStyle labelStyle = new Label.LabelStyle();
-        labelStyle.font = font;
+        labelStyle.font = font24;
         labelStyle.fontColor = Color.WHITE;
 
-        this.skin = new Skin(Gdx.files.internal("uiskin.json"));
+        this.skin = new Skin(Gdx.files.internal("ui/uiskin.json"));
 
         Table headLineTable = new Table();
         headLineTable.top();
@@ -135,7 +138,7 @@ public class HighScoreScreen extends BaseScreen
         btnBack.addListener(new ClickListener(){
             @Override
             public void touchUp(InputEvent e, float x, float y, int point, int button){
-                btnBackClicked();
+                menuEvent.invoke(null);
             }
         });
 
@@ -191,6 +194,21 @@ public class HighScoreScreen extends BaseScreen
 
     }
 
+    public Event<EventArgs> getMenuEvent() {
+        return menuEvent;
+    }
+
+    private void initFonts(){
+        FreeTypeFontGenerator generator =
+                new FreeTypeFontGenerator(Gdx.files.internal("fonts/freeagentbold.ttf"));
+        FreeTypeFontGenerator.FreeTypeFontParameter params =
+                new FreeTypeFontGenerator.FreeTypeFontParameter();
+
+        params.size = 24;
+        params.color = Color.WHITE;
+        this.font24 = generator.generateFont(params);
+    }
+
     public Stage getStage(){
         return this.stage;
     }
@@ -241,6 +259,6 @@ public class HighScoreScreen extends BaseScreen
     @Override
     public void dispose() {
         font24.dispose();
-
+        skin.dispose();
     }
 }

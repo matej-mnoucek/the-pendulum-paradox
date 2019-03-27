@@ -22,7 +22,7 @@ public class TutorialScreen extends BaseScreen{
     private Label headLine;
     private TextButton btnBack;
     private Skin skin;
-    private Event<EventArgs> backEvent = new Event<>();
+    private Event<EventArgs> menuEvent = new Event<>();
 
     public TutorialScreen()
     {
@@ -32,17 +32,17 @@ public class TutorialScreen extends BaseScreen{
         labelStyle.font = font24;
         labelStyle.fontColor = Color.WHITE;
 
-        this.skin = new Skin(Gdx.files.internal("uiskin.json"));
+        this.skin = new Skin(Gdx.files.internal("ui/uiskin.json"));
 
         headLineTable = new Table();
         headLineTable.center().top();
         headLineTable.setFillParent(true);
-        headLineTable.setDebug(true);
+        headLineTable.setDebug(false);
 
         btnTable = new Table();
         btnTable.bottom();
         btnTable.setFillParent(true);
-        btnTable.setDebug(true);
+        btnTable.setDebug(false);
 
         headLine = new Label("Tutorial", labelStyle);
 
@@ -50,7 +50,7 @@ public class TutorialScreen extends BaseScreen{
         btnBack.addListener(new ClickListener(){
             @Override
             public void touchUp(InputEvent e, float x, float y, int point, int button){
-                backEvent.invoke(null);
+                menuEvent.invoke(null);
             }
         });
 
@@ -63,8 +63,8 @@ public class TutorialScreen extends BaseScreen{
 
     }
 
-    public Event<EventArgs> getBackEvent() {
-        return backEvent;
+    public Event<EventArgs> getMenuEvent() {
+        return menuEvent;
     }
 
     //initialize TrueTypeFont

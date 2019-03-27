@@ -61,6 +61,6 @@ public class GameScene extends Scene
     @Override
     public void dispose()
     {
-
+        super.dispose();
     }
 }

@@ -49,6 +49,6 @@ public class MainMenuScene extends Scene
     @Override
     public void dispose()
     {
-
+        super.dispose();
     }
 }

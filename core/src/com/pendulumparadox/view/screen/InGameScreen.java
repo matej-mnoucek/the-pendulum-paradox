@@ -7,11 +7,16 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
+import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.ui.Touchpad;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
 import com.pendulumparadox.observer.Event;
@@ -25,16 +30,12 @@ public class InGameScreen extends BaseScreen
     private Label lifeCount;
     private Label ammoLabel;
     private Label ammoCount;
-    private Image weapon;
-    private Image leftImg;
-    private Image rightImg;
-    private Image jumpImg;
-    private Image shootImg;
     private Texture weaponTexture;
-    private Texture leftTexture;
-    private Texture rightTexture;
-    private Texture jumpTexture;
-    private Texture shootTexture;
+    private Image weapon;
+    private Button btnLeft;
+    private Button btnRight;
+    private Touchpad btnJump;
+    private Touchpad btnShoot;
     private BitmapFont font24;
     private Skin skin;
 
@@ -45,6 +46,8 @@ public class InGameScreen extends BaseScreen
     private Table moveBtnTable;
     private Table actionBtnTable;
 
+    private boolean shooting;
+    private float shootTimer;
 
     // Button events
     // EventArgs == no parameters sent with the message
@@ -63,7 +66,7 @@ public class InGameScreen extends BaseScreen
         labelStyle.font = font24;
         labelStyle.fontColor = Color.WHITE;
 
-        this.skin = new Skin(Gdx.files.internal("uiskin.json"));
+        this.skin = new Skin(Gdx.files.internal("ui/uiskin.json"));
 
         //table for holding HUD objects
         hudTable = new Table();
@@ -74,13 +77,13 @@ public class InGameScreen extends BaseScreen
         moveBtnTable = new Table();
         moveBtnTable.bottom().left();
         moveBtnTable.setFillParent(true);
-        moveBtnTable.setDebug(true);
+        moveBtnTable.setDebug(false);
 
         //table for holding shoot and jump buttons. Right bottom side of screen
         actionBtnTable = new Table();
         actionBtnTable.bottom().right();
         actionBtnTable.setFillParent(true);
-        actionBtnTable.setDebug(true);
+        actionBtnTable.setDebug(false);
 
 
         lifeCounter = 3;
@@ -92,22 +95,23 @@ public class InGameScreen extends BaseScreen
         ammoLabel = new Label("Ammo:", labelStyle);
         ammoCount = new Label(String.format("%03d", ammoCounter), labelStyle);
 
+
         //HUD Texture for weapon, move buttons and action buttons
         weaponTexture = new Texture("sprites/ak47.png");
-        leftTexture = new Texture("sprites/leftArrow.png");
-        rightTexture = new Texture("sprites/rightArrow.png");
-        jumpTexture = new Texture("sprites/jumpButton.png");
-        shootTexture = new Texture("sprites/shootButton.png");
+
 
         //image for weapon button, move button action button
         weapon = new Image(weaponTexture);
-        leftImg = new Image(leftTexture);
-        rightImg = new Image(rightTexture);
-        jumpImg = new Image(jumpTexture);
-        shootImg = new Image(shootTexture);
+        btnLeft = new Button(skin, "left");
+        btnRight = new Button(skin, "right");
+        btnJump = new Touchpad(3, skin, "default");
+        btnJump.setColor(1, 0,0,1);
+        btnShoot = new Touchpad(3, skin, "default");
+        btnShoot.setColor(0,0,1,1);
+
 
         //add clicklistneres for buttons
-        leftImg.addListener(new ClickListener(){
+        btnLeft.addListener(new ClickListener(){
             @Override
             public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
                 // This is just invoking the already defined event
@@ -115,22 +119,29 @@ public class InGameScreen extends BaseScreen
                 leftEvent.invoke(null);
             }
         });
-        rightImg.addListener(new ClickListener(){
+        btnRight.addListener(new ClickListener(){
             @Override
             public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
                 rightEvent.invoke(null);
             }
         });
-        jumpImg.addListener(new ClickListener(){
+        btnJump.addListener(new ClickListener(){
             @Override
             public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
                 jumpEvent.invoke(null);
             }
         });
-        shootImg.addListener(new ClickListener(){
+        btnShoot.addListener(new InputListener(){
+            @Override
+            public boolean touchDown(InputEvent event, float x, float y, int pointer, int Button) {
+                shooting = true;
+                return true;
+            }
+
             @Override
             public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
-                shootEvent.invoke(null);
+                shooting = false;
+                shootTimer = 0;
             }
         });
 
@@ -144,12 +155,12 @@ public class InGameScreen extends BaseScreen
         hudTable.add(weapon).expandX().width(100).height(50).align(Align.left);
 
         //add move buttons to movebtnTable
-        moveBtnTable.add(leftImg).width(60).height(60).padLeft(30).padBottom(30);
-        moveBtnTable.add(rightImg).width(60).height(60).padBottom(30).padLeft(10);
+        moveBtnTable.add(btnLeft).width(60).height(60).padLeft(40).padBottom(15);
+        moveBtnTable.add(btnRight).width(60).height(60).padBottom(40).padLeft(20);
 
         //add action buttons to actionBtnTable
-        actionBtnTable.add(shootImg).width(60).height(60).padBottom(30).padRight(10);
-        actionBtnTable.add(jumpImg).width(60).height(60).padRight(30).padBottom(30);
+        actionBtnTable.add(btnShoot).width(60).height(60).padBottom(40).padRight(20);
+        actionBtnTable.add(btnJump).width(60).height(60).padRight(30).padBottom(15);
 
         //add tables to Stage
         stage.addActor(hudTable);
@@ -200,10 +211,21 @@ public class InGameScreen extends BaseScreen
 
     @Override
     public void render(float delta) {
-
         super.render(delta);
-        //stage.act(delta);
-        //stage.draw();
+        if(shooting) {
+            shootTimer += delta;
+            if(shootTimer > 0.1f){
+                decrementAmmo();
+                shootTimer = 0;
+            }
+        }
+        stage.act(delta);
+        stage.draw();
+    }
+
+    public void decrementAmmo(){
+        this.ammoCounter -= 1;
+        this.ammoCount.setText(String.format("%03d", ammoCounter));
     }
 
     @Override
@@ -224,10 +246,7 @@ public class InGameScreen extends BaseScreen
     @Override
     public void dispose() {
         weaponTexture.dispose();
-        leftTexture.dispose();
-        rightTexture.dispose();
-        shootTexture.dispose();
-        jumpTexture.dispose();
         font24.dispose();
+        skin.dispose();
     }
 }
