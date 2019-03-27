@@ -21,4 +21,9 @@ public abstract class Scene implements Screen
         //renderer = new OrthogonalTiledMapRenderer(level);
         renderer.setView(camera);
     }
+
+    @Override
+    public void dispose() {
+        this.level.dispose();
+    }
 }

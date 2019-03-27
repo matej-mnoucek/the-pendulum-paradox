@@ -75,13 +75,12 @@ public class HighScoreScreen extends BaseScreen
         populateHighscoreList();
 
 
-        BitmapFont font = new BitmapFont();
-        font.getData().scale(0.2f);
+        initFonts();
         Label.LabelStyle labelStyle = new Label.LabelStyle();
-        labelStyle.font = font;
+        labelStyle.font = font24;
         labelStyle.fontColor = Color.WHITE;
 
-        this.skin = new Skin(Gdx.files.internal("uiskin.json"));
+        this.skin = new Skin(Gdx.files.internal("ui/uiskin.json"));
 
         Table headLineTable = new Table();
         headLineTable.top();
@@ -188,6 +187,17 @@ public class HighScoreScreen extends BaseScreen
         stage.addActor(headLineTable);
         stage.addActor(btnBack);
 
+    }
+
+    private void initFonts(){
+        FreeTypeFontGenerator generator =
+                new FreeTypeFontGenerator(Gdx.files.internal("fonts/freeagentbold.ttf"));
+        FreeTypeFontGenerator.FreeTypeFontParameter params =
+                new FreeTypeFontGenerator.FreeTypeFontParameter();
+
+        params.size = 24;
+        params.color = Color.WHITE;
+        this.font24 = generator.generateFont(params);
     }
 
     public Stage getStage(){
