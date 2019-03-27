@@ -166,6 +166,8 @@ public class InGameScreen extends BaseScreen
         stage.addActor(hudTable);
         stage.addActor(moveBtnTable);
         stage.addActor(actionBtnTable);
+
+        Gdx.input.setInputProcessor(stage);
     }
 
     private void initFonts(){
