@@ -92,7 +92,7 @@ public class MenuScreen extends BaseScreen
             }
         });
 
-        table.add(btnNewGame).center().size(300,60).padTop(GamePresenter.V_HEIGHT / 5f);
+        table.add(btnNewGame).center().size(300,60).padTop(20);
         table.row();
         table.add(btnHighScore).center().size(300,60).padTop(20);
         table.row();

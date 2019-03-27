@@ -95,12 +95,13 @@ public class PhysicsSystem extends EntitySystem
 
             // Create body
             Body body = world.createBody(bodyDef);
+            body.setFixedRotation(true);
 
             // Create a box (polygon) shape
             PolygonShape polygon = new PolygonShape();
 
             // Set the polygon shape as a box
-            polygon.setAsBox(dynamicBodyComponent.width, dynamicBodyComponent.height);
+            polygon.setAsBox(dynamicBodyComponent.width/2, dynamicBodyComponent.height/2);
 
             // Create a fixture definition to apply the shape to it
             FixtureDef fixtureDef = new FixtureDef();
@@ -145,9 +146,21 @@ public class PhysicsSystem extends EntitySystem
             Entity entity = dynamicBodyEntities.get(i);
             TransformComponent transformComponent
                     = transformComponentMapper.get(entity);
+            DynamicBodyComponent dynamicBodyComponent
+                    = dynamicBodyComponentComponentMapper.get(entity);
 
             Body body = dynamicBodies.get(i);
             transformComponent.position = body.getPosition();
+
+            // Process impulses
+            body.applyLinearImpulse(dynamicBodyComponent.impulseHorizontal,
+                    dynamicBodyComponent.impulseVertical,
+                    transformComponent.position.x,
+                    transformComponent.position.y,
+                    true);
+
+            dynamicBodyComponent.impulseHorizontal = 0.0f;
+            dynamicBodyComponent.impulseVertical = 0.0f;
         }
     }
 }

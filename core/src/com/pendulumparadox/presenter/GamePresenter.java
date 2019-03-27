@@ -6,25 +6,27 @@ import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.assets.AssetManager;
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.FPSLogger;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.g2d.Animation;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.TextureAtlas;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.World;
+import com.pendulumparadox.Constants;
 import com.pendulumparadox.model.component.AbstractComponentFactory;
 import com.pendulumparadox.model.component.AnimatedSpriteComponent;
-import com.pendulumparadox.model.component.CameraComponent;
+import com.pendulumparadox.model.component.CameraTargetComponent;
 import com.pendulumparadox.model.component.ComponentFactory;
+import com.pendulumparadox.model.component.ControlComponent;
 import com.pendulumparadox.model.component.DynamicBodyComponent;
 import com.pendulumparadox.model.component.TransformComponent;
 import com.pendulumparadox.model.entity.EntityBuilder;
 import com.pendulumparadox.model.entity.IEntityBuilder;
 import com.pendulumparadox.model.system.CameraFollowSystem;
+import com.pendulumparadox.model.system.InputSystem;
 import com.pendulumparadox.model.system.RenderingSystem;
 import com.pendulumparadox.model.system.PhysicsSystem;
 import com.pendulumparadox.state.EInvalidTransition;
@@ -41,7 +43,6 @@ import com.pendulumparadox.view.screen.InGameScreen;
 import com.pendulumparadox.view.screen.MenuScreen;
 import com.pendulumparadox.view.screen.SettingsScreen;
 import com.pendulumparadox.view.screen.TutorialScreen;
-import com.badlogic.gdx.tools.texturepacker.*;
 
 /**
  * The main control class of the whole game.
@@ -49,13 +50,6 @@ import com.badlogic.gdx.tools.texturepacker.*;
  */
 public class GamePresenter extends Game
 {
-
-    public static int V_WIDTH = 960;
-    public static int V_HEIGHT = 540;
-
-    //font
-    public BitmapFont font24;
-
     // Component based system root
     Engine ecs = new Engine();
 
@@ -92,77 +86,84 @@ public class GamePresenter extends Game
     BaseScreen settingsScreen;
     BaseScreen tutorialScreen;
 
-
-    // TEST ANIMATION
-    public Animation<TextureRegion> bulletAnimation;
-    public TextureAtlas atlas;
-    public SpriteBatch spriteBatch;
-    float stateTime = 0.0001f;
+    // DEBUG
+    FPSLogger fpsLogger;
+    Box2DDebugRenderer debugRenderer;
+    ShapeRenderer shapeRenderer;
+    Entity player;
+    TransformComponent transformComponent;
 
     @Override
     public void create()
     {
+        // DEBUG
+        debugRenderer = new Box2DDebugRenderer();
+        shapeRenderer = new ShapeRenderer();
+        shapeRenderer.setColor(Color.RED);
+        shapeRenderer.setProjectionMatrix(mainCamera.combined);
+        fpsLogger = new FPSLogger();
 
-        // TEST ANIMATION
-        /*
-        TexturePacker.process("animations/hero/idle", "packed", "idle");
-        atlas = new TextureAtlas("packed/idle.atlas");
-        bulletAnimation = new Animation<TextureRegion>(0.1f,
-                atlas.findRegions("idle"), Animation.PlayMode.LOOP);
-        spriteBatch = new SpriteBatch();
-        */
-
-        // TEST RENDERING SYSTEM
-        Entity player = new Entity();
-        TransformComponent transform = new TransformComponent();
-        transform.position = new Vector2(300,800);
-        player.add(transform);
+        // TEST PLAYER
+        // ECS Entity
+        player = new Entity();
+        transformComponent = new TransformComponent();
+        transformComponent.position = new Vector2(3,8);
+        player.add(transformComponent);
         AnimatedSpriteComponent animated = new AnimatedSpriteComponent();
         animated.frameDuration = 0.1f;
-        animated.height = 200;
-        animated.width = 200;
+        animated.height = 1.8f;
+        animated.width = 1.8f;
         animated.atlasPath = "packed/idle.atlas";
         animated.region = "idle";
         player.add(animated);
         DynamicBodyComponent dynamicBodyComponent = new DynamicBodyComponent();
-        dynamicBodyComponent.center = transform.position;
-        dynamicBodyComponent.height = animated.height;
-        dynamicBodyComponent.width = animated.width;
+        dynamicBodyComponent.center = transformComponent.position;
+        dynamicBodyComponent.height = 1.5f;
+        dynamicBodyComponent.width = 0.7f;
         player.add(dynamicBodyComponent);
-        CameraComponent cameraComponent = new CameraComponent();
+        CameraTargetComponent cameraComponent = new CameraTargetComponent();
         player.add(cameraComponent);
-        ecs.addEntity(player);
+        ControlComponent controlComponent = new ControlComponent();
+        player.add(controlComponent);
 
+        // ECS Systems
         // Camera follow
         CameraFollowSystem cameraFollowSystem = new CameraFollowSystem(mainCamera);
-        ecs.addSystem(cameraFollowSystem);
 
         // Rendering
-        RenderingSystem renderingSystem = new RenderingSystem();
-        ecs.addSystem(renderingSystem);
+        RenderingSystem renderingSystem = new RenderingSystem(mainCamera);
 
         // Physics
         PhysicsSystem physics = new PhysicsSystem(world);
-        ecs.addSystem(physics);
 
-        //RenderingSystem graphicsSystem = new RenderingSystem();
-        mainCamera.viewportWidth = 960;
-        mainCamera.viewportHeight = 540;
-
-        //ecs.addSystem(graphicsSystem);
+        // Control
+        InputSystem input = new InputSystem();
 
 
-        // Create screen and scene for future view state assembly
-        GameScene levelOneScene = new GameScene(new TmxMapLoader().load("levels/level1.tmx"), mainCamera);
-        GameScene menuScene = new GameScene(new TmxMapLoader().load("levels/level1.tmx"), mainCamera);
-        
+        // UI
         inGameScreen = new InGameScreen();
         GameOverScreen = new GameOverScreen();
         menuScreen = new MenuScreen();
         highScoreScreen = new HighScoreScreen();
         settingsScreen = new SettingsScreen();
         tutorialScreen = new TutorialScreen();
-        
+
+        // Link game start
+        ((MenuScreen)menuScreen).getNewGameEvent().addHandler((args) ->
+        {
+            ecs.addEntity(player);
+            ecs.addSystem(cameraFollowSystem);
+            ecs.addSystem(renderingSystem);
+            ecs.addSystem(physics);
+            ecs.addSystem(input);
+        });
+
+        // Create screen and scene for future view state assembly
+        GameScene levelOneScene = new GameScene(new TmxMapLoader().load("levels/level1.tmx"),
+                world, mainCamera);
+        GameScene menuScene = new GameScene(new TmxMapLoader().load("levels/level1.tmx"),
+                world, mainCamera);
+
         viewStateInGame = new ViewState(levelOneScene, inGameScreen);
         viewStateGameOver = new ViewState(levelOneScene, GameOverScreen);
         viewStateMenu = new ViewState(menuScene, menuScreen);
@@ -266,18 +267,20 @@ public class GamePresenter extends Game
         });
     }
 
+    private float accumulator = 0;
+    private float timeStep = 1/60.0f;
     public void update(float delta)
     {
         // Update ECS
         ecs.update(delta);
 
         // Update physics
-        world.step(1/60f, 6, 2);
-
-        // Test camera move (continuous move to the left)
-        //mainCamera.position
-        //mainCamera.translate(1,0);
-        mainCamera.update();
+        float frameTime = Math.min(delta, 0.25f);
+        accumulator += frameTime;
+        while (accumulator >= timeStep) {
+            world.step(timeStep, 6, 2);
+            accumulator -= timeStep;
+        }
     }
 
     @Override
@@ -285,7 +288,7 @@ public class GamePresenter extends Game
     {
         // Render
         super.render();
-        Gdx.gl.glClearColor(0.0f, 0.4f, 0.4f, 1);
+        Gdx.gl.glClearColor(0.0f, 0.4f, 0.5f, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
         // Get delta time value for current frame
@@ -294,15 +297,15 @@ public class GamePresenter extends Game
         // Get current view state and render it
         ((Screen)viewMachine.getCurrentState()).render(delta);
 
-        // TEST ANIMATION
+        // DEBUG
         /*
-        stateTime += delta;
-        TextureRegion currentFrame = bulletAnimation.getKeyFrame(stateTime);
-        spriteBatch.begin();
-        spriteBatch.draw(currentFrame, 20, 20, 200, 200);
-        spriteBatch.end();
+        shapeRenderer.setProjectionMatrix(mainCamera.combined);
+        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+        shapeRenderer.circle(transformComponent.position.x, transformComponent.position.y,100);
+        shapeRenderer.end();
         */
-
+        //debugRenderer.render(world, mainCamera.combined);
+        fpsLogger.log();
 
         // Update method
         update(delta);
@@ -312,6 +315,12 @@ public class GamePresenter extends Game
     public void resize(int width, int height)
     {
         super.resize(width, height);
+
+        // Virtual pixels
+        mainCamera.setToOrtho(false,
+                (Constants.VIRTUAL_HEIGHT * width / (float)height) / Constants.PPM,
+                Constants.VIRTUAL_HEIGHT / Constants.PPM);
+        mainCamera.update(true);
     }
 
     @Override
