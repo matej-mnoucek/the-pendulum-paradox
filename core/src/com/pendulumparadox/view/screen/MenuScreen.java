@@ -176,6 +176,6 @@ public class MenuScreen extends BaseScreen
     @Override
     public void dispose() {
         font24.dispose();
-
+        skin.dispose();
     }
 }

@@ -13,6 +13,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
+import com.pendulumparadox.observer.Event;
+import com.pendulumparadox.observer.EventArgs;
 import com.pendulumparadox.presenter.GamePresenter;
 
 
@@ -63,6 +65,8 @@ public class HighScoreScreen extends BaseScreen
     private Label tenthScore;
 
     private BitmapFont font24;
+
+    private Event<EventArgs> menuEvent = new Event<>();
 
 
     public HighScoreScreen()
@@ -133,7 +137,7 @@ public class HighScoreScreen extends BaseScreen
         btnBack.addListener(new ClickListener(){
             @Override
             public void touchUp(InputEvent e, float x, float y, int point, int button){
-                btnBackClicked();
+                menuEvent.invoke(null);
             }
         });
 
@@ -187,6 +191,10 @@ public class HighScoreScreen extends BaseScreen
         stage.addActor(headLineTable);
         stage.addActor(btnBack);
 
+    }
+
+    public Event<EventArgs> getMenuEvent() {
+        return menuEvent;
     }
 
     private void initFonts(){
@@ -250,6 +258,6 @@ public class HighScoreScreen extends BaseScreen
     @Override
     public void dispose() {
         font24.dispose();
-
+        skin.dispose();
     }
 }

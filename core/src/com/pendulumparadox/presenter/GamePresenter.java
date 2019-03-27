@@ -242,7 +242,7 @@ public class GamePresenter extends Game
                 eStateNotAvailable.printStackTrace();
             }
             // set input processor to new State's BaseScreen stage
-            Gdx.input.setInputProcessor(this.gameOverScreen.getStage());
+            Gdx.input.setInputProcessor(this.inGameScreen.getStage());
         });
         ((GameOverScreen) gameOverScreen).getHighScoreEvent().addHandler((args) -> {
             // call on state machine to change state
@@ -268,9 +268,47 @@ public class GamePresenter extends Game
             // set input processor to new State's BaseScreen stage
             Gdx.input.setInputProcessor(this.menuScreen.getStage());
         });
+        ((HighScoreScreen) highScoreScreen).getMenuEvent().addHandler((args) -> {
+            // call on state machine to change state
+            try {
+                viewMachine.nextState(viewStateMenu);
+            } catch (EInvalidTransition eInvalidTransition) {
+                eInvalidTransition.printStackTrace();
+            } catch (EStateNotAvailable eStateNotAvailable) {
+                eStateNotAvailable.printStackTrace();
+            }
+            // set input processor to new State's BaseScreen stage
+            Gdx.input.setInputProcessor(this.menuScreen.getStage());
+        });
+        ((SettingsScreen) settingsScreen).getSoundEvent().addHandler((args) -> {
+            assert true;
+        });
+        ((SettingsScreen) settingsScreen).getMenuEvent().addHandler((args) -> {
+            // call on state machine to change state
+            try{
+                viewMachine.nextState(viewStateMenu);
+            } catch (EInvalidTransition eInvalidTransition) {
+                eInvalidTransition.printStackTrace();
+            }catch (EStateNotAvailable eStateNotAvailable){
+                eStateNotAvailable.printStackTrace();
+            }
+            // set input processor to new State's BaseScreen stage
+            Gdx.input.setInputProcessor(this.menuScreen.getStage());
+        });
+        ((TutorialScreen) tutorialScreen).getMenuEvent().addHandler((args) -> {
+            // call on state machine to change state
+            try{
+                viewMachine.nextState(viewStateMenu);
+            } catch (EInvalidTransition eInvalidTransition) {
+                eInvalidTransition.printStackTrace();
+            }catch (EStateNotAvailable eStateNotAvailable){
+                eStateNotAvailable.printStackTrace();
+            }
+            // set input processor to new State's BaseScreen stage
+            Gdx.input.setInputProcessor(menuScreen.getStage());
+        });
 
     }
-
 
 
 

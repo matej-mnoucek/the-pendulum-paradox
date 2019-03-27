@@ -243,5 +243,6 @@ public class InGameScreen extends BaseScreen
     public void dispose() {
         weaponTexture.dispose();
         font24.dispose();
+        skin.dispose();
     }
 }
