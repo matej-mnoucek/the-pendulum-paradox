@@ -360,7 +360,7 @@ public class GamePresenter extends Game
             // set input processor to new State's BaseScreen stage
             Gdx.input.setInputProcessor(menuScreen.getStage());
         });
-        
+
     }
 
     public void update(float delta)
