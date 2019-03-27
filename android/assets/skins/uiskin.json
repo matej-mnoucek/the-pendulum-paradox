@@ -68,7 +68,6 @@ com.badlogic.gdx.scenes.scene2d.ui.Touchpad$TouchpadStyle: {
 },
 com.badlogic.gdx.scenes.scene2d.ui.Button$ButtonStyle: {
 	default: { up: button, down: button-down },
-	round: { up: round-button, down: round-button-down}
 	music: { up: music-off, down: music-down, checked: music },
 	left: { up: left-button, down: left-button-down },
 	sound: { up: sound-off, down: sound-down, checked: sound },
@@ -191,4 +190,3 @@ com.badlogic.gdx.scenes.scene2d.ui.SelectBox$SelectBoxStyle: {
 	}
 }
 }
-
