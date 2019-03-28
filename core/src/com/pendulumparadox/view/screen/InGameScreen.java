@@ -97,7 +97,7 @@ public class InGameScreen extends BaseScreen
 
 
         //HUD Texture for weapon, move buttons and action buttons
-        weaponTexture = new Texture("sprites/ak47.png");
+        weaponTexture = new Texture("sprites/weapons/ak47.png");
 
 
         //image for weapon button, move button action button
