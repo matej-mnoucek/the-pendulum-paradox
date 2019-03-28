@@ -155,21 +155,23 @@ public class GamePresenter extends Game
 
         //ecs.addSystem(graphicsSystem);
 
+
         //populate assetmanager with assets
-        assetManager.load("sounds/POL-galactic-trek-short.wav", Music.class);
-        assetManager.load("single_gunshot.mp3", Sound.class);
-        assetManager.load("menuMusic", Music.class);
-        assetManager.load("coin_collect.mp3", Sound.class);
-        assetManager.load("jump.mp3", Sound.class);
-        assetManager.load("die.mp3", Sound.class);
-        assetManager.load("GameOver.mp3", Sound.class);
-        assetManager.load("reload.mp3", Sound.class);
+        //assetManager.load("sounds/inGameMusic.mp3", Music.class);
+        //assetManager.load("sounds/single_gunshot.mp3", Sound.class);
+        assetManager.load("sounds/coin_collect.mp3", Sound.class);
+        assetManager.load("sounds/jump.mp3", Sound.class);
+        assetManager.load("sounds/die.mp3", Sound.class);
+        assetManager.load("sounds/GameOver.mp3", Sound.class);
+        assetManager.load("sounds/reload.mp3", Sound.class);
+        //assetManager.load("sounds/enemy_dead.mp3", Sound.class);
+        assetManager.finishLoading();
 
         // Create screen and scene for future view state assembly
         GameScene levelOneScene = new GameScene(new TmxMapLoader().load("levels/level1.tmx"), mainCamera);
         GameScene menuScene = new GameScene(new TmxMapLoader().load("levels/level1.tmx"), mainCamera);
         
-        inGameScreen = new InGameScreen();
+        inGameScreen = new InGameScreen(this.assetManager);
         gameOverScreen = new GameOverScreen();
         menuScreen = new MenuScreen();
         highScoreScreen = new HighScoreScreen();
@@ -251,6 +253,7 @@ public class GamePresenter extends Game
             } catch (EStateNotAvailable eStateNotAvailable) {
                 eStateNotAvailable.printStackTrace();
             }
+            ((InGameScreen) ((ViewState) viewMachine.getCurrentState()).getScreen()).getGameMusic().play();
             // set input processor to new State's BaseScreen stage
         });
         ((MenuScreen) menuScreen).getSettingsEvent().addHandler((args) -> {

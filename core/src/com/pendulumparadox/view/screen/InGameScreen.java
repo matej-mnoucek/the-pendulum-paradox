@@ -1,6 +1,8 @@
 package com.pendulumparadox.view.screen;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.assets.AssetManager;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
@@ -57,8 +59,18 @@ public class InGameScreen extends BaseScreen
     Event<EventArgs> leftEvent = new Event<>();
     Event<EventArgs> rightEvent = new Event<>();
 
-    public InGameScreen()
+    AssetManager assetManager;
+
+    Music gameMusic;
+
+    public InGameScreen(AssetManager manager)
     {
+
+        this.assetManager = manager;
+
+        //this.gameMusic = assetManager.get("sounds/inGameMusic.mp3", Music.class);
+        //this.gameMusic.setLooping(true);
+
         //super(camera);
 
         initFonts();
@@ -182,6 +194,10 @@ public class InGameScreen extends BaseScreen
     @Override
     public void show() {
 
+    }
+
+    public Music getGameMusic(){
+        return this.gameMusic;
     }
 
     @Override

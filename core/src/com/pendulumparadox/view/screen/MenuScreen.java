@@ -1,6 +1,8 @@
 package com.pendulumparadox.view.screen;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.assets.AssetManager;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
@@ -33,12 +35,18 @@ public class MenuScreen extends BaseScreen
     Event<EventArgs> highScoreEvent = new Event<>();
     Event<EventArgs> tutorialEvent = new Event<>();
 
+    //private Music menuMusic;
+
     // Setup the whole layout here
     public MenuScreen()
     {
         //super(camera);
 
         this.skin = new Skin(Gdx.files.internal("skins/uiskin.json"));
+
+        //menuMusic = Gdx.audio.newMusic(Gdx.files.internal("sounds/menuMusic.mp3"));
+        //menuMusic.setLooping(true);
+        //menuMusic.play();
 
         initFonts();
         Label.LabelStyle labelStyle = new Label.LabelStyle();
@@ -56,6 +64,7 @@ public class MenuScreen extends BaseScreen
         btnNewGame.addListener(new ClickListener(){
             @Override
             public void touchUp(InputEvent e, float x, float y, int point, int button){
+                //menuMusic.stop();
                 newGameEvent.invoke(null);
             }
         });
