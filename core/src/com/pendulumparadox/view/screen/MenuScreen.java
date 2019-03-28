@@ -35,7 +35,7 @@ public class MenuScreen extends BaseScreen
     Event<EventArgs> highScoreEvent = new Event<>();
     Event<EventArgs> tutorialEvent = new Event<>();
 
-    //private Music menuMusic;
+    //jprivate Music menuMusic;
 
     // Setup the whole layout here
     public MenuScreen()
