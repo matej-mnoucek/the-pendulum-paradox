@@ -1,6 +1,7 @@
 package com.pendulumparadox.view.screen;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
@@ -57,9 +58,15 @@ public class InGameScreen extends BaseScreen
     Event<EventArgs> leftEvent = new Event<>();
     Event<EventArgs> rightEvent = new Event<>();
 
+    private Music inGameMusic;
+
+
     public InGameScreen()
     {
         //super(camera);
+
+        this.inGameMusic = Gdx.audio.newMusic(Gdx.files.internal("sounds/inGameMusic.mp3"));
+        this.inGameMusic.setLooping(true);
 
         initFonts();
         Label.LabelStyle labelStyle = new Label.LabelStyle();
@@ -145,6 +152,7 @@ public class InGameScreen extends BaseScreen
             }
         });
 
+
         //add ammo, lives and weapon to HUD table
         hudTable.add(ammoLabel).expandX().align(Align.left);
         hudTable.add(lifeLabel).expandX().align(Align.right);
@@ -166,6 +174,10 @@ public class InGameScreen extends BaseScreen
         stage.addActor(hudTable);
         stage.addActor(moveBtnTable);
         stage.addActor(actionBtnTable);
+    }
+
+    public Music getInGameMusic(){
+        return this.inGameMusic;
     }
 
     private void initFonts(){

@@ -158,7 +158,7 @@ public class GamePresenter extends Game
         //populate assetmanager with assets
         assetManager.load("sounds/POL-galactic-trek-short.wav", Music.class);
         assetManager.load("single_gunshot.mp3", Sound.class);
-        assetManager.load("menuMusic", Music.class);
+        assetManager.load("menuMusic.mp3", Music.class);
         assetManager.load("coin_collect.mp3", Sound.class);
         assetManager.load("jump.mp3", Sound.class);
         assetManager.load("die.mp3", Sound.class);
@@ -171,7 +171,7 @@ public class GamePresenter extends Game
         
         inGameScreen = new InGameScreen();
         gameOverScreen = new GameOverScreen();
-        menuScreen = new MenuScreen();
+        menuScreen = new MenuScreen(this.assetManager);
         highScoreScreen = new HighScoreScreen();
         settingsScreen = new SettingsScreen();
         tutorialScreen = new TutorialScreen();
@@ -251,6 +251,7 @@ public class GamePresenter extends Game
             } catch (EStateNotAvailable eStateNotAvailable) {
                 eStateNotAvailable.printStackTrace();
             }
+            ((InGameScreen) this.inGameScreen).getInGameMusic().play();
             // set input processor to new State's BaseScreen stage
         });
         ((MenuScreen) menuScreen).getSettingsEvent().addHandler((args) -> {
@@ -390,6 +391,7 @@ public class GamePresenter extends Game
         //mainCamera.translate(1,0);
         mainCamera.update();
     }
+
 
     @Override
     public void render()
