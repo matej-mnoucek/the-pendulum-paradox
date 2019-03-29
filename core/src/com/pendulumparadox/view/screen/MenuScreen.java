@@ -63,9 +63,14 @@ public class MenuScreen extends BaseScreen
         this.btnNewGame = new TextButton("New Game", skin);
         btnNewGame.addListener(new ClickListener(){
             @Override
-            public void touchUp(InputEvent e, float x, float y, int point, int button){
-                //menuMusic.stop();
+            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
                 newGameEvent.invoke(null);
+                return super.touchDown(event, x, y, pointer, button);
+            }
+
+            @Override
+            public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+                super.touchUp(event, x, y, pointer, button);
             }
         });
 
