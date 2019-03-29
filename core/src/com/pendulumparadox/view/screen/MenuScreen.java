@@ -116,8 +116,14 @@ public class MenuScreen extends BaseScreen
         this.btnGoogleLogin = new TextButton("Log In to Google", skin);
         btnGoogleLogin.addListener(new ClickListener(){
             @Override
-            public void touchUp(InputEvent e, float x, float y, int point, int button){
+            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
                 btnGoogleLoginClicked();
+                return super.touchDown(event, x, y, pointer, button);
+            }
+
+            @Override
+            public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+                super.touchUp(event, x, y, pointer, button);
             }
         });
 

@@ -92,6 +92,7 @@ public class GamePresenter extends Game
     private Boolean firstPlayThrough = true;
 
     private Music menuMusic;
+    private Music inGameMusic;
     private boolean soundOn;
 
     // DEBUG
@@ -161,6 +162,8 @@ public class GamePresenter extends Game
         files needs to be streamed rather than be defined as Sound Class*/
         soundOn = true;
         menuMusic = Gdx.audio.newMusic(Gdx.files.internal("sounds/menuMusic.mp3"));
+        inGameMusic = Gdx.audio.newMusic(Gdx.files.internal("sounds/inGameMusic.mp3"));
+        inGameMusic.setVolume(0.5f);
         menuMusic.setLooping(true);
         menuMusic.play();
 
@@ -186,9 +189,9 @@ public class GamePresenter extends Game
                 ecs.addEntity(player);
             }
             Gdx.input.setInputProcessor(inGameScreen.getStage());
+            menuMusic.stop();
             if(soundOn) {
-                menuMusic.stop();
-                ((InGameScreen) inGameScreen).playGameMusic();
+                inGameMusic.play();
             }
             // call on state machine to change state
             try {
@@ -314,11 +317,11 @@ public class GamePresenter extends Game
 
         ((InGameScreen) inGameScreen).getSoundEvent().addHandler((args) -> {
             if(soundOn){
-                ((InGameScreen) inGameScreen).stopGameMusic();
+                inGameMusic.pause();
                 ((SettingsScreen) settingsScreen).setSoundOn(false);
                 soundOn = false;
             } else {
-                ((InGameScreen) inGameScreen).playGameMusic();
+                inGameMusic.play();
                 ((SettingsScreen) settingsScreen).setSoundOn(true);
                 soundOn = true;
             }
@@ -331,13 +334,13 @@ public class GamePresenter extends Game
             assert true;
         });
         ((InGameScreen) inGameScreen).getShootEvent().addHandler((args) -> {
-            assert true;
+            assetManager.get("sounds/single_gunshot.mp3", Sound.class).play(1f);
         });
         ((InGameScreen) inGameScreen).getJumpEvent().addHandler((args) -> {
             // set input processor to new State's BaseScreen stage
             Gdx.input.setInputProcessor(gameOverScreen.getStage());
+            inGameMusic.stop();
             if(soundOn) {
-                ((InGameScreen) inGameScreen).getGameMusic().stop();
                 menuMusic.play();
             }
             //remove Player entity to stop it rendering whilst not ingame

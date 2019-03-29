@@ -61,8 +61,6 @@ public class InGameScreen extends BaseScreen
     Event<EventArgs> rightEvent = new Event<>();
     Event<EventArgs> soundEvent = new Event<>();
 
-
-    private Music gameMusic;
     private boolean soundOn;
 
 
@@ -78,8 +76,6 @@ public class InGameScreen extends BaseScreen
 
         this.skin = new Skin(Gdx.files.internal("skins/uiskin.json"));
 
-        this.gameMusic = Gdx.audio.newMusic(Gdx.files.internal("sounds/inGameMusic.mp3"));
-        this.gameMusic.setLooping(true);
         this.soundOn = true;
 
         //table for holding HUD objects
@@ -183,7 +179,6 @@ public class InGameScreen extends BaseScreen
                 shootEvent.invoke(null);
                 return super.touchDown(event, x, y, pointer, button);
             }
-
             @Override
             public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
                 super.touchUp(event, x, y, pointer, button);
@@ -235,35 +230,11 @@ public class InGameScreen extends BaseScreen
         }
     }
 
-    public void playGameMusic(){
-        this.gameMusic.play();
-    }
-
-    public void stopGameMusic(){
-        this.gameMusic.pause();
-    }
-
-    public boolean isSoundOn(){
-        return soundOn;
-    }
-
-    public void setBtnSoundToggled(){
-        if(this.soundOn){
-            btnSound.setChecked(true);
-        }
-        else{
-            btnSound.setChecked(false);
-        }
-    }
-
     @Override
     public void show() {
 
     }
 
-    public Music getGameMusic(){
-        return this.gameMusic;
-    }
 
     @Override
     public void resize(int width, int height) {

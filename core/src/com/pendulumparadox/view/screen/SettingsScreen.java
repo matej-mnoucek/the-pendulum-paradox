@@ -27,8 +27,6 @@ public class SettingsScreen extends BaseScreen{
     private Table headlineTable;
     private Table backTable;
 
-    private boolean soundOn;
-
     private Event<EventArgs> soundEvent = new Event<>();
     private Event<EventArgs> menuEvent = new Event<>();
 
