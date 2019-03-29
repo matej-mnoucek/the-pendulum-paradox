@@ -35,7 +35,7 @@ public class MenuScreen extends BaseScreen
     Event<EventArgs> highScoreEvent = new Event<>();
     Event<EventArgs> tutorialEvent = new Event<>();
 
-    //jprivate Music menuMusic;
+    private Music menuMusic;
 
     // Setup the whole layout here
     public MenuScreen()
@@ -44,9 +44,6 @@ public class MenuScreen extends BaseScreen
 
         this.skin = new Skin(Gdx.files.internal("skins/uiskin.json"));
 
-        //menuMusic = Gdx.audio.newMusic(Gdx.files.internal("sounds/menuMusic.mp3"));
-        //menuMusic.setLooping(true);
-        //menuMusic.play();
 
         initFonts();
         Label.LabelStyle labelStyle = new Label.LabelStyle();
@@ -77,24 +74,42 @@ public class MenuScreen extends BaseScreen
         this.btnTutorial = new TextButton("Tutorial", skin);
         btnTutorial.addListener(new ClickListener(){
             @Override
-            public void touchUp(InputEvent e, float x, float y, int point, int button){
+            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
                 tutorialEvent.invoke(null);
+                return super.touchDown(event, x, y, pointer, button);
+            }
+
+            @Override
+            public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+                super.touchUp(event, x, y, pointer, button);
             }
         });
 
         this.btnHighScore = new TextButton("HighScore", skin);
         btnHighScore.addListener(new ClickListener(){
             @Override
-            public void touchUp(InputEvent e, float x, float y, int point, int button){
+            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
                 highScoreEvent.invoke(null);
+                return super.touchDown(event, x, y, pointer, button);
+            }
+
+            @Override
+            public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+                super.touchUp(event, x, y, pointer, button);
             }
         });
 
         this.btnSettings = new TextButton("Settings", skin);
         btnSettings.addListener(new ClickListener(){
             @Override
-            public void touchUp(InputEvent e, float x, float y, int point, int button){
+            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
                 settingsEvent.invoke(null);
+                return super.touchDown(event, x, y, pointer, button);
+            }
+
+            @Override
+            public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+                super.touchUp(event, x, y, pointer, button);
             }
         });
 

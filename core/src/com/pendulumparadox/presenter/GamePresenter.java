@@ -4,7 +4,6 @@ import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.audio.Music;
@@ -46,6 +45,7 @@ import com.pendulumparadox.view.screen.InGameScreen;
 import com.pendulumparadox.view.screen.MenuScreen;
 import com.pendulumparadox.view.screen.SettingsScreen;
 import com.pendulumparadox.view.screen.TutorialScreen;
+
 
 /**
  * The main control class of the whole game.
@@ -89,6 +89,10 @@ public class GamePresenter extends Game
     private BaseScreen settingsScreen;
     private BaseScreen tutorialScreen;
 
+    private Boolean firstPlayThrough = true;
+
+    private Music menuMusic;
+    private boolean soundOn;
 
     // DEBUG
     FPSLogger fpsLogger;
@@ -98,8 +102,7 @@ public class GamePresenter extends Game
     TransformComponent transformComponent;
 
     @Override
-    public void create()
-    {
+    public void create() {
         // DEBUG
         debugRenderer = new Box2DDebugRenderer();
         shapeRenderer = new ShapeRenderer();
@@ -111,7 +114,7 @@ public class GamePresenter extends Game
         // ECS Entity
         player = new Entity();
         transformComponent = new TransformComponent();
-        transformComponent.position = new Vector2(3,8);
+        transformComponent.position = new Vector2(3, 8);
         player.add(transformComponent);
         AnimatedSpriteComponent animated = new AnimatedSpriteComponent();
         animated.frameDuration = 0.1f;
@@ -154,6 +157,12 @@ public class GamePresenter extends Game
         //assetManager.load("sounds/enemy_dead.mp3", Sound.class);
         assetManager.finishLoading();
 
+        /*set music for menu and start playing. Music not in assetManager because larger sound
+        files needs to be streamed rather than be defined as Sound Class*/
+        soundOn = true;
+        menuMusic = Gdx.audio.newMusic(Gdx.files.internal("sounds/menuMusic.mp3"));
+        menuMusic.setLooping(true);
+        menuMusic.play();
 
         inGameScreen = new InGameScreen();
         gameOverScreen = new GameOverScreen();
@@ -163,13 +172,32 @@ public class GamePresenter extends Game
         tutorialScreen = new TutorialScreen();
 
         // Link game start
-        ((MenuScreen)menuScreen).getNewGameEvent().addHandler((args) ->
+        ((MenuScreen) menuScreen).getNewGameEvent().addHandler((args) ->
         {
-            ecs.addEntity(player);
-            ecs.addSystem(cameraFollowSystem);
-            ecs.addSystem(renderingSystem);
-            ecs.addSystem(physics);
-            ecs.addSystem(input);
+            if (firstPlayThrough) {
+                ecs.addEntity(player);
+                ecs.addSystem(cameraFollowSystem);
+                ecs.addSystem(renderingSystem);
+                ecs.addSystem(physics);
+                ecs.addSystem(input);
+
+                firstPlayThrough = false;
+            } else {
+                ecs.addEntity(player);
+            }
+            Gdx.input.setInputProcessor(inGameScreen.getStage());
+            menuMusic.stop();
+            if(soundOn) {
+                ((InGameScreen) inGameScreen).playGameMusic(true);
+            }
+            // call on state machine to change state
+            try {
+                viewMachine.nextState(viewStateInGame);
+            } catch (EInvalidTransition eInvalidTransition) {
+                eInvalidTransition.printStackTrace();
+            } catch (EStateNotAvailable eStateNotAvailable) {
+                eStateNotAvailable.printStackTrace();
+            }
         });
 
         // Create screen and scene for future view state assembly
@@ -230,7 +258,7 @@ public class GamePresenter extends Game
         Gdx.input.setInputProcessor(menuScreen.getStage());
 
 
-
+        /*this event is already defined above
         // Registering event handler == a piece of code that runs everytime the event is invoked
         ((MenuScreen) menuScreen).getNewGameEvent().addHandler((args) -> {
             Gdx.input.setInputProcessor(inGameScreen.getStage());
@@ -243,6 +271,7 @@ public class GamePresenter extends Game
                 eStateNotAvailable.printStackTrace();
             }
         });
+        */
 
         ((MenuScreen) menuScreen).getSettingsEvent().addHandler((args) -> {
             // set input processor to new State's BaseScreen stage
@@ -282,6 +311,11 @@ public class GamePresenter extends Game
                 eStateNotAvailable.printStackTrace();
             }
         });
+
+        ((InGameScreen) inGameScreen).getSoundEvent().addHandler((args) -> {
+            assert true;
+        });
+
         ((InGameScreen) inGameScreen).getLeftEvent().addHandler((args) -> {
             assert true;
         });
@@ -294,6 +328,12 @@ public class GamePresenter extends Game
         ((InGameScreen) inGameScreen).getJumpEvent().addHandler((args) -> {
             // set input processor to new State's BaseScreen stage
             Gdx.input.setInputProcessor(gameOverScreen.getStage());
+            if(soundOn) {
+                ((InGameScreen) inGameScreen).getGameMusic().stop();
+                menuMusic.play();
+            }
+            //remove Player entity to stop it rendering whilst not ingame
+            ecs.removeEntity(player);
             // call on state machine to change state
             try {
                 viewMachine.nextState(viewStateGameOver);
@@ -302,17 +342,18 @@ public class GamePresenter extends Game
             } catch (EStateNotAvailable eStateNotAvailable) {
                 eStateNotAvailable.printStackTrace();
             }
+
         });
 
         ((GameOverScreen) gameOverScreen).getNewGameEvent().addHandler((args) -> {
             // set input processor to new State's BaseScreen stage
             Gdx.input.setInputProcessor(inGameScreen.getStage());
             // call on state machine to change state
-            try{
+            try {
                 viewMachine.nextState(viewStateInGame);
             } catch (EInvalidTransition eInvalidTransition) {
                 eInvalidTransition.printStackTrace();
-            }catch (EStateNotAvailable eStateNotAvailable){
+            } catch (EStateNotAvailable eStateNotAvailable) {
                 eStateNotAvailable.printStackTrace();
             }
         });
@@ -321,11 +362,11 @@ public class GamePresenter extends Game
             // set input processor to new State's BaseScreen stage
             Gdx.input.setInputProcessor(highScoreScreen.getStage());
             // call on state machine to change state
-            try{
+            try {
                 viewMachine.nextState(viewStateHighScore);
             } catch (EInvalidTransition eInvalidTransition) {
                 eInvalidTransition.printStackTrace();
-            }catch (EStateNotAvailable eStateNotAvailable){
+            } catch (EStateNotAvailable eStateNotAvailable) {
                 eStateNotAvailable.printStackTrace();
             }
         });
@@ -334,11 +375,11 @@ public class GamePresenter extends Game
             // set input processor to new State's BaseScreen stage
             Gdx.input.setInputProcessor(menuScreen.getStage());
             // call on state machine to change state
-            try{
+            try {
                 viewMachine.nextState(viewStateMenu);
             } catch (EInvalidTransition eInvalidTransition) {
                 eInvalidTransition.printStackTrace();
-            }catch (EStateNotAvailable eStateNotAvailable){
+            } catch (EStateNotAvailable eStateNotAvailable) {
                 eStateNotAvailable.printStackTrace();
             }
         });
@@ -356,18 +397,24 @@ public class GamePresenter extends Game
         });
 
         ((SettingsScreen) settingsScreen).getSoundEvent().addHandler((args) -> {
-            assert true;
+            if(soundOn) {
+                menuMusic.pause();
+                soundOn = false;
+            } else {
+                menuMusic.play();
+                soundOn = true;
+            }
         });
 
         ((SettingsScreen) settingsScreen).getMenuEvent().addHandler((args) -> {
             // set input processor to new State's BaseScreen stage
             Gdx.input.setInputProcessor(menuScreen.getStage());
             // call on state machine to change state
-            try{
+            try {
                 viewMachine.nextState(viewStateMenu);
             } catch (EInvalidTransition eInvalidTransition) {
                 eInvalidTransition.printStackTrace();
-            }catch (EStateNotAvailable eStateNotAvailable){
+            } catch (EStateNotAvailable eStateNotAvailable) {
                 eStateNotAvailable.printStackTrace();
             }
         });
@@ -376,11 +423,11 @@ public class GamePresenter extends Game
             // set input processor to new State's BaseScreen stage
             Gdx.input.setInputProcessor(menuScreen.getStage());
             // call on state machine to change state
-            try{
+            try {
                 viewMachine.nextState(viewStateMenu);
             } catch (EInvalidTransition eInvalidTransition) {
                 eInvalidTransition.printStackTrace();
-            }catch (EStateNotAvailable eStateNotAvailable){
+            } catch (EStateNotAvailable eStateNotAvailable) {
                 eStateNotAvailable.printStackTrace();
             }
         });
@@ -452,5 +499,9 @@ public class GamePresenter extends Game
     public void resume()
     {
         super.resume();
+    }
+
+    public boolean isSoundOn() {
+        return soundOn;
     }
 }

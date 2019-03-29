@@ -64,20 +64,27 @@ public class SettingsScreen extends BaseScreen{
         this.btnSound.setChecked(true);
         btnSound.addListener(new ClickListener(){
             @Override
-            public void touchUp(InputEvent e, float x, float y, int point, int button){
-                if(btnSound.isChecked()){
-                    btnSound.setChecked(false);
-                } else {
-                    btnSound.setChecked(true);
-                }
+            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
                 soundEvent.invoke(null);
+                return super.touchDown(event, x, y, pointer, button);
+            }
+
+            @Override
+            public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+                super.touchUp(event, x, y, pointer, button);
             }
         });
-        btnMenu = new TextButton("Menu", skin);
+        btnMenu = new TextButton("Main Menu", skin);
         btnMenu.addListener(new ClickListener() {
             @Override
-            public void touchUp(InputEvent e, float x, float y, int point, int button) {
+            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
                 menuEvent.invoke(null);
+                return super.touchDown(event, x, y, pointer, button);
+            }
+
+            @Override
+            public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+                super.touchUp(event, x, y, pointer, button);
             }
         });
 
@@ -106,6 +113,14 @@ public class SettingsScreen extends BaseScreen{
         params.size = 24;
         params.color = Color.WHITE;
         this.font24 = generator.generateFont(params);
+    }
+
+    public void setSoundOn(boolean soundOn){
+        if(soundOn){
+            this.btnSound.setChecked(false);
+        } else{
+            this.btnSound.setChecked(true);
+        }
     }
 
     public Stage getStage(){
