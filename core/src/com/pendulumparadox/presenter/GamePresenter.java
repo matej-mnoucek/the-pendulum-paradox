@@ -186,9 +186,9 @@ public class GamePresenter extends Game
                 ecs.addEntity(player);
             }
             Gdx.input.setInputProcessor(inGameScreen.getStage());
-            menuMusic.stop();
             if(soundOn) {
-                ((InGameScreen) inGameScreen).playGameMusic(true);
+                menuMusic.stop();
+                ((InGameScreen) inGameScreen).playGameMusic();
             }
             // call on state machine to change state
             try {
@@ -313,7 +313,15 @@ public class GamePresenter extends Game
         });
 
         ((InGameScreen) inGameScreen).getSoundEvent().addHandler((args) -> {
-            assert true;
+            if(soundOn){
+                ((InGameScreen) inGameScreen).stopGameMusic();
+                ((SettingsScreen) settingsScreen).setSoundOn(false);
+                soundOn = false;
+            } else {
+                ((InGameScreen) inGameScreen).playGameMusic();
+                ((SettingsScreen) settingsScreen).setSoundOn(true);
+                soundOn = true;
+            }
         });
 
         ((InGameScreen) inGameScreen).getLeftEvent().addHandler((args) -> {
@@ -399,9 +407,11 @@ public class GamePresenter extends Game
         ((SettingsScreen) settingsScreen).getSoundEvent().addHandler((args) -> {
             if(soundOn) {
                 menuMusic.pause();
+                ((InGameScreen) inGameScreen).setSoundOn(false);
                 soundOn = false;
             } else {
                 menuMusic.play();
+                ((InGameScreen) inGameScreen).setSoundOn(true);
                 soundOn = true;
             }
         });

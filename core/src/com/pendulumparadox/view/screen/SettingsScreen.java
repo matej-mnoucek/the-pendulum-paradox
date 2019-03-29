@@ -117,9 +117,9 @@ public class SettingsScreen extends BaseScreen{
 
     public void setSoundOn(boolean soundOn){
         if(soundOn){
-            this.btnSound.setChecked(false);
+            btnSound.setChecked(true);
         } else{
-            this.btnSound.setChecked(true);
+            btnSound.setChecked(false);
         }
     }
 

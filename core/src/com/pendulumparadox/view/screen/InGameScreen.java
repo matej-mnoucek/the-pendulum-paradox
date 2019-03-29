@@ -131,11 +131,7 @@ public class InGameScreen extends BaseScreen
         btnSound.addListener(new ClickListener(){
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
-                if(soundOn){
-                    gameMusic.pause();
-                } else{
-                    gameMusic.play();
-                }
+                soundEvent.invoke(null);
                 return super.touchDown(event, x, y, pointer, button);
             }
 
@@ -231,20 +227,21 @@ public class InGameScreen extends BaseScreen
 
     public void setSoundOn(boolean isSoundOn){
         if(isSoundOn){
+            btnSound.setChecked(true);
             this.soundOn = true;
         } else{
+            btnSound.setChecked(false);
             this.soundOn = false;
         }
     }
 
-    public void playGameMusic(boolean SoundOn){
-        if(soundOn) {
-            this.gameMusic.play();
-        }else {
-            this.gameMusic.stop();
-        }
+    public void playGameMusic(){
+        this.gameMusic.play();
     }
 
+    public void stopGameMusic(){
+        this.gameMusic.pause();
+    }
 
     public boolean isSoundOn(){
         return soundOn;
