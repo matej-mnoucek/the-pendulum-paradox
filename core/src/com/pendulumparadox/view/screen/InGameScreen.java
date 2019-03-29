@@ -49,7 +49,6 @@ public class InGameScreen extends BaseScreen
     private Table moveBtnTable;
     private Table actionBtnTable;
 
-    private boolean shooting;
     private float shootTimer;
 
     // Button events
@@ -181,6 +180,7 @@ public class InGameScreen extends BaseScreen
             }
             @Override
             public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+                shootEvent.invoke(null);
                 super.touchUp(event, x, y, pointer, button);
             }
         });
@@ -266,13 +266,6 @@ public class InGameScreen extends BaseScreen
     @Override
     public void render(float delta) {
         super.render(delta);
-        if(shooting) {
-            shootTimer += delta;
-            if(shootTimer > 0.1f){
-                decrementAmmo();
-                shootTimer = 0;
-            }
-        }
         stage.act(delta);
         stage.draw();
     }
