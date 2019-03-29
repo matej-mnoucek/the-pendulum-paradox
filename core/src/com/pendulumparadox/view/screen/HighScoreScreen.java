@@ -133,8 +133,8 @@ public class HighScoreScreen extends BaseScreen
 
         btnBack = new TextButton("BACK", skin);
         btnBack.setSize(200, 60);
-        btnBack.setPosition(GamePresenter.V_WIDTH / 2 - btnBack.getWidth() / 2,
-                Align.bottom + (GamePresenter.V_HEIGHT / 10));
+        btnBack.setPosition(400 - btnBack.getWidth() / 2,
+                Align.bottom + (800 / 10));
         btnBack.addListener(new ClickListener(){
             @Override
             public void touchUp(InputEvent e, float x, float y, int point, int button){

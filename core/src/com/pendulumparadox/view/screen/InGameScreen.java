@@ -63,10 +63,8 @@ public class InGameScreen extends BaseScreen
 
     Music gameMusic;
 
-    public InGameScreen(AssetManager manager)
+    public InGameScreen()
     {
-
-        this.assetManager = manager;
 
         //this.gameMusic = assetManager.get("sounds/inGameMusic.mp3", Music.class);
         //this.gameMusic.setLooping(true);
@@ -109,7 +107,7 @@ public class InGameScreen extends BaseScreen
 
 
         //HUD Texture for weapon, move buttons and action buttons
-        weaponTexture = new Texture("sprites/ak47.png");
+        weaponTexture = new Texture("sprites/weapons/ak47.png");
 
 
         //image for weapon button, move button action button

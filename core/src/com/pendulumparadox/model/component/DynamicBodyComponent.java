@@ -9,7 +9,10 @@ public class DynamicBodyComponent implements Component
     public float height = 1.0f;
     public Vector2 center = new Vector2(0,0);
 
-    public float density = 1.0f;
-    public float friction = 0.0f;
-    public float restitution = 0.0f;
+    public float density = 40.0f;
+    public float friction = 0.3f;
+    public float restitution = 0.1f;
+
+    public float impulseVertical = 0.0f;
+    public float impulseHorizontal = 0.0f;
 }

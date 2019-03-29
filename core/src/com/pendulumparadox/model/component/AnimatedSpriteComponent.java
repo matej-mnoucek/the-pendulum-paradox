@@ -13,6 +13,6 @@ public class AnimatedSpriteComponent implements Component
     public String region = "";
     public float frameDuration = 1.0f;
 
-    public int width = 1;
-    public int height = 1;
+    public float width = 1;
+    public float height = 1;
 }

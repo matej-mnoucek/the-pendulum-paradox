@@ -6,20 +6,19 @@ import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.EntitySystem;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.utils.ImmutableArray;
+import com.badlogic.gdx.graphics.Camera;
+import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.pendulumparadox.model.component.AnimatedSpriteComponent;
-import com.pendulumparadox.model.component.GraphicsComponent;
 import com.pendulumparadox.model.component.SpriteComponent;
 import com.pendulumparadox.model.component.TransformComponent;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import javax.xml.crypto.dsig.Transform;
 
 /**
  * All the logic for graphics components
@@ -42,6 +41,12 @@ public class RenderingSystem extends EntitySystem
     private List<Texture> sprites = new ArrayList<>();
     private List<Animation<TextureRegion>> animations = new ArrayList<>();
 
+    private OrthographicCamera camera;
+
+    public RenderingSystem(OrthographicCamera camera)
+    {
+        this.camera = camera;
+    }
 
     @Override
     public void addedToEngine(Engine engine)
@@ -96,8 +101,8 @@ public class RenderingSystem extends EntitySystem
 
             Texture texture = sprites.get(i);
             spriteBatch.draw(texture,
-                    transformComponent.position.x,
-                    transformComponent.position.y,
+                    transformComponent.position.x - spriteComponent.width/2.0f,
+                    transformComponent.position.y - spriteComponent.height/2.0f,
                     spriteComponent.width,
                     spriteComponent.height);
         }
@@ -111,9 +116,10 @@ public class RenderingSystem extends EntitySystem
                     = animatedSpriteComponentMapper.get(entity);
 
             TextureRegion currentFrame = animations.get(i).getKeyFrame(stateTime);
+            spriteBatch.setProjectionMatrix(camera.combined);
             spriteBatch.draw(currentFrame,
-                    transformComponent.position.x,
-                    transformComponent.position.y,
+                    transformComponent.position.x - animatedSpriteComponent.width/2.0f,
+                    transformComponent.position.y - animatedSpriteComponent.height/2.0f,
                     animatedSpriteComponent.width,
                     animatedSpriteComponent.height);
         }

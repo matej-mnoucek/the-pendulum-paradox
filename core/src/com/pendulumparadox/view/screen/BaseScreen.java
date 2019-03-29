@@ -15,7 +15,7 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 public abstract class BaseScreen implements Screen
 {
     protected Stage stage;
-    protected static Camera camera;
+    protected static OrthographicCamera camera;
     protected static Viewport viewport;
 
     public BaseScreen()
