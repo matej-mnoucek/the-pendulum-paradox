@@ -30,10 +30,10 @@ public class HighScoreScreen extends BaseScreen
 
     private TextButton btnBack;
 
+    private Label headLine;
     private Label scoreLabel;
     private Label nameLabel;
     private Label placeLabel;
-    private Label headLine;
     private Label first;
     private Label firstName;
     private Label firstScore;
