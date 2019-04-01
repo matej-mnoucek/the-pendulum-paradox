@@ -511,7 +511,9 @@ public class GamePresenter extends Game
             shootingTimer += delta;
             if(shootingTimer > 0.1) {
                 ((InGameScreen) inGameScreen).decrementAmmo();
-                assetManager.get("sounds/single_gunshot.mp3", Sound.class).play();
+                if(soundOn) {
+                    assetManager.get("sounds/single_gunshot.mp3", Sound.class).play();
+                }
                 shootingTimer = 0;
             }
         }
