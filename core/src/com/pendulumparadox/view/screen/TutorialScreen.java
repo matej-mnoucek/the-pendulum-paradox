@@ -49,8 +49,14 @@ public class TutorialScreen extends BaseScreen{
         btnBack = new TextButton("Back", skin);
         btnBack.addListener(new ClickListener(){
             @Override
-            public void touchUp(InputEvent e, float x, float y, int point, int button){
+            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
                 menuEvent.invoke(null);
+                return super.touchDown(event, x, y, pointer, button);
+            }
+
+            @Override
+            public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+                super.touchUp(event, x, y, pointer, button);
             }
         });
 

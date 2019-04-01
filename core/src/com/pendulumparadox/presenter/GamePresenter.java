@@ -4,7 +4,6 @@ import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.audio.Music;
@@ -46,6 +45,8 @@ import com.pendulumparadox.view.screen.InGameScreen;
 import com.pendulumparadox.view.screen.MenuScreen;
 import com.pendulumparadox.view.screen.SettingsScreen;
 import com.pendulumparadox.view.screen.TutorialScreen;
+
+//TODO: implement "new game" pressed from GameOverScreen.
 
 /**
  * The main control class of the whole game.
@@ -89,6 +90,13 @@ public class GamePresenter extends Game
     private BaseScreen settingsScreen;
     private BaseScreen tutorialScreen;
 
+    private Boolean firstPlayThrough = true;
+
+    private Music menuMusic;
+    private Music inGameMusic;
+    private boolean soundOn;
+    private boolean shooting;
+    private float shootingTimer = 0;
 
     // DEBUG
     FPSLogger fpsLogger;
@@ -98,8 +106,7 @@ public class GamePresenter extends Game
     TransformComponent transformComponent;
 
     @Override
-    public void create()
-    {
+    public void create() {
         // DEBUG
         debugRenderer = new Box2DDebugRenderer();
         shapeRenderer = new ShapeRenderer();
@@ -111,7 +118,7 @@ public class GamePresenter extends Game
         // ECS Entity
         player = new Entity();
         transformComponent = new TransformComponent();
-        transformComponent.position = new Vector2(3,8);
+        transformComponent.position = new Vector2(3, 8);
         player.add(transformComponent);
         AnimatedSpriteComponent animated = new AnimatedSpriteComponent();
         animated.frameDuration = 0.1f;
@@ -143,17 +150,30 @@ public class GamePresenter extends Game
         // Control
         InputSystem input = new InputSystem();
 
-        //populate assetmanager with assets
-        assetManager.load("sounds/POL-galactic-trek-short.wav", Music.class);
-        assetManager.load("single_gunshot.mp3", Sound.class);
-        assetManager.load("menuMusic", Music.class);
-        assetManager.load("coin_collect.mp3", Sound.class);
-        assetManager.load("jump.mp3", Sound.class);
-        assetManager.load("die.mp3", Sound.class);
-        assetManager.load("GameOver.mp3", Sound.class);
-        assetManager.load("reload.mp3", Sound.class);
 
-        // UI
+        //populate assetmanager with assets
+        assetManager.load("sounds/single_gunshot.mp3", Sound.class);
+        assetManager.load("sounds/coin_collect.mp3", Sound.class);
+        assetManager.load("sounds/jump.mp3", Sound.class);
+        assetManager.load("sounds/die.mp3", Sound.class);
+        assetManager.load("sounds/GameOver.mp3", Sound.class);
+        assetManager.load("sounds/reload.mp3", Sound.class);
+        //assetManager.load("sounds/enemy_dead.mp3", Sound.class);
+        assetManager.finishLoading();
+
+        /*set music for menu and start playing.
+        Set music for gameplay, but do not start it.
+        Music not in assetManager because larger sound files needs to be streamed as Gdx.audio-type
+        and not Gdx.Sound type*/
+        soundOn = true;
+        menuMusic = Gdx.audio.newMusic(Gdx.files.internal("sounds/menuMusic.mp3"));
+        inGameMusic = Gdx.audio.newMusic(Gdx.files.internal("sounds/inGameMusic.mp3"));
+        inGameMusic.setVolume(0.5f);
+        menuMusic.setLooping(true);
+        inGameMusic.setLooping(true);
+        menuMusic.play();
+
+        //define screens
         inGameScreen = new InGameScreen();
         gameOverScreen = new GameOverScreen();
         menuScreen = new MenuScreen();
@@ -162,13 +182,38 @@ public class GamePresenter extends Game
         tutorialScreen = new TutorialScreen();
 
         // Link game start
-        ((MenuScreen)menuScreen).getNewGameEvent().addHandler((args) ->
+        ((MenuScreen) menuScreen).getNewGameEvent().addHandler((args) ->
         {
-            ecs.addEntity(player);
-            ecs.addSystem(cameraFollowSystem);
-            ecs.addSystem(renderingSystem);
-            ecs.addSystem(physics);
-            ecs.addSystem(input);
+            //on first play through set the following entities to ECS
+            if (firstPlayThrough) {
+                ecs.addEntity(player);
+                ecs.addSystem(cameraFollowSystem);
+                ecs.addSystem(renderingSystem);
+                ecs.addSystem(physics);
+                ecs.addSystem(input);
+
+                firstPlayThrough = false;
+            }
+            //always set player entity when switching to in-game mode
+            else {
+                ecs.addEntity(player);
+            }
+            //set inGameScreen's stage as the input processor
+            Gdx.input.setInputProcessor(inGameScreen.getStage());
+            //stop menu music. will call stop() method on menu music even if sound is currently turned off
+            menuMusic.stop();
+            //if sound is turned on: start playing in-game music
+            if(soundOn) {
+                inGameMusic.play();
+            }
+            // call on state machine to change state
+            try {
+                viewMachine.nextState(viewStateInGame);
+            } catch (EInvalidTransition eInvalidTransition) {
+                eInvalidTransition.printStackTrace();
+            } catch (EStateNotAvailable eStateNotAvailable) {
+                eStateNotAvailable.printStackTrace();
+            }
         });
 
         // Create screen and scene for future view state assembly
@@ -177,6 +222,7 @@ public class GamePresenter extends Game
         GameScene menuScene = new GameScene(new TmxMapLoader().load("levels/level1.tmx"),
                 world, mainCamera);
 
+        //define states. states are made up of one screen and one scene
         viewStateInGame = new ViewState(levelOneScene, inGameScreen);
         viewStateGameOver = new ViewState(levelOneScene, gameOverScreen);
         viewStateMenu = new ViewState(menuScene, menuScreen);
@@ -184,20 +230,8 @@ public class GamePresenter extends Game
         viewStateSettings = new ViewState(menuScene, settingsScreen);
         viewStateTutorial = new ViewState(menuScene, tutorialScreen);
 
-        /*create input multiplexer. Input multiplexer serves as the inputProcessor
-        for the whole game. When an input event is registered, it passes the input
-        event to the first inputprocessor added to it. If that processor returns false
-        input multiplexer passes the event on to the next processor that was added
-        to it and so forth*/
-        InputMultiplexer inputMultiplexer = new InputMultiplexer();
-        inputMultiplexer.addProcessor(inGameScreen.getStage());
-        inputMultiplexer.addProcessor(menuScreen.getStage());
-        inputMultiplexer.addProcessor(gameOverScreen.getStage());
-        inputMultiplexer.addProcessor(highScoreScreen.getStage());
-        inputMultiplexer.addProcessor(settingsScreen.getStage());
-        inputMultiplexer.addProcessor(tutorialScreen.getStage());
 
-        // Add state to the state machine
+        // Add states to the state machine
         viewMachine.addState(viewStateInGame);
         viewMachine.addState(viewStateGameOver);
         viewMachine.addState(viewStateMenu);
@@ -205,7 +239,7 @@ public class GamePresenter extends Game
         viewMachine.addState(viewStateSettings);
         viewMachine.addState(viewStateTutorial);
 
-        // Define transition
+        // Define transition between states
         Transition menuToHighScore = new Transition(viewStateMenu, viewStateHighScore);
         Transition menuToInGame = new Transition(viewStateMenu, viewStateInGame);
         Transition menuToSettings = new Transition(viewStateMenu, viewStateSettings);
@@ -238,23 +272,21 @@ public class GamePresenter extends Game
             eStateNotAvailable.printStackTrace();
         }
         // Set inputProcessor to entry point's BaseScreen's Stage
-        Gdx.input.setInputProcessor(inputMultiplexer);
+        Gdx.input.setInputProcessor(menuScreen.getStage());
 
 
+        /*all the events that will result from pressing a button somewhere in the game are defined
+        bellow. For every possible button-press-action the corresponding Event adds a handler that
+         subscribes to this Event.
+         Whenever the button is pressed, this EventHandler will perform it's handle()-method.
+        addHandler((args) -> {code...}); defines what the handle()-method for that specific
+        eventHandlerwill do
+        */
 
-        // Registering event handler == a piece of code that runs everytime the event is invoked
-        ((MenuScreen) menuScreen).getNewGameEvent().addHandler((args) -> {
-            // call on state machine to change state
-            try {
-                viewMachine.nextState(viewStateInGame);
-            } catch (EInvalidTransition eInvalidTransition) {
-                eInvalidTransition.printStackTrace();
-            } catch (EStateNotAvailable eStateNotAvailable) {
-                eStateNotAvailable.printStackTrace();
-            }
-            // set input processor to new State's BaseScreen stage
-        });
+        //settings button pressed from main menu
         ((MenuScreen) menuScreen).getSettingsEvent().addHandler((args) -> {
+            // set input processor to new State's BaseScreen stage
+            Gdx.input.setInputProcessor(settingsScreen.getStage());
             // call on state machine to change state
             try {
                 viewMachine.nextState(viewStateSettings);
@@ -263,9 +295,12 @@ public class GamePresenter extends Game
             } catch (EStateNotAvailable eStateNotAvailable) {
                 eStateNotAvailable.printStackTrace();
             }
-            // set input processor to new State's BaseScreen stage
         });
+
+        //highscore button pressed from main menu
         ((MenuScreen) menuScreen).getHighScoreEvent().addHandler((args) -> {
+            // set input processor to new State's BaseScreen stage
+            Gdx.input.setInputProcessor(highScoreScreen.getStage());
             // call on state machine to change state
             try {
                 viewMachine.nextState(viewStateHighScore);
@@ -274,9 +309,12 @@ public class GamePresenter extends Game
             } catch (EStateNotAvailable eStateNotAvailable) {
                 eStateNotAvailable.printStackTrace();
             }
-            // set input processor to new State's BaseScreen stage
         });
+
+        //tutorial button pressed in main menu
         ((MenuScreen) menuScreen).getTutorialEvent().addHandler((args) -> {
+            // set input processor to new State's BaseScreen stage
+            Gdx.input.setInputProcessor(tutorialScreen.getStage());
             // call on state machine to change state
             try {
                 viewMachine.nextState(viewStateTutorial);
@@ -285,18 +323,54 @@ public class GamePresenter extends Game
             } catch (EStateNotAvailable eStateNotAvailable) {
                 eStateNotAvailable.printStackTrace();
             }
-            // set input processor to new State's BaseScreen stage
         });
+        //sound button pressed from gameplay
+        ((InGameScreen) inGameScreen).getSoundEvent().addHandler((args) -> {
+            //if sound is turned on: pause game music. Set the sound-button in settingsscreen to
+            //not be toggled, and vice versa
+            if(soundOn){
+                inGameMusic.pause();
+                ((SettingsScreen) settingsScreen).setSoundOn(false);
+                soundOn = false;
+            } else {
+                inGameMusic.play();
+                ((SettingsScreen) settingsScreen).setSoundOn(true);
+                soundOn = true;
+            }
+        });
+
         ((InGameScreen) inGameScreen).getLeftEvent().addHandler((args) -> {
             assert true;
         });
         ((InGameScreen) inGameScreen).getRightEvent().addHandler((args) -> {
             assert true;
         });
+
+        //shoot button pressed in-game. sets boolean variable "shooting" to true. this causes the
+        //GamePresenter's update method to perform shooting action
         ((InGameScreen) inGameScreen).getShootEvent().addHandler((args) -> {
-            assert true;
+            if(shooting){
+                shooting = false;
+            } else{
+                shooting = true;
+            }
         });
+
+        //jump button pressed in-game. Currently this causes the the game to go from play-state to
+        //gameOver-state
         ((InGameScreen) inGameScreen).getJumpEvent().addHandler((args) -> {
+            // set input processor to new State's BaseScreen stage
+            Gdx.input.setInputProcessor(gameOverScreen.getStage());
+
+            //stop game music and start menu music if sound is turned on
+            inGameMusic.stop();
+            if(soundOn) {
+                menuMusic.play();
+            }
+
+            //remove Player entity to stop it rendering whilst not in-game
+            ecs.removeEntity(player);
+
             // call on state machine to change state
             try {
                 viewMachine.nextState(viewStateGameOver);
@@ -305,42 +379,44 @@ public class GamePresenter extends Game
             } catch (EStateNotAvailable eStateNotAvailable) {
                 eStateNotAvailable.printStackTrace();
             }
-            // set input processor to new State's BaseScreen stage
+
         });
+
+        //new game pressed from gameOver state
+        /*
+        TODO: implement this method correctly. this is currently an invalid state transition
+         */
         ((GameOverScreen) gameOverScreen).getNewGameEvent().addHandler((args) -> {
+            // set input processor to new State's BaseScreen stage
+            Gdx.input.setInputProcessor(inGameScreen.getStage());
             // call on state machine to change state
-            try{
+            try {
                 viewMachine.nextState(viewStateInGame);
             } catch (EInvalidTransition eInvalidTransition) {
                 eInvalidTransition.printStackTrace();
-            }catch (EStateNotAvailable eStateNotAvailable){
+            } catch (EStateNotAvailable eStateNotAvailable) {
                 eStateNotAvailable.printStackTrace();
             }
-            // set input processor to new State's BaseScreen stage
         });
+
+        //press highscore button from game over screen
         ((GameOverScreen) gameOverScreen).getHighScoreEvent().addHandler((args) -> {
+            // set input processor to new State's BaseScreen stage
+            Gdx.input.setInputProcessor(highScoreScreen.getStage());
             // call on state machine to change state
-            try{
+            try {
                 viewMachine.nextState(viewStateHighScore);
             } catch (EInvalidTransition eInvalidTransition) {
                 eInvalidTransition.printStackTrace();
-            }catch (EStateNotAvailable eStateNotAvailable){
+            } catch (EStateNotAvailable eStateNotAvailable) {
                 eStateNotAvailable.printStackTrace();
             }
-            // set input processor to new State's BaseScreen stage
         });
+
+        //main menu button pressed from game over screen
         ((GameOverScreen) gameOverScreen).getMenuEvent().addHandler((args) -> {
-            // call on state machine to change state
-            try{
-                viewMachine.nextState(viewStateMenu);
-            } catch (EInvalidTransition eInvalidTransition) {
-                eInvalidTransition.printStackTrace();
-            }catch (EStateNotAvailable eStateNotAvailable){
-                eStateNotAvailable.printStackTrace();
-            }
             // set input processor to new State's BaseScreen stage
-        });
-        ((HighScoreScreen) highScoreScreen).getMenuEvent().addHandler((args) -> {
+            Gdx.input.setInputProcessor(menuScreen.getStage());
             // call on state machine to change state
             try {
                 viewMachine.nextState(viewStateMenu);
@@ -349,32 +425,65 @@ public class GamePresenter extends Game
             } catch (EStateNotAvailable eStateNotAvailable) {
                 eStateNotAvailable.printStackTrace();
             }
-            // set input processor to new State's BaseScreen stage
         });
+
+        //Highscore button pressed from main menu screen
+        ((HighScoreScreen) highScoreScreen).getMenuEvent().addHandler((args) -> {
+            // set input processor to new State's BaseScreen stage
+            Gdx.input.setInputProcessor(menuScreen.getStage());
+            // call on state machine to change state
+            try {
+                viewMachine.nextState(viewStateMenu);
+            } catch (EInvalidTransition eInvalidTransition) {
+                eInvalidTransition.printStackTrace();
+            } catch (EStateNotAvailable eStateNotAvailable) {
+                eStateNotAvailable.printStackTrace();
+            }
+        });
+
+        //sound button pressed from settings screen
         ((SettingsScreen) settingsScreen).getSoundEvent().addHandler((args) -> {
-            assert true;
+            //if sound is currently playing: pause menu-music. Set in-game sound to be off.
+            //set boolean variable "soundOn" to false
+            if(soundOn) {
+                menuMusic.pause();
+                ((InGameScreen) inGameScreen).setSoundOn(false);
+                soundOn = false;
+            //if sound is currently not playing: start playing menu-music. set in-game music to be on
+            //set boolean "soundOn" to true
+            } else {
+                menuMusic.play();
+                ((InGameScreen) inGameScreen).setSoundOn(true);
+                soundOn = true;
+            }
         });
+
+        //if back button pressed from settings screen:
         ((SettingsScreen) settingsScreen).getMenuEvent().addHandler((args) -> {
+            // set input processor to new State's BaseScreen stage
+            Gdx.input.setInputProcessor(menuScreen.getStage());
             // call on state machine to change state
-            try{
+            try {
                 viewMachine.nextState(viewStateMenu);
             } catch (EInvalidTransition eInvalidTransition) {
                 eInvalidTransition.printStackTrace();
-            }catch (EStateNotAvailable eStateNotAvailable){
+            } catch (EStateNotAvailable eStateNotAvailable) {
                 eStateNotAvailable.printStackTrace();
             }
-            // set input processor to new State's BaseScreen stage
         });
+
+        //tutorial button pressed from main menu screen
         ((TutorialScreen) tutorialScreen).getMenuEvent().addHandler((args) -> {
+            // set input processor to new State's BaseScreen stage
+            Gdx.input.setInputProcessor(menuScreen.getStage());
             // call on state machine to change state
-            try{
+            try {
                 viewMachine.nextState(viewStateMenu);
             } catch (EInvalidTransition eInvalidTransition) {
                 eInvalidTransition.printStackTrace();
-            }catch (EStateNotAvailable eStateNotAvailable){
+            } catch (EStateNotAvailable eStateNotAvailable) {
                 eStateNotAvailable.printStackTrace();
             }
-            // set input processor to new State's BaseScreen stage
         });
     }
 
@@ -391,6 +500,20 @@ public class GamePresenter extends Game
         while (accumulator >= timeStep) {
             world.step(timeStep, 6, 2);
             accumulator -= timeStep;
+        }
+
+        /*if shoot button is pressed down: variable "shooting" is set to true.
+        Shooting timer counts the time since the last bullet fired.
+        Every 100ms a gunshot sound is played,
+        and decrementAmmo() subtracts 1 from inGameScreen's ammoLabel in HUD
+        when shooting button is released: varuable "shooting" is set to false*/
+        if(shooting){
+            shootingTimer += delta;
+            if(shootingTimer > 0.1) {
+                ((InGameScreen) inGameScreen).decrementAmmo();
+                assetManager.get("sounds/single_gunshot.mp3", Sound.class).play();
+                shootingTimer = 0;
+            }
         }
     }
 
@@ -444,5 +567,9 @@ public class GamePresenter extends Game
     public void resume()
     {
         super.resume();
+    }
+
+    public boolean isSoundOn() {
+        return soundOn;
     }
 }

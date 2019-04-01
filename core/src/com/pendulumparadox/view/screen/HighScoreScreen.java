@@ -30,10 +30,10 @@ public class HighScoreScreen extends BaseScreen
 
     private TextButton btnBack;
 
+    private Label headLine;
     private Label scoreLabel;
     private Label nameLabel;
     private Label placeLabel;
-    private Label headLine;
     private Label first;
     private Label firstName;
     private Label firstScore;
@@ -96,6 +96,10 @@ public class HighScoreScreen extends BaseScreen
         table.center();
         table.setFillParent(true);
 
+        Table btnTable = new Table();
+        btnTable.center().bottom();
+        btnTable.setFillParent(true);
+
         headLine = new Label("HIGHSCORES", labelStyle);
         placeLabel = new Label("Place", labelStyle);
         nameLabel = new Label("Name", labelStyle);
@@ -131,18 +135,22 @@ public class HighScoreScreen extends BaseScreen
         tenthName = new Label(names[0], labelStyle);
         tenthScore = new Label(String.format("%06d",score[0]), labelStyle);
 
-        btnBack = new TextButton("BACK", skin);
-        btnBack.setSize(200, 60);
-        btnBack.setPosition(400 - btnBack.getWidth() / 2,
-                Align.bottom + (800 / 10));
+        btnBack = new TextButton("Main Menu", skin);
         btnBack.addListener(new ClickListener(){
             @Override
-            public void touchUp(InputEvent e, float x, float y, int point, int button){
+            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
                 menuEvent.invoke(null);
+                return super.touchDown(event, x, y, pointer, button);
+            }
+
+            @Override
+            public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+                super.touchUp(event, x, y, pointer, button);
             }
         });
 
         headLineTable.add(headLine).expandX().padTop(20).padBottom(20);
+        btnTable.add(btnBack).expandX().padBottom(20).size(300,60);
         table.add(placeLabel);
         table.add(nameLabel);
         table.add(scoreLabel);
@@ -190,7 +198,7 @@ public class HighScoreScreen extends BaseScreen
 
         stage.addActor(table);
         stage.addActor(headLineTable);
-        stage.addActor(btnBack);
+        stage.addActor(btnTable);
 
     }
 

@@ -1,6 +1,8 @@
 package com.pendulumparadox.view.screen;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.assets.AssetManager;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
@@ -21,7 +23,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
 import com.pendulumparadox.observer.Event;
 import com.pendulumparadox.observer.EventArgs;
-
+import com.pendulumparadox.presenter.GamePresenter;
 
 
 public class InGameScreen extends BaseScreen
@@ -32,6 +34,7 @@ public class InGameScreen extends BaseScreen
     private Label ammoCount;
     private Texture weaponTexture;
     private Image weapon;
+    private Button btnSound;
     private Button btnLeft;
     private Button btnRight;
     private Touchpad btnJump;
@@ -46,7 +49,6 @@ public class InGameScreen extends BaseScreen
     private Table moveBtnTable;
     private Table actionBtnTable;
 
-    private boolean shooting;
     private float shootTimer;
 
     // Button events
@@ -56,9 +58,14 @@ public class InGameScreen extends BaseScreen
     Event<EventArgs> jumpEvent = new Event<>();
     Event<EventArgs> leftEvent = new Event<>();
     Event<EventArgs> rightEvent = new Event<>();
+    Event<EventArgs> soundEvent = new Event<>();
+
+    private boolean soundOn;
+
 
     public InGameScreen()
     {
+
         //super(camera);
 
         initFonts();
@@ -67,6 +74,8 @@ public class InGameScreen extends BaseScreen
         labelStyle.fontColor = Color.WHITE;
 
         this.skin = new Skin(Gdx.files.internal("skins/uiskin.json"));
+
+        this.soundOn = true;
 
         //table for holding HUD objects
         hudTable = new Table();
@@ -102,6 +111,9 @@ public class InGameScreen extends BaseScreen
 
         //image for weapon button, move button action button
         weapon = new Image(weaponTexture);
+        btnSound = new Button(skin, "sound");
+        btnSound.setChecked(true);
+
         btnLeft = new Button(skin, "left");
         btnRight = new Button(skin, "right");
         btnJump = new Touchpad(3, skin, "default");
@@ -111,37 +123,65 @@ public class InGameScreen extends BaseScreen
 
 
         //add clicklistneres for buttons
-        btnLeft.addListener(new ClickListener(){
+        btnSound.addListener(new ClickListener(){
             @Override
-            public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
-                // This is just invoking the already defined event
-                // We are not passing any data == null for EventArgs argument
-                leftEvent.invoke(null);
-            }
-        });
-        btnRight.addListener(new ClickListener(){
-            @Override
-            public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
-                rightEvent.invoke(null);
-            }
-        });
-        btnJump.addListener(new ClickListener(){
-            @Override
-            public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
-                jumpEvent.invoke(null);
-            }
-        });
-        btnShoot.addListener(new InputListener(){
-            @Override
-            public boolean touchDown(InputEvent event, float x, float y, int pointer, int Button) {
-                shooting = true;
-                return true;
+            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                soundEvent.invoke(null);
+                return super.touchDown(event, x, y, pointer, button);
             }
 
             @Override
             public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
-                shooting = false;
-                shootTimer = 0;
+                super.touchUp(event, x, y, pointer, button);
+            }
+        });
+
+        btnLeft.addListener(new ClickListener(){
+            @Override
+            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                leftEvent.invoke(null);
+                return super.touchDown(event, x, y, pointer, button);
+            }
+
+            @Override
+            public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+                super.touchUp(event, x, y, pointer, button);
+            }
+        });
+        btnRight.addListener(new ClickListener(){
+            @Override
+            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                rightEvent.invoke(null);
+                return super.touchDown(event, x, y, pointer, button);
+            }
+
+            @Override
+            public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+                super.touchUp(event, x, y, pointer, button);
+            }
+        });
+        btnJump.addListener(new ClickListener(){
+            @Override
+            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                jumpEvent.invoke(null);
+                return super.touchDown(event, x, y, pointer, button);
+            }
+
+            @Override
+            public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+                super.touchUp(event, x, y, pointer, button);
+            }
+        });
+        btnShoot.addListener(new ClickListener() {
+            @Override
+            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                shootEvent.invoke(null);
+                return super.touchDown(event, x, y, pointer, button);
+            }
+            @Override
+            public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+                shootEvent.invoke(null);
+                super.touchUp(event, x, y, pointer, button);
             }
         });
 
@@ -152,7 +192,8 @@ public class InGameScreen extends BaseScreen
         hudTable.add(ammoCount).align(Align.left).padLeft(10);
         hudTable.add(lifeCount).align(Align.right).padRight(20);
         hudTable.row();
-        hudTable.add(weapon).expandX().width(100).height(50).align(Align.left);
+        hudTable.add(weapon).width(100).height(50).align(Align.left);
+        hudTable.add(btnSound).align(Align.right).padRight(20);
 
         //add move buttons to movebtnTable
         moveBtnTable.add(btnLeft).width(60).height(60).padLeft(40).padBottom(15);
@@ -179,10 +220,21 @@ public class InGameScreen extends BaseScreen
         this.font24 = generator.generateFont(params);
     }
 
+    public void setSoundOn(boolean isSoundOn){
+        if(isSoundOn){
+            btnSound.setChecked(true);
+            this.soundOn = true;
+        } else{
+            btnSound.setChecked(false);
+            this.soundOn = false;
+        }
+    }
+
     @Override
     public void show() {
 
     }
+
 
     @Override
     public void resize(int width, int height) {
@@ -209,16 +261,11 @@ public class InGameScreen extends BaseScreen
         return rightEvent;
     }
 
+    public Event<EventArgs> getSoundEvent(){ return soundEvent; }
+
     @Override
     public void render(float delta) {
         super.render(delta);
-        if(shooting) {
-            shootTimer += delta;
-            if(shootTimer > 0.1f){
-                decrementAmmo();
-                shootTimer = 0;
-            }
-        }
         stage.act(delta);
         stage.draw();
     }

@@ -1,6 +1,8 @@
 package com.pendulumparadox.view.screen;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.assets.AssetManager;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
@@ -33,12 +35,15 @@ public class MenuScreen extends BaseScreen
     Event<EventArgs> highScoreEvent = new Event<>();
     Event<EventArgs> tutorialEvent = new Event<>();
 
+    private Music menuMusic;
+
     // Setup the whole layout here
     public MenuScreen()
     {
         //super(camera);
 
         this.skin = new Skin(Gdx.files.internal("skins/uiskin.json"));
+
 
         initFonts();
         Label.LabelStyle labelStyle = new Label.LabelStyle();
@@ -55,40 +60,70 @@ public class MenuScreen extends BaseScreen
         this.btnNewGame = new TextButton("New Game", skin);
         btnNewGame.addListener(new ClickListener(){
             @Override
-            public void touchUp(InputEvent e, float x, float y, int point, int button){
+            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
                 newGameEvent.invoke(null);
+                return super.touchDown(event, x, y, pointer, button);
+            }
+
+            @Override
+            public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+                super.touchUp(event, x, y, pointer, button);
             }
         });
 
         this.btnTutorial = new TextButton("Tutorial", skin);
         btnTutorial.addListener(new ClickListener(){
             @Override
-            public void touchUp(InputEvent e, float x, float y, int point, int button){
+            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
                 tutorialEvent.invoke(null);
+                return super.touchDown(event, x, y, pointer, button);
+            }
+
+            @Override
+            public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+                super.touchUp(event, x, y, pointer, button);
             }
         });
 
         this.btnHighScore = new TextButton("HighScore", skin);
         btnHighScore.addListener(new ClickListener(){
             @Override
-            public void touchUp(InputEvent e, float x, float y, int point, int button){
+            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
                 highScoreEvent.invoke(null);
+                return super.touchDown(event, x, y, pointer, button);
+            }
+
+            @Override
+            public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+                super.touchUp(event, x, y, pointer, button);
             }
         });
 
         this.btnSettings = new TextButton("Settings", skin);
         btnSettings.addListener(new ClickListener(){
             @Override
-            public void touchUp(InputEvent e, float x, float y, int point, int button){
+            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
                 settingsEvent.invoke(null);
+                return super.touchDown(event, x, y, pointer, button);
+            }
+
+            @Override
+            public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+                super.touchUp(event, x, y, pointer, button);
             }
         });
 
         this.btnGoogleLogin = new TextButton("Log In to Google", skin);
         btnGoogleLogin.addListener(new ClickListener(){
             @Override
-            public void touchUp(InputEvent e, float x, float y, int point, int button){
+            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
                 btnGoogleLoginClicked();
+                return super.touchDown(event, x, y, pointer, button);
+            }
+
+            @Override
+            public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+                super.touchUp(event, x, y, pointer, button);
             }
         });
 
