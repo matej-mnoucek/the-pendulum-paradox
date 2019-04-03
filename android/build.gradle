@@ -17,8 +17,8 @@ android {
         exclude 'META-INF/robovm/ios/robovm.xml'
     }
     defaultConfig {
-        applicationId "com.mygdx.game"
-        minSdkVersion 9
+        applicationId "com.thependulumparadox.game"
+        minSdkVersion 14
         targetSdkVersion 28
         versionCode 1
         versionName "1.0"
@@ -34,6 +34,13 @@ android {
         sourceCompatibility 1.8
         targetCompatibility 1.8
     }
+
+}
+
+dependencies{
+    implementation "com.google.android.gms:play-services-games:+"
+    implementation 'com.google.android.gms:play-services-auth:+'
+
 }
 
 
