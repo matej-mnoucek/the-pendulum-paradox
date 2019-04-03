@@ -1,9 +1,15 @@
 package com.thependulumparadox.view.screen;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.assets.AssetManager;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.Color;
+
+import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
@@ -11,8 +17,11 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.thependulumparadox.presenter.GamePresenter;
 import com.thependulumparadox.multiplayer.ISynchronization;
+import com.thependulumparadox.observer.Event;
+import com.thependulumparadox.observer.EventArgs;
+import com.thependulumparadox.presenter.GamePresenter;
 
-public class MenuScreen extends Screen
+public class MenuScreen extends BaseScreen
 {
 
     private TextButton btnNewGame;
@@ -20,30 +29,36 @@ public class MenuScreen extends Screen
     private TextButton btnHighScore;
     private TextButton btnSettings;
     private TextButton btnGoogleLogin;
+    private Skin skin;
+
+    private BitmapFont font24;
+
+    Event<EventArgs> newGameEvent = new Event<>();
+    Event<EventArgs> settingsEvent = new Event<>();
+    Event<EventArgs> highScoreEvent = new Event<>();
+    Event<EventArgs> tutorialEvent = new Event<>();
+
+    private Music menuMusic;
 
 
     private ISynchronization proxy;
 
 
-    public MenuScreen(ISynchronization proxy){
-        this.proxy = proxy;
-    }
 
     // Setup the whole layout here
-    public void create()
+    public MenuScreen(ISynchronization proxy)
     {
-        super.create();
+        //super(camera);
 
-        System.out.println("Menu Screen Created!");
+        this.skin = new Skin(Gdx.files.internal("skins/uiskin.json"));
 
-        BitmapFont font = new BitmapFont();
-        font.getData().scale(0.2f);
+        this.proxy = proxy;
+
+        initFonts();
         Label.LabelStyle labelStyle = new Label.LabelStyle();
-        labelStyle.font = font;
+        labelStyle.font = font24;
         labelStyle.fontColor = Color.WHITE;
 
-        Gdx.input.setInputProcessor(stage);
-        Skin skin = new Skin(Gdx.files.internal("ui\\uiskin.json"));
 
         Table table = new Table();
         table.center();
@@ -51,47 +66,77 @@ public class MenuScreen extends Screen
 
         //TODO: Fit buttons with final size of screen!
 
-        btnNewGame = new TextButton("New Game", skin);
+        this.btnNewGame = new TextButton("New Game", skin);
         btnNewGame.addListener(new ClickListener(){
             @Override
-            public void touchUp(InputEvent e, float x, float y, int point, int button){
-                btnNewGameClicked();
+            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                newGameEvent.invoke(null);
+                return super.touchDown(event, x, y, pointer, button);
+            }
+
+            @Override
+            public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+                super.touchUp(event, x, y, pointer, button);
             }
         });
 
-        btnTutorial = new TextButton("Tutorial", skin);
+        this.btnTutorial = new TextButton("Tutorial", skin);
         btnTutorial.addListener(new ClickListener(){
             @Override
-            public void touchUp(InputEvent e, float x, float y, int point, int button){
-                btnTutorialClicked();
+            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                tutorialEvent.invoke(null);
+                return super.touchDown(event, x, y, pointer, button);
+            }
+
+            @Override
+            public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+                super.touchUp(event, x, y, pointer, button);
             }
         });
 
-        btnHighScore = new TextButton("HighScore", skin);
+        this.btnHighScore = new TextButton("HighScore", skin);
         btnHighScore.addListener(new ClickListener(){
             @Override
-            public void touchUp(InputEvent e, float x, float y, int point, int button){
-                btnHighScoreClicked();
+            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                highScoreEvent.invoke(null);
+                return super.touchDown(event, x, y, pointer, button);
+            }
+
+            @Override
+            public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+                super.touchUp(event, x, y, pointer, button);
             }
         });
 
-        btnSettings = new TextButton("Settings", skin);
+        this.btnSettings = new TextButton("Settings", skin);
         btnSettings.addListener(new ClickListener(){
             @Override
-            public void touchUp(InputEvent e, float x, float y, int point, int button){
-                btnSettingsClicked();
+            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                settingsEvent.invoke(null);
+                return super.touchDown(event, x, y, pointer, button);
+            }
+
+            @Override
+            public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+                super.touchUp(event, x, y, pointer, button);
             }
         });
 
-        btnGoogleLogin = new TextButton("Log In to Google", skin);
+        this.btnGoogleLogin = new TextButton("Log In to Google", skin);
         btnGoogleLogin.addListener(new ClickListener(){
             @Override
-            public void touchUp(InputEvent e, float x, float y, int point, int button){
+            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
                 btnGoogleLoginClicked();
+                return super.touchDown(event, x, y, pointer, button);
+            }
+
+            @Override
+            public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+                super.touchUp(event, x, y, pointer, button);
             }
         });
 
-        table.add(btnNewGame).center().size(300,60).padTop(GamePresenter.V_HEIGHT / 5);
+        table.add(btnNewGame).center().size(300,60).padTop(20);
         table.row();
         table.add(btnHighScore).center().size(300,60).padTop(20);
         table.row();
@@ -104,23 +149,50 @@ public class MenuScreen extends Screen
         stage.addActor(table);
     }
 
-    public void btnTutorialClicked(){
-        btnTutorial.setText("YAY!");
+    public Stage getStage(){
+        return this.stage;
     }
 
-    public void btnNewGameClicked(){
+    public void btnNewGameClicked() {
         proxy.startQuickGame();
     }
 
-    public void btnHighScoreClicked(){
-        btnHighScore.setText("YAY!");
+    private void initFonts(){
+        FreeTypeFontGenerator generator =
+                new FreeTypeFontGenerator(Gdx.files.internal("fonts/freeagentbold.ttf"));
+        FreeTypeFontGenerator.FreeTypeFontParameter params =
+                new FreeTypeFontGenerator.FreeTypeFontParameter();
+
+        params.size = 24;
+        params.color = Color.WHITE;
+        this.font24 = generator.generateFont(params);
     }
 
-    public void btnSettingsClicked(){
-        btnSettings.setText("YAY!");
+    public Event<EventArgs> getNewGameEvent() {
+        return newGameEvent;
     }
+
+    public Event<EventArgs> getSettingsEvent() {
+        return settingsEvent;
+    }
+
+    public Event<EventArgs> getHighScoreEvent() {
+        return highScoreEvent;
+    }
+
+    public Event<EventArgs> getTutorialEvent() {
+        return tutorialEvent;
+    }
+
     public void btnGoogleLoginClicked(){
         proxy.startSignInIntent();
+    }
+
+
+
+    @Override
+    public void show() {
+
     }
 
     @Override
@@ -128,10 +200,8 @@ public class MenuScreen extends Screen
 
     }
 
-    public void render ()
-    {
-        float delta = Gdx.graphics.getDeltaTime();
-        //Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+    @Override
+    public void render(float delta) {
         stage.act(delta);
         stage.draw();
     }
@@ -147,7 +217,13 @@ public class MenuScreen extends Screen
     }
 
     @Override
-    public void dispose() {
+    public void hide() {
 
+    }
+
+    @Override
+    public void dispose() {
+        font24.dispose();
+        skin.dispose();
     }
 }

@@ -2,8 +2,11 @@ package com.thependulumparadox.view.screen;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
@@ -12,18 +15,26 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
 import com.thependulumparadox.presenter.GamePresenter;
 
+import com.thependulumparadox.observer.Event;
+import com.thependulumparadox.observer.EventArgs;
+import com.thependulumparadox.presenter.GamePresenter;
 
-public class HighScoreScreen extends Screen
+
+
+
+public class HighScoreScreen extends BaseScreen
 {
     private String[] names;
     private Integer[] score;
 
+    private Skin skin;
+
     private TextButton btnBack;
 
+    private Label headLine;
     private Label scoreLabel;
     private Label nameLabel;
     private Label placeLabel;
-    private Label headLine;
     private Label first;
     private Label firstName;
     private Label firstScore;
@@ -55,25 +66,27 @@ public class HighScoreScreen extends Screen
     private Label tenthName;
     private Label tenthScore;
 
+    private BitmapFont font24;
 
-    @Override
-    public void create()
+    private Event<EventArgs> menuEvent = new Event<>();
+
+
+    public HighScoreScreen()
     {
-        super.create();
+        //super(camera);
 
         this.names = new String[10];
         this.score = new Integer[10];
 
         populateHighscoreList();
 
-        BitmapFont font = new BitmapFont();
-        font.getData().scale(0.2f);
+
+        initFonts();
         Label.LabelStyle labelStyle = new Label.LabelStyle();
-        labelStyle.font = font;
+        labelStyle.font = font24;
         labelStyle.fontColor = Color.WHITE;
 
-        Gdx.input.setInputProcessor(stage);
-        Skin skin = new Skin(Gdx.files.internal("uiskin.json"));
+        this.skin = new Skin(Gdx.files.internal("skins/uiskin.json"));
 
         Table headLineTable = new Table();
         headLineTable.top();
@@ -83,6 +96,10 @@ public class HighScoreScreen extends Screen
         Table table = new Table();
         table.center();
         table.setFillParent(true);
+
+        Table btnTable = new Table();
+        btnTable.center().bottom();
+        btnTable.setFillParent(true);
 
         headLine = new Label("HIGHSCORES", labelStyle);
         placeLabel = new Label("Place", labelStyle);
@@ -119,18 +136,22 @@ public class HighScoreScreen extends Screen
         tenthName = new Label(names[0], labelStyle);
         tenthScore = new Label(String.format("%06d",score[0]), labelStyle);
 
-        btnBack = new TextButton("BACK", skin);
-        btnBack.setSize(200, 60);
-        btnBack.setPosition(GamePresenter.V_WIDTH / 2 - btnBack.getWidth() / 2,
-                Align.bottom + (GamePresenter.V_HEIGHT / 10));
+        btnBack = new TextButton("Main Menu", skin);
         btnBack.addListener(new ClickListener(){
             @Override
-            public void touchUp(InputEvent e, float x, float y, int point, int button){
-                btnBackClicked();
+            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                menuEvent.invoke(null);
+                return super.touchDown(event, x, y, pointer, button);
+            }
+
+            @Override
+            public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+                super.touchUp(event, x, y, pointer, button);
             }
         });
 
         headLineTable.add(headLine).expandX().padTop(20).padBottom(20);
+        btnTable.add(btnBack).expandX().padBottom(20).size(300,60);
         table.add(placeLabel);
         table.add(nameLabel);
         table.add(scoreLabel);
@@ -178,9 +199,29 @@ public class HighScoreScreen extends Screen
 
         stage.addActor(table);
         stage.addActor(headLineTable);
-        stage.addActor(btnBack);
+        stage.addActor(btnTable);
 
     }
+
+    public Event<EventArgs> getMenuEvent() {
+        return menuEvent;
+    }
+
+    private void initFonts(){
+        FreeTypeFontGenerator generator =
+                new FreeTypeFontGenerator(Gdx.files.internal("fonts/freeagentbold.ttf"));
+        FreeTypeFontGenerator.FreeTypeFontParameter params =
+                new FreeTypeFontGenerator.FreeTypeFontParameter();
+
+        params.size = 24;
+        params.color = Color.WHITE;
+        this.font24 = generator.generateFont(params);
+    }
+
+    public Stage getStage(){
+        return this.stage;
+    }
+
 
     private void populateHighscoreList(){
         for(int i = 0; i<10; i++){
@@ -189,21 +230,21 @@ public class HighScoreScreen extends Screen
         }
     }
 
-    public void btnBackClicked(){
-        btnBack.setText("yay!");
+
+    @Override
+    public void show() {
+
+    }
+
+    @Override
+    public void render(float delta) {
+        stage.act(delta);
+        stage.draw();
     }
 
     @Override
     public void resize(int width, int height) {
 
-    }
-
-    @Override
-    public void render() {
-        float delta = Gdx.graphics.getDeltaTime();
-        //Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-        stage.act(delta);
-        stage.draw();
     }
 
     @Override
@@ -217,7 +258,13 @@ public class HighScoreScreen extends Screen
     }
 
     @Override
-    public void dispose() {
+    public void hide() {
 
+    }
+
+    @Override
+    public void dispose() {
+        font24.dispose();
+        skin.dispose();
     }
 }

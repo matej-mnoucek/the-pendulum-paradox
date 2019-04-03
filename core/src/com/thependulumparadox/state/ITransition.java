@@ -1,7 +1,7 @@
 package com.thependulumparadox.state;
 
-public interface ITransition<T extends IState, U extends IState>
+public interface ITransition
 {
-    T getFrom();
-    U getTo();
+    IState getFrom();
+    IState getTo();
 }

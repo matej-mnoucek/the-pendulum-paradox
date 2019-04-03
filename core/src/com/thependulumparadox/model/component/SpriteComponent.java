@@ -5,5 +5,7 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 
 public class SpriteComponent implements Component
 {
-    public Sprite sprite;
+    public String spritePath = "";
+    public int width = 1;
+    public int height = 1;
 }

@@ -5,9 +5,9 @@ import com.badlogic.gdx.maps.tiled.TiledMap;
 
 public class MainMenuScene extends Scene
 {
-    public MainMenuScene(TiledMap level, OrthographicCamera camera)
+    public MainMenuScene(OrthographicCamera camera)
     {
-        super(level, camera);
+        super(camera);
     }
 
     @Override
@@ -49,6 +49,6 @@ public class MainMenuScene extends Scene
     @Override
     public void dispose()
     {
-
+        super.dispose();
     }
 }

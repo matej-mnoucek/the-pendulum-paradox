@@ -1,5 +1,7 @@
 package com.thependulumparadox.state;
 
+import com.thependulumparadox.view.ViewState;
+
 import java.util.ArrayList;
 import java.util.List;
 

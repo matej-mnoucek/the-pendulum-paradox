@@ -1,7 +1,8 @@
 package com.thependulumparadox.model.system.enhancement;
 
 import com.badlogic.ashley.core.Entity;
-import com.thependulumparadox.model.component.LifeComponent;
+
+import com.thependulumparadox.model.component.AttributesComponent;
 
 /**
  * Example of modifier that adds some extra lifes
@@ -19,7 +20,7 @@ public class LifeEnhancement extends Enhancement
     @Override
     public void apply()
     {
-        LifeComponent life = entity.getComponent(LifeComponent.class);
+        AttributesComponent life = entity.getComponent(AttributesComponent.class);
         if (life != null)
         {
             life.lives += bonusLifes;

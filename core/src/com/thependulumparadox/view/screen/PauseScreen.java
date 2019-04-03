@@ -1,20 +1,27 @@
 package com.thependulumparadox.view.screen;
 
-public class PauseScreen extends Screen
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
+
+public class PauseScreen extends BaseScreen
 {
-
-    @Override
-    public void create(){
-
-    }
-
     @Override
     public void resize(int width, int height) {
 
     }
 
     @Override
-    public void render() {
+    public void show() {
+
+    }
+
+    @Override
+    public void render(float delta) {
 
     }
 
@@ -25,6 +32,11 @@ public class PauseScreen extends Screen
 
     @Override
     public void resume() {
+
+    }
+
+    @Override
+    public void hide() {
 
     }
 

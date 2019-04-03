@@ -13,7 +13,8 @@ public class PendulumParadoxGame extends ApplicationAdapter
 
 	public PendulumParadoxGame(ISynchronization networkproxy){
 	    this.proxy = networkproxy;
-	    this.game = new GamePresenter(networkproxy);
+	    this.game = new GamePresenter();
+	    ((GamePresenter) this.game).setProxy(proxy);
     }
 
 

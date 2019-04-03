@@ -11,14 +11,14 @@ import com.thependulumparadox.TiledHandler.OrthogonalTiledMapObjectHandler;
  */
 public abstract class Scene implements Screen
 {
-    TiledMap level;
-    MapRenderer renderer;
+    protected OrthographicCamera camera;
 
-    public Scene(TiledMap level, OrthographicCamera camera)
+    public Scene(OrthographicCamera camera)
     {
-        this.level = level;
-        renderer = new OrthogonalTiledMapObjectHandler(level);
-        //renderer = new OrthogonalTiledMapRenderer(level);
-        renderer.setView(camera);
+        this.camera = camera;
+    }
+
+    @Override
+    public void dispose() {
     }
 }
