@@ -45,6 +45,7 @@ import com.pendulumparadox.view.screen.InGameScreen;
 import com.pendulumparadox.view.screen.MenuScreen;
 import com.pendulumparadox.view.screen.SettingsScreen;
 import com.pendulumparadox.view.screen.TutorialScreen;
+import com.pendulumparadox.view.screen.WinScreen;
 
 //TODO: implement "new game" pressed from GameOverScreen.
 
@@ -79,6 +80,7 @@ public class GamePresenter extends Game
     // Predefined view states (composed of one screen and one scene)
     private ViewState viewStateInGame;
     private ViewState viewStateGameOver;
+    private ViewState viewStateYouWin;
     private ViewState viewStateMenu;
     private ViewState viewStateHighScore;
     private ViewState viewStateSettings;
@@ -89,6 +91,7 @@ public class GamePresenter extends Game
     private BaseScreen menuScreen;
     private BaseScreen settingsScreen;
     private BaseScreen tutorialScreen;
+    private BaseScreen winScreen;
 
     private Boolean firstPlayThrough = true;
 
@@ -180,6 +183,7 @@ public class GamePresenter extends Game
         highScoreScreen = new HighScoreScreen();
         settingsScreen = new SettingsScreen();
         tutorialScreen = new TutorialScreen();
+        winScreen = new WinScreen();
 
         // Link game start
         ((MenuScreen) menuScreen).getNewGameEvent().addHandler((args) ->
@@ -225,6 +229,7 @@ public class GamePresenter extends Game
         //define states. states are made up of one screen and one scene
         viewStateInGame = new ViewState(levelOneScene, inGameScreen);
         viewStateGameOver = new ViewState(levelOneScene, gameOverScreen);
+        viewStateYouWin = new ViewState(levelOneScene, winScreen);
         viewStateMenu = new ViewState(menuScene, menuScreen);
         viewStateHighScore = new ViewState(menuScene, highScoreScreen);
         viewStateSettings = new ViewState(menuScene, settingsScreen);
@@ -238,6 +243,7 @@ public class GamePresenter extends Game
         viewMachine.addState(viewStateHighScore);
         viewMachine.addState(viewStateSettings);
         viewMachine.addState(viewStateTutorial);
+        viewMachine.addState(viewStateYouWin);
 
         // Define transition between states
         Transition menuToHighScore = new Transition(viewStateMenu, viewStateHighScore);
@@ -247,8 +253,13 @@ public class GamePresenter extends Game
         Transition tutorialToMenu = new Transition(viewStateTutorial, viewStateMenu);
         Transition settingsToMenu = new Transition(viewStateSettings, viewStateMenu);
         Transition inGameToGameOver = new Transition(viewStateInGame, viewStateGameOver);
+        Transition inGameToYouWin = new Transition(viewStateInGame, viewStateYouWin);
         Transition gameOverToHighScore = new Transition(viewStateGameOver, viewStateHighScore);
         Transition gameOverToMenu = new Transition(viewStateGameOver, viewStateMenu);
+        Transition gameOverToNewGame = new Transition(viewStateGameOver, viewStateInGame);
+        Transition youWinToHighscore = new Transition(viewStateYouWin, viewStateHighScore);
+        Transition youWinToMenu = new Transition(viewStateYouWin, viewStateMenu);
+        Transition youWinToNewGame = new Transition(viewStateYouWin, viewStateInGame);
         Transition highScoreToMenu = new Transition(viewStateHighScore, viewStateMenu);
         Transition inGameToHighScore = new Transition(viewStateInGame, viewStateHighScore);
 
@@ -258,8 +269,13 @@ public class GamePresenter extends Game
         viewMachine.addTransition(menuToSettings);
         viewMachine.addTransition(settingsToMenu);
         viewMachine.addTransition(inGameToGameOver);
+        viewMachine.addTransition(inGameToYouWin);
         viewMachine.addTransition(gameOverToHighScore);
         viewMachine.addTransition(gameOverToMenu);
+        viewMachine.addTransition(gameOverToNewGame);
+        viewMachine.addTransition(youWinToHighscore);
+        viewMachine.addTransition(youWinToMenu);
+        viewMachine.addTransition(youWinToNewGame);
         viewMachine.addTransition(highScoreToMenu);
         viewMachine.addTransition(inGameToHighScore);
         viewMachine.addTransition(menuToTutorial);
@@ -382,13 +398,41 @@ public class GamePresenter extends Game
 
         });
 
-        //new game pressed from gameOver state
-        /*
-        TODO: implement this method correctly. this is currently an invalid state transition
-         */
+        //
+        ((InGameScreen) inGameScreen).getReloadEvent().addHandler((args) -> {
+            //set input processor to new state's BaseScreen stage
+            Gdx.input.setInputProcessor(winScreen.getStage());
+
+            //stop game music and start menu music if sound is turned on
+            inGameMusic.stop();
+            if(soundOn) {
+                menuMusic.play();
+            }
+
+            //remove Player entity to stop it rendering whilst not in-game
+            ecs.removeEntity(player);
+
+            // call on state machine to change state
+            try {
+                viewMachine.nextState(viewStateYouWin);
+            } catch (EInvalidTransition eInvalidTransition) {
+                eInvalidTransition.printStackTrace();
+            } catch (EStateNotAvailable eStateNotAvailable) {
+                eStateNotAvailable.printStackTrace();
+            }
+        });
+
+        //new game pressed from gameOver screen
         ((GameOverScreen) gameOverScreen).getNewGameEvent().addHandler((args) -> {
             // set input processor to new State's BaseScreen stage
             Gdx.input.setInputProcessor(inGameScreen.getStage());
+
+            //stop game music and start menu music if sound is turned on
+            menuMusic.stop();
+            if(soundOn) {
+                inGameMusic.play();
+            }
+
             // call on state machine to change state
             try {
                 viewMachine.nextState(viewStateInGame);
@@ -397,6 +441,10 @@ public class GamePresenter extends Game
             } catch (EStateNotAvailable eStateNotAvailable) {
                 eStateNotAvailable.printStackTrace();
             }
+
+            // set player entity when switching to in-game mode
+            ecs.addEntity(player);
+
         });
 
         //press highscore button from game over screen
@@ -425,6 +473,58 @@ public class GamePresenter extends Game
             } catch (EStateNotAvailable eStateNotAvailable) {
                 eStateNotAvailable.printStackTrace();
             }
+        });
+
+        // Highscore button pressed from WinScreen
+        ((WinScreen) winScreen).getHighScoreEvent().addHandler((args) -> {
+            // set input processor to new state's baseScreen stage
+            Gdx.input.setInputProcessor(highScoreScreen.getStage());
+            // call on state machine to change state
+            try{
+                viewMachine.nextState(viewStateHighScore);
+            } catch (EInvalidTransition eInvalidTransition) {
+                eInvalidTransition.printStackTrace();
+            } catch (EStateNotAvailable eStateNotAvailable) {
+                eStateNotAvailable.printStackTrace();
+            }
+        });
+
+        // main menu button pressed from WinScreen
+        ((WinScreen) winScreen).getMenuEvent().addHandler((args) -> {
+            // set input processor to new state's baseScreen stage
+            Gdx.input.setInputProcessor(menuScreen.getStage());
+            // call on state machine to change state
+            try{
+                viewMachine.nextState(viewStateMenu);
+            } catch (EInvalidTransition eInvalidTransition) {
+                eInvalidTransition.printStackTrace();
+            } catch (EStateNotAvailable eStateNotAvailable) {
+                eStateNotAvailable.printStackTrace();
+            }
+        });
+
+        // new Game button pressed from WinScreen
+        ((WinScreen) winScreen).getNewGameEvent().addHandler((args) -> {
+            // set input processor to new state's baseScreen stage
+            Gdx.input.setInputProcessor(inGameScreen.getStage());
+
+            //stop game music and start menu music if sound is turned on
+            menuMusic.stop();
+            if(soundOn) {
+                inGameMusic.play();
+            }
+
+            // call on state machine to change state
+            try{
+                viewMachine.nextState(viewStateInGame);
+            } catch (EInvalidTransition eInvalidTransition) {
+                eInvalidTransition.printStackTrace();
+            } catch (EStateNotAvailable eStateNotAvailable) {
+                eStateNotAvailable.printStackTrace();
+            }
+
+            // set player entity when switching to in-game mode
+            ecs.addEntity(player);
         });
 
         //Highscore button pressed from main menu screen

@@ -59,6 +59,9 @@ public class InGameScreen extends BaseScreen
     Event<EventArgs> leftEvent = new Event<>();
     Event<EventArgs> rightEvent = new Event<>();
     Event<EventArgs> soundEvent = new Event<>();
+    Event<EventArgs> gameOverEvent = new Event<>();
+    Event<EventArgs> winEvent = new Event<>();
+    Event<EventArgs> reloadEvent = new Event<>();
 
     private boolean soundOn;
 
@@ -123,6 +126,23 @@ public class InGameScreen extends BaseScreen
 
 
         //add clicklistneres for buttons
+
+        // clicklistener for Weapon Image. Maybe use for reloading weapon later.
+        // Right now this brings the player to the "you win"-state. This is for debugging
+        // This is for debugging the state machine.
+        weapon.addListener(new ClickListener(){
+            @Override
+            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                reloadEvent.invoke(null);
+                return super.touchDown(event, x, y, pointer, button);
+            }
+
+            @Override
+            public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+                super.touchUp(event, x, y, pointer, button);
+            }
+        });
+
         btnSound.addListener(new ClickListener(){
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
@@ -160,6 +180,9 @@ public class InGameScreen extends BaseScreen
                 super.touchUp(event, x, y, pointer, button);
             }
         });
+
+        // click listener for jump button is currently used to change from in-game to game over
+        // this is for debugging the state machine
         btnJump.addListener(new ClickListener(){
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
@@ -262,6 +285,8 @@ public class InGameScreen extends BaseScreen
     }
 
     public Event<EventArgs> getSoundEvent(){ return soundEvent; }
+
+    public Event<EventArgs> getReloadEvent() {return reloadEvent; }
 
     @Override
     public void render(float delta) {
