@@ -34,6 +34,7 @@ public class MenuScreen extends BaseScreen
     Event<EventArgs> settingsEvent = new Event<>();
     Event<EventArgs> highScoreEvent = new Event<>();
     Event<EventArgs> tutorialEvent = new Event<>();
+    Event<EventArgs> googleLoginEvent = new Event<>();
 
     private Music menuMusic;
 
@@ -117,7 +118,7 @@ public class MenuScreen extends BaseScreen
         btnGoogleLogin.addListener(new ClickListener(){
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
-                btnGoogleLoginClicked();
+                googleLoginEvent.invoke(null);
                 return super.touchDown(event, x, y, pointer, button);
             }
 
@@ -172,9 +173,7 @@ public class MenuScreen extends BaseScreen
         return tutorialEvent;
     }
 
-    public void btnGoogleLoginClicked(){
-        btnGoogleLogin.setText("YAY!");
-    }
+    public Event<EventArgs> getGoogleLoginEvent(){ return googleLoginEvent; }
 
 
 

@@ -324,6 +324,23 @@ public class GamePresenter extends Game
                 eStateNotAvailable.printStackTrace();
             }
         });
+
+        //google log in button pressed in main menu
+        ((MenuScreen) menuScreen).getGoogleLoginEvent().addHandler((args) -> {
+            // invoke google play l
+            Gdx.input.setInputProcessor(tutorialScreen.getStage());
+            // call on state machine to change state
+            try {
+                viewMachine.nextState(viewStateTutorial);
+            } catch (EInvalidTransition eInvalidTransition) {
+                eInvalidTransition.printStackTrace();
+            } catch (EStateNotAvailable eStateNotAvailable) {
+                eStateNotAvailable.printStackTrace();
+            }
+        });
+
+
+
         //sound button pressed from gameplay
         ((InGameScreen) inGameScreen).getSoundEvent().addHandler((args) -> {
             //if sound is turned on: pause game music. Set the sound-button in settingsscreen to
