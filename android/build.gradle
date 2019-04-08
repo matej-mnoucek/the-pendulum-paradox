@@ -1,6 +1,6 @@
 android {
-    buildToolsVersion "28.0.3"
-    compileSdkVersion 28
+    buildToolsVersion '28.0.3'
+    compileSdkVersion 27
     sourceSets {
         main {
             manifest.srcFile 'AndroidManifest.xml'
@@ -31,16 +31,15 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility 1.8
-        targetCompatibility 1.8
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
     }
 
 }
 
-dependencies{
-    implementation "com.google.android.gms:play-services-games:+"
+dependencies {
+    implementation 'com.google.android.gms:play-services-games:+'
     implementation 'com.google.android.gms:play-services-auth:+'
-
 }
 
 
