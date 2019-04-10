@@ -1,0 +1,82 @@
+
+knight_enemy.png
+size: 2048,2048
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+attack
+  rotate: false
+  xy: 2, 711
+  size: 587, 707
+  orig: 587, 707
+  offset: 0, 0
+  index: 7
+attack
+  rotate: false
+  xy: 2, 2
+  size: 587, 707
+  orig: 587, 707
+  offset: 0, 0
+  index: 8
+attack
+  rotate: false
+  xy: 591, 711
+  size: 587, 707
+  orig: 587, 707
+  offset: 0, 0
+  index: 9
+attack
+  rotate: false
+  xy: 591, 2
+  size: 587, 707
+  orig: 587, 707
+  offset: 0, 0
+  index: 0
+attack
+  rotate: false
+  xy: 1180, 711
+  size: 587, 707
+  orig: 587, 707
+  offset: 0, 0
+  index: 1
+attack
+  rotate: false
+  xy: 1180, 2
+  size: 587, 707
+  orig: 587, 707
+  offset: 0, 0
+  index: 2
+
+knight_enemy2.png
+size: 2048,2048
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+attack
+  rotate: false
+  xy: 2, 711
+  size: 587, 707
+  orig: 587, 707
+  offset: 0, 0
+  index: 3
+attack
+  rotate: false
+  xy: 2, 2
+  size: 587, 707
+  orig: 587, 707
+  offset: 0, 0
+  index: 4
+attack
+  rotate: false
+  xy: 591, 711
+  size: 587, 707
+  orig: 587, 707
+  offset: 0, 0
+  index: 5
+attack
+  rotate: false
+  xy: 591, 2
+  size: 587, 707
+  orig: 587, 707
+  offset: 0, 0
+  index: 6

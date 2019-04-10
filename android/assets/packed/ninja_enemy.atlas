@@ -1,0 +1,82 @@
+
+ninja_enemy.png
+size: 2048,2048
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+attack
+  rotate: false
+  xy: 2, 1136
+  size: 524, 565
+  orig: 524, 565
+  offset: 0, 0
+  index: 7
+attack
+  rotate: false
+  xy: 2, 569
+  size: 524, 565
+  orig: 524, 565
+  offset: 0, 0
+  index: 8
+attack
+  rotate: false
+  xy: 528, 1136
+  size: 524, 565
+  orig: 524, 565
+  offset: 0, 0
+  index: 9
+attack
+  rotate: false
+  xy: 2, 2
+  size: 524, 565
+  orig: 524, 565
+  offset: 0, 0
+  index: 0
+attack
+  rotate: false
+  xy: 528, 569
+  size: 524, 565
+  orig: 524, 565
+  offset: 0, 0
+  index: 1
+attack
+  rotate: false
+  xy: 1054, 1136
+  size: 524, 565
+  orig: 524, 565
+  offset: 0, 0
+  index: 2
+attack
+  rotate: false
+  xy: 528, 2
+  size: 524, 565
+  orig: 524, 565
+  offset: 0, 0
+  index: 3
+attack
+  rotate: false
+  xy: 1054, 569
+  size: 524, 565
+  orig: 524, 565
+  offset: 0, 0
+  index: 4
+attack
+  rotate: false
+  xy: 1054, 2
+  size: 524, 565
+  orig: 524, 565
+  offset: 0, 0
+  index: 5
+
+ninja_enemy2.png
+size: 1024,1024
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+attack
+  rotate: false
+  xy: 2, 2
+  size: 524, 565
+  orig: 524, 565
+  offset: 0, 0
+  index: 6

@@ -105,6 +105,8 @@ public class GamePresenter extends Game
     Box2DDebugRenderer debugRenderer;
     ShapeRenderer shapeRenderer;
     Entity player;
+    Entity enemy1;
+    Entity enemy2;
     TransformComponent transformComponent;
 
     private boolean isMultiplayer = false;
@@ -150,6 +152,44 @@ public class GamePresenter extends Game
         player.add(dynamicBodyComponent);
         PlayerComponent playerComponent = new PlayerComponent();
         player.add(playerComponent);
+
+        // ENEMY ENTITY
+        enemy1 = new Entity();
+        enemy1.flags = 0x0004;
+        TransformComponent transform = new TransformComponent();
+        transform.position = new Vector2(10, 8);
+        enemy1.add(transform);
+        AnimatedSpriteComponent animatedEnemy = new AnimatedSpriteComponent();
+        animatedEnemy.frameDuration = 0.07f;
+        animatedEnemy.height = 1.8f;
+        animatedEnemy.width = 1.8f;
+        animatedEnemy.atlasPath = "packed/ninja_enemy.atlas";
+        animatedEnemy.region = "attack";
+        enemy1.add(animatedEnemy);
+        DynamicBodyComponent dynamicBody = new DynamicBodyComponent();
+        dynamicBody.center = transform.position;
+        dynamicBody.height = 1.5f;
+        dynamicBody.width = 0.7f;
+        enemy1.add(dynamicBody);
+
+        enemy2 = new Entity();
+        enemy2.flags = 0x0004;
+        TransformComponent transform2 = new TransformComponent();
+        transform2.position = new Vector2(20, 8);
+        enemy2.add(transform2);
+        AnimatedSpriteComponent animatedEnemy2 = new AnimatedSpriteComponent();
+        animatedEnemy2.frameDuration = 0.07f;
+        animatedEnemy2.height = 1.8f;
+        animatedEnemy2.width = 1.8f;
+        animatedEnemy2.atlasPath = "packed/knight_enemy.atlas";
+        animatedEnemy2.region = "attack";
+        enemy2.add(animatedEnemy2);
+        DynamicBodyComponent dynamicBody2 = new DynamicBodyComponent();
+        dynamicBody2.center = transform2.position;
+        dynamicBody2.height = 1.5f;
+        dynamicBody2.width = 0.7f;
+        enemy2.add(dynamicBody2);
+
 
         // ECS Systems
         // Camera follow
@@ -202,6 +242,8 @@ public class GamePresenter extends Game
             //on first play through set the following entities to ECS
             if (firstPlayThrough) {
                 ecs.addEntity(player);
+                ecs.addEntity(enemy1);
+                ecs.addEntity(enemy2);
                 ecs.addSystem(cameraFollowSystem);
                 ecs.addSystem(renderingSystem);
                 ecs.addSystem(input);
@@ -635,7 +677,7 @@ public class GamePresenter extends Game
         shapeRenderer.circle(transformComponent.position.x, transformComponent.position.y,100);
         shapeRenderer.end();
         */
-        //debugRenderer.render(world, mainCamera.combined);
+        debugRenderer.render(world, mainCamera.combined);
         fpsLogger.log();
 
         // Update method
