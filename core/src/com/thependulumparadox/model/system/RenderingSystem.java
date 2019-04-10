@@ -87,6 +87,7 @@ public class RenderingSystem extends EntitySystem
         // Check if some sprites were added to the engine
         if (spriteEntities.size() != cachedSpriteEntities.size())
         {
+            // If new entity is present
             for (int i = 0; i < spriteEntities.size(); i++)
             {
                 // Get entity
@@ -98,11 +99,26 @@ public class RenderingSystem extends EntitySystem
                     cachedSpriteEntities.add(entity);
                 }
             }
+
+            // If an entity was removed
+            for (int i = 0; i < cachedSpriteEntities.size(); i++)
+            {
+                // Get entity
+                Entity entity = cachedSpriteEntities.get(i);
+
+                if (!spriteEntities.contains(entity, true))
+                {
+                    int index = cachedSpriteEntities.indexOf(entity);
+                    cachedSpriteEntities.remove(entity);
+                    sprites.remove(index);
+                }
+            }
         }
 
         // Check if some animations were added to the engine
         if (animatedEntities.size() != cachedAnimatedEntities.size())
         {
+            // If new entity was added
             for (int i = 0; i < animatedEntities.size(); i++)
             {
                 // Get entity
@@ -112,6 +128,20 @@ public class RenderingSystem extends EntitySystem
                 {
                     animations.add(tearUpAnimation(entity));
                     cachedAnimatedEntities.add(entity);
+                }
+            }
+
+            // If an entity was removed
+            for (int i = 0; i < cachedAnimatedEntities.size(); i++)
+            {
+                // Get entity
+                Entity entity = cachedAnimatedEntities.get(i);
+
+                if (!animatedEntities.contains(entity, true))
+                {
+                    int index = cachedAnimatedEntities.indexOf(entity);
+                    cachedAnimatedEntities.remove(entity);
+                    animations.remove(index);
                 }
             }
         }

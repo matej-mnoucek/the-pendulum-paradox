@@ -8,8 +8,12 @@ import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.utils.ImmutableArray;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
+import com.badlogic.gdx.physics.box2d.Contact;
+import com.badlogic.gdx.physics.box2d.ContactImpulse;
+import com.badlogic.gdx.physics.box2d.ContactListener;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
+import com.badlogic.gdx.physics.box2d.Manifold;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
 import com.thependulumparadox.model.component.DynamicBodyComponent;
@@ -25,7 +29,6 @@ import java.util.List;
 public class PhysicsSystem extends EntitySystem
 {
     // Collision category (bit masks)
-    // 0000000000000000 = 0 = no group
     // 0000000000000001 = 1 = ground group
     // 0000000000000010 = 2 = player group
     // 0000000000000100 = 4 = enemy group
@@ -114,6 +117,52 @@ public class PhysicsSystem extends EntitySystem
             // Cache corresponding entity
             cachedDynamicBodyEntities.add(entity);
         }
+
+        // Define collision handling
+        world.setContactListener(new ContactListener()
+        {
+            @Override
+            public void beginContact(Contact contact)
+            {
+
+                if(contact.getFixtureB().getUserData() instanceof Entity)
+                {
+                    Entity entity = (Entity) contact.getFixtureB().getUserData();
+
+                    // If bullet then remove it
+                    if (entity.flags == 0x0008)
+                    {
+                        engine.removeEntity(entity);
+                    }
+                }
+
+                if(contact.getFixtureA().getUserData() instanceof Entity)
+                {
+                    Entity entity = (Entity) contact.getFixtureA().getUserData();
+
+                    // If bullet then remove it
+                    if (entity.flags == 0x0008)
+                    {
+                        engine.removeEntity(entity);
+                    }
+                }
+            }
+
+            @Override
+            public void endContact(Contact contact) {
+
+            }
+
+            @Override
+            public void preSolve(Contact contact, Manifold oldManifold) {
+
+            }
+
+            @Override
+            public void postSolve(Contact contact, ContactImpulse impulse) {
+
+            }
+        });
     }
 
     public void removedFromEngine (Engine engine)
@@ -148,6 +197,7 @@ public class PhysicsSystem extends EntitySystem
         // Check if some dynamic bodies were added to the engine
         if (dynamicBodyEntities.size() != cachedDynamicBodyEntities.size())
         {
+            // If there is new entity
             for (int i = 0; i < dynamicBodyEntities.size(); i++)
             {
                 // Get entity
@@ -159,11 +209,27 @@ public class PhysicsSystem extends EntitySystem
                     cachedDynamicBodyEntities.add(entity);
                 }
             }
+
+            // If an entity was removed
+            for (int i = 0; i < cachedDynamicBodyEntities.size(); i++)
+            {
+                // Get entity
+                Entity entity = cachedDynamicBodyEntities.get(i);
+
+                if (!dynamicBodyEntities.contains(entity, true))
+                {
+                    int index = cachedDynamicBodyEntities.indexOf(entity);
+                    cachedDynamicBodyEntities.remove(entity);
+                    Body body = dynamicBodies.remove(index);
+                    world.destroyBody(body);
+                }
+            }
         }
 
         // Check if some static bodies were added to the engine
         if (staticBodyEntities.size() != cachedStaticBodyEntities.size())
         {
+            // If there is a new entity
             for (int i = 0; i < staticBodyEntities.size(); i++)
             {
                 // Get entity
@@ -173,6 +239,21 @@ public class PhysicsSystem extends EntitySystem
                 {
                     staticBodies.add(tearUpStaticBody(entity));
                     cachedStaticBodyEntities.add(entity);
+                }
+            }
+
+            // If an entity was removed
+            for (int i = 0; i < cachedStaticBodyEntities.size(); i++)
+            {
+                // Get entity
+                Entity entity = cachedStaticBodyEntities.get(i);
+
+                if (!staticBodyEntities.contains(entity, true))
+                {
+                    int index = cachedStaticBodyEntities.indexOf(entity);
+                    cachedStaticBodyEntities.remove(entity);
+                    Body body = staticBodies.remove(index);
+                    world.destroyBody(body);
                 }
             }
         }
@@ -257,7 +338,12 @@ public class PhysicsSystem extends EntitySystem
         }
 
         // Create our fixture and attach it to the body
-        body.createFixture(fixtureDef);
+        Fixture fixture = body.createFixture(fixtureDef);
+
+
+        // Pass entity for collision detection
+        fixture.setUserData(entity);
+
 
         // Return body
         return body;
@@ -316,7 +402,10 @@ public class PhysicsSystem extends EntitySystem
         }
 
         // Create a fixture from the box and add it to the body
-        body.createFixture(fixtureDef);
+        Fixture fixture = body.createFixture(fixtureDef);
+
+        // Pass entity for collision detection
+        fixture.setUserData(entity);
 
         // Return body
         return body;

@@ -635,7 +635,7 @@ public class GamePresenter extends Game
         shapeRenderer.circle(transformComponent.position.x, transformComponent.position.y,100);
         shapeRenderer.end();
         */
-        debugRenderer.render(world, mainCamera.combined);
+        //debugRenderer.render(world, mainCamera.combined);
         fpsLogger.log();
 
         // Update method
