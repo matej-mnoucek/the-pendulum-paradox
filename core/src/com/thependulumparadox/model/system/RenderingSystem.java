@@ -38,7 +38,9 @@ public class RenderingSystem extends EntitySystem
     private float stateTime = 0.0f;
 
     private List<Texture> sprites = new ArrayList<>();
+    private List<Entity> cachedSpriteEntities = new ArrayList<>();
     private List<Animation<TextureRegion>> animations = new ArrayList<>();
+    private List<Entity> cachedAnimatedEntities = new ArrayList<>();
 
     private OrthographicCamera camera;
 
@@ -59,26 +61,20 @@ public class RenderingSystem extends EntitySystem
         for (int i = 0; i < spriteEntities.size(); i++)
         {
             Entity entity = spriteEntities.get(i);
-            SpriteComponent spriteComponent = spriteComponentMapper.get(entity);
+            sprites.add(tearUpSprite(entity));
 
-            Texture texture = new Texture(spriteComponent.spritePath);
-            sprites.add(texture);
+            // Cache corresponding entity
+            cachedSpriteEntities.add(entity);
         }
 
         // Preload animations
         for (int i = 0; i < animatedEntities.size(); i++)
         {
             Entity entity = animatedEntities.get(i);
-            AnimatedSpriteComponent animatedSpriteComponent
-                    = animatedSpriteComponentMapper.get(entity);
+            animations.add(tearUpAnimation(entity));
 
-            TextureAtlas atlas = new TextureAtlas(animatedSpriteComponent.atlasPath);
-            Animation<TextureRegion> animation = new Animation<TextureRegion>(
-                    animatedSpriteComponent.frameDuration,
-                    atlas.findRegions(animatedSpriteComponent.region),
-                    Animation.PlayMode.LOOP);
-
-            animations.add(animation);
+            // Cache corresponding entity
+            cachedAnimatedEntities.add(entity);
         }
     }
 
@@ -88,6 +84,37 @@ public class RenderingSystem extends EntitySystem
         // Update state time
         stateTime += delta;
 
+        // Check if some sprites were added to the engine
+        if (spriteEntities.size() != cachedSpriteEntities.size())
+        {
+            for (int i = 0; i < spriteEntities.size(); i++)
+            {
+                // Get entity
+                Entity entity = spriteEntities.get(i);
+
+                if (!cachedSpriteEntities.contains(entity))
+                {
+                    sprites.add(tearUpSprite(entity));
+                    cachedSpriteEntities.add(entity);
+                }
+            }
+        }
+
+        // Check if some animations were added to the engine
+        if (animatedEntities.size() != cachedAnimatedEntities.size())
+        {
+            for (int i = 0; i < animatedEntities.size(); i++)
+            {
+                // Get entity
+                Entity entity = animatedEntities.get(i);
+
+                if (!cachedAnimatedEntities.contains(entity))
+                {
+                    animations.add(tearUpAnimation(entity));
+                    cachedAnimatedEntities.add(entity);
+                }
+            }
+        }
 
         // Render static sprites at first
         spriteBatch.begin();
@@ -123,5 +150,25 @@ public class RenderingSystem extends EntitySystem
                     animatedSpriteComponent.height);
         }
         spriteBatch.end();
+    }
+
+    private Texture tearUpSprite(Entity entity)
+    {
+        SpriteComponent spriteComponent = spriteComponentMapper.get(entity);
+        return new Texture(spriteComponent.spritePath);
+    }
+
+    private Animation<TextureRegion> tearUpAnimation(Entity entity)
+    {
+        AnimatedSpriteComponent animatedSpriteComponent
+                = animatedSpriteComponentMapper.get(entity);
+
+        TextureAtlas atlas = new TextureAtlas(animatedSpriteComponent.atlasPath);
+        Animation<TextureRegion> animation = new Animation<TextureRegion>(
+                animatedSpriteComponent.frameDuration,
+                atlas.findRegions(animatedSpriteComponent.region),
+                Animation.PlayMode.LOOP);
+
+        return animation;
     }
 }

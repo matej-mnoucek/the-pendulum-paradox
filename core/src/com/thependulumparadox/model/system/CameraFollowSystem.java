@@ -6,7 +6,7 @@ import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.EntitySystem;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.thependulumparadox.model.component.CameraTargetComponent;
+import com.thependulumparadox.model.component.PlayerComponent;
 import com.thependulumparadox.model.component.TransformComponent;
 
 /**
@@ -27,7 +27,7 @@ public class CameraFollowSystem extends EntitySystem
 
     public void addedToEngine(Engine engine)
     {
-        followedEntity = engine.getEntitiesFor(Family.all(CameraTargetComponent.class,
+        followedEntity = engine.getEntitiesFor(Family.all(PlayerComponent.class,
                 TransformComponent.class).get()).first();
     }
 

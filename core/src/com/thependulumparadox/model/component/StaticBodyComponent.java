@@ -12,4 +12,6 @@ public class StaticBodyComponent implements Component
     public float density = 1.0f;
     public float friction = 0.0f;
     public float restitution = 0.0f;
+
+    public short collisionGroup = 0;
 }

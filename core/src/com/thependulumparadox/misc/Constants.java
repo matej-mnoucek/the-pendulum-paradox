@@ -1,4 +1,4 @@
-package com.thependulumparadox;
+package com.thependulumparadox.misc;
 
 public class Constants
 {

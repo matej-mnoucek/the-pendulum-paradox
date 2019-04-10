@@ -6,6 +6,6 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 public class SpriteComponent implements Component
 {
     public String spritePath = "";
-    public int width = 1;
-    public int height = 1;
+    public float width = 1.0f;
+    public float height = 1.0f;
 }

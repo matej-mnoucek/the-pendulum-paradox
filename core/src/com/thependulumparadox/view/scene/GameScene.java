@@ -12,9 +12,7 @@ import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
-import com.thependulumparadox.Constants;
-import com.thependulumparadox.TiledHandler.OrthogonalTiledMapObjectHandler;
-import com.thependulumparadox.presenter.GamePresenter;
+import com.thependulumparadox.misc.Constants;
 
 public class GameScene extends Scene
 {

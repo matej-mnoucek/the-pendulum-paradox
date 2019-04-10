@@ -13,6 +13,9 @@ public class DynamicBodyComponent implements Component
     public float friction = 0.3f;
     public float restitution = 0.1f;
 
+    public short collisionGroup = 0;
+
+    public float gravityScale = 1.0f;
     public float impulseVertical = 0.0f;
     public float impulseHorizontal = 0.0f;
 }

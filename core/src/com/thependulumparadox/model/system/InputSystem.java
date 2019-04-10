@@ -8,8 +8,8 @@ import com.badlogic.ashley.core.Family;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.thependulumparadox.model.MoveCommands;
-import com.thependulumparadox.model.component.ControlComponent;
 import com.thependulumparadox.model.component.DynamicBodyComponent;
+import com.thependulumparadox.model.component.PlayerComponent;
 import com.thependulumparadox.model.component.TransformComponent;
 
 /**
@@ -34,7 +34,7 @@ public class InputSystem extends EntitySystem implements MoveCommands
 
     public void addedToEngine(Engine engine)
     {
-        controlledEntity = engine.getEntitiesFor(Family.all(ControlComponent.class,
+        controlledEntity = engine.getEntitiesFor(Family.all(PlayerComponent.class,
                 TransformComponent.class).get()).first();
         dynamicBodyComponent = dynamicBodyComponentMapper.get(controlledEntity);
     }
@@ -59,7 +59,7 @@ public class InputSystem extends EntitySystem implements MoveCommands
 
         if (Gdx.input.isKeyPressed(Input.Keys.UP) || jump)
         {
-            dynamicBodyComponent.impulseVertical = 150f;
+            dynamicBodyComponent.impulseVertical = 15f;
             jump = false;
         }
         else if (Gdx.input.isKeyPressed(Input.Keys.DOWN))

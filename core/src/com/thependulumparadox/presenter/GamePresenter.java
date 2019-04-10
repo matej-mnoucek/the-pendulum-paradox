@@ -18,13 +18,13 @@ import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.World;
+import com.thependulumparadox.model.component.PlayerComponent;
+import com.thependulumparadox.model.system.ShootingSystem;
 import com.thependulumparadox.multiplayer.ISynchronization;
-import com.thependulumparadox.Constants;
+import com.thependulumparadox.misc.Constants;
 import com.thependulumparadox.model.component.AbstractComponentFactory;
 import com.thependulumparadox.model.component.AnimatedSpriteComponent;
-import com.thependulumparadox.model.component.CameraTargetComponent;
 import com.thependulumparadox.model.component.ComponentFactory;
-import com.thependulumparadox.model.component.ControlComponent;
 import com.thependulumparadox.model.component.DynamicBodyComponent;
 import com.thependulumparadox.model.component.TransformComponent;
 import com.thependulumparadox.model.entity.EntityBuilder;
@@ -107,20 +107,22 @@ public class GamePresenter extends Game
     Entity player;
     TransformComponent transformComponent;
 
-    //Current Scene
-    GameScene currentScene;
-    //Current Screen
-    //GameOverScreen currentScreen = new GameOverScreen();
-    MenuScreen currentScreen;
+    private boolean isMultiplayer = false;
+    private ISynchronization proxy;
 
-    ISynchronization proxy;
+    // Single player
+    public GamePresenter() { isMultiplayer = false; };
 
-    public void setProxy(ISynchronization proxy){
+    // Multi player
+    public GamePresenter(ISynchronization proxy)
+    {
         this.proxy = proxy;
+        this.isMultiplayer = true;
     }
 
     @Override
-    public void create() {
+    public void create()
+    {
         // DEBUG
         debugRenderer = new Box2DDebugRenderer();
         shapeRenderer = new ShapeRenderer();
@@ -128,9 +130,9 @@ public class GamePresenter extends Game
         shapeRenderer.setProjectionMatrix(mainCamera.combined);
         fpsLogger = new FPSLogger();
 
-        // TEST PLAYER
-        // ECS Entity
+        // PLAYER ENTITY
         player = new Entity();
+        player.flags = 0x0002;
         transformComponent = new TransformComponent();
         transformComponent.position = new Vector2(3, 8);
         player.add(transformComponent);
@@ -146,10 +148,8 @@ public class GamePresenter extends Game
         dynamicBodyComponent.height = 1.5f;
         dynamicBodyComponent.width = 0.7f;
         player.add(dynamicBodyComponent);
-        CameraTargetComponent cameraComponent = new CameraTargetComponent();
-        player.add(cameraComponent);
-        ControlComponent controlComponent = new ControlComponent();
-        player.add(controlComponent);
+        PlayerComponent playerComponent = new PlayerComponent();
+        player.add(playerComponent);
 
         // ECS Systems
         // Camera follow
@@ -163,6 +163,7 @@ public class GamePresenter extends Game
 
         // Control
         InputSystem input = new InputSystem();
+        ShootingSystem shooting = new ShootingSystem("sprites/bullets/circle_bullet_blue.png");
 
 
         //populate assetmanager with assets
@@ -203,8 +204,9 @@ public class GamePresenter extends Game
                 ecs.addEntity(player);
                 ecs.addSystem(cameraFollowSystem);
                 ecs.addSystem(renderingSystem);
-                ecs.addSystem(physics);
                 ecs.addSystem(input);
+                ecs.addSystem(shooting);
+                ecs.addSystem(physics);
 
                 firstPlayThrough = false;
             }
@@ -406,22 +408,22 @@ public class GamePresenter extends Game
         });
 
         ((InGameScreen) inGameScreen).getLeftEvent().addHandler((args) -> {
-            proxy.sendAction("L");
+            //proxy.sendAction("L");
             input.moveLeft();
         });
 
         ((InGameScreen) inGameScreen).getStopLeftEvent().addHandler((args) -> {
-            proxy.sendAction("SL");
+            //proxy.sendAction("SL");
             input.stopMoveLeft();
         });
 
         ((InGameScreen) inGameScreen).getRightEvent().addHandler((args) -> {
-            proxy.sendAction("R");
+            //proxy.sendAction("R");
             input.moveRight();
         });
 
         ((InGameScreen) inGameScreen).getStopRightEvent().addHandler((args) -> {
-            proxy.sendAction("SR");
+            //proxy.sendAction("SR");
             input.stopMoveRight();
         });
 
@@ -429,7 +431,7 @@ public class GamePresenter extends Game
         //shoot button pressed in-game. sets boolean variable "shooting" to true. this causes the
         //GamePresenter's update method to perform shooting action
         ((InGameScreen) inGameScreen).getShootEvent().addHandler((args) -> {
-            proxy.sendAction("S");
+            //proxy.sendAction("S");
             input.startShooting();
 /*            if(shooting){
                 shooting = false;
@@ -439,7 +441,7 @@ public class GamePresenter extends Game
         });
 
         ((InGameScreen) inGameScreen).getStopshootEvent().addHandler((args) -> {
-            proxy.sendAction("SS");
+            //proxy.sendAction("SS");
             input.stopShooting();
         });
 
@@ -448,7 +450,7 @@ public class GamePresenter extends Game
         ((InGameScreen) inGameScreen).getJumpEvent().addHandler((args) -> {
 
             input.jump();
-            proxy.sendAction("J");
+            //proxy.sendAction("J");
 
             /*// set input processor to new State's BaseScreen stage
             Gdx.input.setInputProcessor(gameOverScreen.getStage());
@@ -609,7 +611,7 @@ public class GamePresenter extends Game
             }
         }
 
-        proxy.handleActions();
+        //proxy.handleActions();
     }
 
     @Override
@@ -633,7 +635,7 @@ public class GamePresenter extends Game
         shapeRenderer.circle(transformComponent.position.x, transformComponent.position.y,100);
         shapeRenderer.end();
         */
-        //debugRenderer.render(world, mainCamera.combined);
+        debugRenderer.render(world, mainCamera.combined);
         fpsLogger.log();
 
         // Update method
@@ -662,9 +664,5 @@ public class GamePresenter extends Game
     public void resume()
     {
         super.resume();
-    }
-
-    public boolean isSoundOn() {
-        return soundOn;
     }
 }

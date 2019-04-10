@@ -7,23 +7,25 @@ import com.thependulumparadox.presenter.GamePresenter;
 
 public class PendulumParadoxGame extends ApplicationAdapter
 {
-	Game game;
-	ISynchronization proxy;
+	private Game game;
 
-
-	public PendulumParadoxGame(ISynchronization networkproxy){
-	    this.proxy = networkproxy;
-	    this.game = new GamePresenter();
-	    ((GamePresenter) this.game).setProxy(proxy);
+	// Standard single player game
+	public PendulumParadoxGame()
+    {
+	    game = new GamePresenter();
     }
 
+    // Multi player game with  synchronization proxy
+    public PendulumParadoxGame(ISynchronization proxy)
+    {
+        game = new GamePresenter(proxy);
+    }
 
     @Override
     public void create()
     {
         super.create();
         game.create();
-        System.out.println("game created");
     }
 
     @Override
