@@ -28,19 +28,19 @@ import java.util.List;
  */
 public class PhysicsSystem extends EntitySystem
 {
-    // Collision category (bit masks)
-    // 0000000000000001 = 1 = ground group
-    // 0000000000000010 = 2 = player group
-    // 0000000000000100 = 4 = enemy group
-    // 0000000000001000 = 8 = bullet group
-    // 0000000000010000 = 16 = power-up group
+    // Collision category (bit masks) - 15 bits
+    // 000000000000001 = 1 = ground group
+    // 000000000000010 = 2 = player group
+    // 000000000000100 = 4 = enemy group
+    // 000000000001000 = 8 = bullet group
+    // 000000000010000 = 16 = power-up group
     public enum CollisionCategory
     {
-        DEFAULT(0x0001),
-        PLAYER(0x0002),
-        ENEMY(0x0004),
-        BULLET(0x0008),
-        POWERUP(0x0010);
+        DEFAULT(1),
+        PLAYER(2),
+        ENEMY(4),
+        BULLET(8),
+        POWERUP(16);
 
         public final short bits;
         private CollisionCategory(int bits)
@@ -49,19 +49,19 @@ public class PhysicsSystem extends EntitySystem
         }
     }
 
-    // Collision masks (bit masks)
-    // Default group = collides with everything = 1111111111111111
-    // Player group = collides with default, enemy and power-up group = 0000000000010101
-    // Enemy group = collides with default, bullets and player group = 0000000000001011
-    // Bullet group = collides with default and enemy group = 0000000000000101
-    // Power-up group = collides with default and player group = 0000000000000011
+    // Collision masks (bit masks) - 15 bits
+    // Default group = collides with everything = 111111111111111
+    // Player group = collides with default, enemy and power-up group = 000000000010101
+    // Enemy group = collides with default, bullets and player group = 000000000001011
+    // Bullet group = collides with default and enemy group = 000000000000101
+    // Power-up group = collides with default and player group = 000000000000011
     public enum CollisionMask
     {
-        DEFAULT(0xFFFF),
-        PLAYER(0x0015),
-        ENEMY(0x000B),
-        BULLET(0x0005),
-        POWERUP(0x0003);
+        DEFAULT(32767),
+        PLAYER(21),
+        ENEMY(11),
+        BULLET(5),
+        POWERUP(3);
 
         public final short bits;
         private CollisionMask(int bits)
@@ -124,15 +124,25 @@ public class PhysicsSystem extends EntitySystem
             @Override
             public void beginContact(Contact contact)
             {
-
-                if(contact.getFixtureB().getUserData() instanceof Entity)
+                if(contact.getFixtureA().getUserData() instanceof Entity
+                        && contact.getFixtureB().getUserData() instanceof Entity)
                 {
-                    Entity entity = (Entity) contact.getFixtureB().getUserData();
+                    Entity entityA = (Entity) contact.getFixtureA().getUserData();
+                    Entity entityB = (Entity) contact.getFixtureB().getUserData();
 
-                    // If bullet then remove it
-                    if (entity.flags == 0x0008)
+                    // If bullet and enemy kill it
+                    if(entityA.flags == 4 && entityB.flags == 8)
                     {
-                        engine.removeEntity(entity);
+                        engine.removeEntity(entityA);
+                        engine.removeEntity(entityB);
+                        return;
+                    }
+
+                    if(entityB.flags == 4 && entityA.flags == 8)
+                    {
+                        engine.removeEntity(entityA);
+                        engine.removeEntity(entityB);
+                        return;
                     }
                 }
 
@@ -140,10 +150,27 @@ public class PhysicsSystem extends EntitySystem
                 {
                     Entity entity = (Entity) contact.getFixtureA().getUserData();
 
+                    //System.out.println("FLAG_A:" + entity.flags);
+
                     // If bullet then remove it
-                    if (entity.flags == 0x0008)
+                    if (entity.flags == 8)
                     {
                         engine.removeEntity(entity);
+                        return;
+                    }
+                }
+
+                if(contact.getFixtureB().getUserData() instanceof Entity)
+                {
+                    Entity entity = (Entity) contact.getFixtureB().getUserData();
+
+                    //System.out.println("FLAG_B:" + entity.flags);
+
+                    // If bullet then remove it
+                    if (entity.flags == 8)
+                    {
+                        engine.removeEntity(entity);
+                        return;
                     }
                 }
             }
@@ -318,23 +345,27 @@ public class PhysicsSystem extends EntitySystem
             case 1:
                 fixtureDef.filter.categoryBits = CollisionCategory.DEFAULT.bits;
                 fixtureDef.filter.maskBits = CollisionMask.DEFAULT.bits;
+                break;
             // Player
             case 2:
                 fixtureDef.filter.categoryBits = CollisionCategory.PLAYER.bits;
                 fixtureDef.filter.maskBits = CollisionMask.PLAYER.bits;
+                break;
             // Enemy
             case 4:
                 fixtureDef.filter.categoryBits = CollisionCategory.ENEMY.bits;
                 fixtureDef.filter.maskBits = CollisionMask.ENEMY.bits;
+                break;
             // Bullet
             case 8:
                 fixtureDef.filter.categoryBits = CollisionCategory.BULLET.bits;
                 fixtureDef.filter.maskBits = CollisionMask.BULLET.bits;
+                break;
             // Power up
             case 16:
                 fixtureDef.filter.categoryBits = CollisionCategory.POWERUP.bits;
                 fixtureDef.filter.maskBits = CollisionMask.POWERUP.bits;
-
+                break;
         }
 
         // Create our fixture and attach it to the body
@@ -382,23 +413,27 @@ public class PhysicsSystem extends EntitySystem
             case 1:
                 fixtureDef.filter.categoryBits = CollisionCategory.DEFAULT.bits;
                 fixtureDef.filter.maskBits = CollisionMask.DEFAULT.bits;
+                break;
                 // Player
             case 2:
                 fixtureDef.filter.categoryBits = CollisionCategory.PLAYER.bits;
                 fixtureDef.filter.maskBits = CollisionMask.PLAYER.bits;
+                break;
                 // Enemy
             case 4:
                 fixtureDef.filter.categoryBits = CollisionCategory.ENEMY.bits;
                 fixtureDef.filter.maskBits = CollisionMask.ENEMY.bits;
+                break;
                 // Bullet
             case 8:
                 fixtureDef.filter.categoryBits = CollisionCategory.BULLET.bits;
                 fixtureDef.filter.maskBits = CollisionMask.BULLET.bits;
+                break;
                 // Power up
             case 16:
                 fixtureDef.filter.categoryBits = CollisionCategory.POWERUP.bits;
                 fixtureDef.filter.maskBits = CollisionMask.POWERUP.bits;
-
+                break;
         }
 
         // Create a fixture from the box and add it to the body

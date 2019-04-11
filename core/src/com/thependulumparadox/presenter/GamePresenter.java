@@ -134,7 +134,7 @@ public class GamePresenter extends Game
 
         // PLAYER ENTITY
         player = new Entity();
-        player.flags = 0x0002;
+        player.flags = 2;
         transformComponent = new TransformComponent();
         transformComponent.position = new Vector2(3, 8);
         player.add(transformComponent);
@@ -155,7 +155,7 @@ public class GamePresenter extends Game
 
         // ENEMY ENTITY
         enemy1 = new Entity();
-        enemy1.flags = 0x0004;
+        enemy1.flags = 4;
         TransformComponent transform = new TransformComponent();
         transform.position = new Vector2(10, 8);
         enemy1.add(transform);
@@ -173,7 +173,7 @@ public class GamePresenter extends Game
         enemy1.add(dynamicBody);
 
         enemy2 = new Entity();
-        enemy2.flags = 0x0004;
+        enemy2.flags = 4;
         TransformComponent transform2 = new TransformComponent();
         transform2.position = new Vector2(20, 8);
         enemy2.add(transform2);
@@ -677,7 +677,7 @@ public class GamePresenter extends Game
         shapeRenderer.circle(transformComponent.position.x, transformComponent.position.y,100);
         shapeRenderer.end();
         */
-        debugRenderer.render(world, mainCamera.combined);
+        //debugRenderer.render(world, mainCamera.combined);
         fpsLogger.log();
 
         // Update method
