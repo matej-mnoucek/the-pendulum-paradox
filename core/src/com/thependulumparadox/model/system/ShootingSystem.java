@@ -8,6 +8,7 @@ import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.core.PooledEngine;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.physics.box2d.World;
 import com.thependulumparadox.model.component.BulletComponent;
 import com.thependulumparadox.model.component.DynamicBodyComponent;
 import com.thependulumparadox.model.component.PlayerComponent;
@@ -29,10 +30,12 @@ public class ShootingSystem extends EntitySystem
 
     private String bulletSpritePath;
     private Engine engine;
+    private World world;
 
-    public ShootingSystem(String bulletSpritePath)
+    public ShootingSystem(String bulletSpritePath, World world)
     {
         this.bulletSpritePath = bulletSpritePath;
+        this.world = world;
     }
 
     public void addedToEngine(Engine engine)
@@ -53,8 +56,8 @@ public class ShootingSystem extends EntitySystem
         if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE))
         {
             // Create new bullet
-            Entity bullet = bulletPool.createEntity();
-            bullet.flags = 0x0008;
+            Entity bullet = new Entity(); //bulletPool.createEntity();
+            bullet.flags = 8;
             TransformComponent transform = new TransformComponent();
             transform.position = transformComponent.position;
             SpriteComponent sprite = new SpriteComponent();
@@ -63,12 +66,15 @@ public class ShootingSystem extends EntitySystem
             sprite.width = 0.3f;
             BulletComponent bulletComponent = new BulletComponent();
             bulletComponent.damage = playerComponent.damage;
-            DynamicBodyComponent dynamic = new DynamicBodyComponent();
-            dynamic.center = transformComponent.position;
-            dynamic.height = sprite.height;
-            dynamic.width = sprite.width;
-            dynamic.impulseHorizontal = 5f;
-            dynamic.gravityScale = 0.0f;
+            DynamicBodyComponent dynamic = new DynamicBodyComponent(world);
+            dynamic.position(transformComponent.position).dimension(sprite.width, sprite.height)
+                    .gravityScale(0.0f).activate(true);
+            dynamic.body.applyLinearImpulse(5,0,0,0,true);
+            //dynamic.center = transformComponent.position;
+            //dynamic.height = sprite.height;
+            //dynamic.width = sprite.width;
+            //dynamic.impulseHorizontal = 5f;
+            //dynamic.gravityScale = 0.0f;
 
             // Add all components
             bullet.add(transform);

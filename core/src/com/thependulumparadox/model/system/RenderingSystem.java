@@ -199,6 +199,8 @@ public class RenderingSystem extends EntitySystem
                 atlas.findRegions(animatedSpriteComponent.region),
                 Animation.PlayMode.LOOP);
 
+
+
         return animation;
     }
 }

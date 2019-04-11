@@ -1,5 +1,6 @@
 package com.thependulumparadox.model.system;
 
+import com.badlogic.ashley.core.Component;
 import com.badlogic.ashley.core.ComponentMapper;
 import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.Entity;
@@ -11,6 +12,7 @@ import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.Contact;
 import com.badlogic.gdx.physics.box2d.ContactImpulse;
 import com.badlogic.gdx.physics.box2d.ContactListener;
+import com.badlogic.gdx.physics.box2d.Filter;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.Manifold;
@@ -81,11 +83,6 @@ public class PhysicsSystem extends EntitySystem
     private ComponentMapper<TransformComponent> transformComponentMapper
             = ComponentMapper.getFor(TransformComponent.class);
 
-    private List<Body> staticBodies = new ArrayList<>();
-    private List<Body> dynamicBodies = new ArrayList<>();
-    private List<Entity> cachedStaticBodyEntities = new ArrayList<>();
-    private List<Entity> cachedDynamicBodyEntities = new ArrayList<>();
-
     private World world;
 
     public PhysicsSystem(World world) { this.world = world; }
@@ -97,25 +94,26 @@ public class PhysicsSystem extends EntitySystem
         dynamicBodyEntities = engine.getEntitiesFor(Family.all(DynamicBodyComponent.class,
                 TransformComponent.class).get());
 
-        // Create static bodies
+        // Initialize static bodies
         for (int i = 0; i < staticBodyEntities.size(); i++)
         {
             Entity entity = staticBodyEntities.get(i);
-            staticBodies.add(tearUpStaticBody(entity));
+            StaticBodyComponent component = staticBodyComponentComponentMapper.get(entity);
 
-            // Cache corresponding entity
-            cachedStaticBodyEntities.add(entity);
+            initializeBody(entity, component.body);
+            component.initialized = true;
+            component.activate(true);
         }
 
-        // Create dynamic bodies
+        // Initialize dynamic bodies
         for (int i = 0; i < dynamicBodyEntities.size(); i++)
         {
             Entity entity = dynamicBodyEntities.get(i);
-            Body dynamicBody = tearUpDynamicBody(entity);
-            dynamicBodies.add(dynamicBody);
+            DynamicBodyComponent component = dynamicBodyComponentComponentMapper.get(entity);
 
-            // Cache corresponding entity
-            cachedDynamicBodyEntities.add(entity);
+            initializeBody(entity, component.body);
+            component.initialized = true;
+            component.activate(true);
         }
 
         // Define collision handling
@@ -133,15 +131,25 @@ public class PhysicsSystem extends EntitySystem
                     // If bullet and enemy kill it
                     if(entityA.flags == 4 && entityB.flags == 8)
                     {
+                        world.step(0,0,0);
+                        world.destroyBody(contact.getFixtureA().getBody());
+                        world.destroyBody(contact.getFixtureB().getBody());
+
                         engine.removeEntity(entityA);
                         engine.removeEntity(entityB);
+
                         return;
                     }
 
                     if(entityB.flags == 4 && entityA.flags == 8)
                     {
+                        world.step(0,0,0);
+                        world.destroyBody(contact.getFixtureA().getBody());
+                        world.destroyBody(contact.getFixtureB().getBody());
+
                         engine.removeEntity(entityA);
                         engine.removeEntity(entityB);
+
                         return;
                     }
                 }
@@ -192,96 +200,32 @@ public class PhysicsSystem extends EntitySystem
         });
     }
 
-    public void removedFromEngine (Engine engine)
-    {
-        
-        // Dispose shapes
-        for (Body staticBody : staticBodies)
-        {
-            for (Fixture fixture : staticBody.getFixtureList())
-            {
-                fixture.getShape().dispose();
-            }
-        }
-
-        for (Body dynamicBody : dynamicBodies)
-        {
-            for (Fixture fixture : dynamicBody.getFixtureList())
-            {
-                fixture.getShape().dispose();
-            }
-        }
-
-        // Delete bodies and empty caches
-        staticBodies.clear();
-        cachedStaticBodyEntities.clear();
-        dynamicBodies.clear();
-        cachedDynamicBodyEntities.clear();
-    }
-
+    private float accumulator = 0;
+    private float timeStep = 1/60.0f;
     public void update(float deltaTime)
     {
-        // Check if some dynamic bodies were added to the engine
-        if (dynamicBodyEntities.size() != cachedDynamicBodyEntities.size())
+        // Check new entities
+        for (int i = 0; i < staticBodyEntities.size(); i++)
         {
-            // If there is new entity
-            for (int i = 0; i < dynamicBodyEntities.size(); i++)
+            Entity entity = staticBodyEntities.get(i);
+            StaticBodyComponent component = staticBodyComponentComponentMapper.get(entity);
+
+            if (!component.initialized)
             {
-                // Get entity
-                Entity entity = dynamicBodyEntities.get(i);
-
-                if (!cachedDynamicBodyEntities.contains(entity))
-                {
-                    dynamicBodies.add(tearUpDynamicBody(entity));
-                    cachedDynamicBodyEntities.add(entity);
-                }
-            }
-
-            // If an entity was removed
-            for (int i = 0; i < cachedDynamicBodyEntities.size(); i++)
-            {
-                // Get entity
-                Entity entity = cachedDynamicBodyEntities.get(i);
-
-                if (!dynamicBodyEntities.contains(entity, true))
-                {
-                    int index = cachedDynamicBodyEntities.indexOf(entity);
-                    cachedDynamicBodyEntities.remove(entity);
-                    Body body = dynamicBodies.remove(index);
-                    world.destroyBody(body);
-                }
+                initializeBody(entity, component.body);
+                component.initialized = true;
             }
         }
 
-        // Check if some static bodies were added to the engine
-        if (staticBodyEntities.size() != cachedStaticBodyEntities.size())
+        for (int i = 0; i < dynamicBodyEntities.size(); i++)
         {
-            // If there is a new entity
-            for (int i = 0; i < staticBodyEntities.size(); i++)
+            Entity entity = dynamicBodyEntities.get(i);
+            DynamicBodyComponent component = dynamicBodyComponentComponentMapper.get(entity);
+
+            if (!component.initialized)
             {
-                // Get entity
-                Entity entity = staticBodyEntities.get(i);
-
-                if (!cachedStaticBodyEntities.contains(entity))
-                {
-                    staticBodies.add(tearUpStaticBody(entity));
-                    cachedStaticBodyEntities.add(entity);
-                }
-            }
-
-            // If an entity was removed
-            for (int i = 0; i < cachedStaticBodyEntities.size(); i++)
-            {
-                // Get entity
-                Entity entity = cachedStaticBodyEntities.get(i);
-
-                if (!staticBodyEntities.contains(entity, true))
-                {
-                    int index = cachedStaticBodyEntities.indexOf(entity);
-                    cachedStaticBodyEntities.remove(entity);
-                    Body body = staticBodies.remove(index);
-                    world.destroyBody(body);
-                }
+                initializeBody(entity, component.body);
+                component.initialized = true;
             }
         }
 
@@ -295,154 +239,55 @@ public class PhysicsSystem extends EntitySystem
             DynamicBodyComponent dynamicBodyComponent
                     = dynamicBodyComponentComponentMapper.get(entity);
 
-            Body body = dynamicBodies.get(i);
-            transformComponent.position = body.getPosition();
-            body.setGravityScale(dynamicBodyComponent.gravityScale);
+            // Update position
+            transformComponent.position = dynamicBodyComponent.body.getPosition();
+        }
 
-            // Process impulses
-            body.applyLinearImpulse(dynamicBodyComponent.impulseHorizontal,
-                    dynamicBodyComponent.impulseVertical,
-                    transformComponent.position.x,
-                    transformComponent.position.y,
-                    true);
-
-            //dynamicBodyComponent.impulseHorizontal = 0.0f;
-            //dynamicBodyComponent.impulseVertical = 0.0f;
+        // Update physics
+        float frameTime = Math.min(deltaTime, 0.25f);
+        accumulator += frameTime;
+        while (accumulator >= timeStep)
+        {
+            world.step(timeStep, 6, 2);
+            accumulator -= timeStep;
         }
     }
 
-
-    private Body tearUpDynamicBody(Entity entity)
+    private void initializeBody(Entity entity, Body body)
     {
-        DynamicBodyComponent dynamicBodyComponent
-                = dynamicBodyComponentComponentMapper.get(entity);
-
-        BodyDef bodyDef = new BodyDef();
-        bodyDef.type = BodyDef.BodyType.DynamicBody;
-        bodyDef.position.set(dynamicBodyComponent.center);
-
-        // Create body
-        Body body = world.createBody(bodyDef);
-        body.setFixedRotation(true);
-
-        // Create a box (polygon) shape
-        PolygonShape polygon = new PolygonShape();
-
-        // Set the polygon shape as a box
-        polygon.setAsBox(dynamicBodyComponent.width/2, dynamicBodyComponent.height/2);
-
-        // Create a fixture definition to apply the shape to it
-        FixtureDef fixtureDef = new FixtureDef();
-        fixtureDef.shape = polygon;
-        fixtureDef.density = dynamicBodyComponent.density;
-        fixtureDef.friction = dynamicBodyComponent.friction;
-        fixtureDef.restitution = dynamicBodyComponent.restitution;
-
-        // Setup collision category and mask based on entity flags
+        // Setup collisions
+        Filter filter = new Filter();
         switch (entity.flags)
         {
             // Default
             case 1:
-                fixtureDef.filter.categoryBits = CollisionCategory.DEFAULT.bits;
-                fixtureDef.filter.maskBits = CollisionMask.DEFAULT.bits;
+                filter.categoryBits = CollisionCategory.DEFAULT.bits;
+                filter.maskBits = CollisionMask.DEFAULT.bits;
                 break;
             // Player
             case 2:
-                fixtureDef.filter.categoryBits = CollisionCategory.PLAYER.bits;
-                fixtureDef.filter.maskBits = CollisionMask.PLAYER.bits;
+                filter.categoryBits = CollisionCategory.PLAYER.bits;
+                filter.maskBits = CollisionMask.PLAYER.bits;
                 break;
             // Enemy
             case 4:
-                fixtureDef.filter.categoryBits = CollisionCategory.ENEMY.bits;
-                fixtureDef.filter.maskBits = CollisionMask.ENEMY.bits;
+                filter.categoryBits = CollisionCategory.ENEMY.bits;
+                filter.maskBits = CollisionMask.ENEMY.bits;
                 break;
             // Bullet
             case 8:
-                fixtureDef.filter.categoryBits = CollisionCategory.BULLET.bits;
-                fixtureDef.filter.maskBits = CollisionMask.BULLET.bits;
+                filter.categoryBits = CollisionCategory.BULLET.bits;
+                filter.maskBits = CollisionMask.BULLET.bits;
                 break;
             // Power up
             case 16:
-                fixtureDef.filter.categoryBits = CollisionCategory.POWERUP.bits;
-                fixtureDef.filter.maskBits = CollisionMask.POWERUP.bits;
+                filter.categoryBits = CollisionCategory.POWERUP.bits;
+                filter.maskBits = CollisionMask.POWERUP.bits;
                 break;
         }
+        body.getFixtureList().first().setFilterData(filter);
 
-        // Create our fixture and attach it to the body
-        Fixture fixture = body.createFixture(fixtureDef);
-
-
-        // Pass entity for collision detection
-        fixture.setUserData(entity);
-
-
-        // Return body
-        return body;
-    }
-
-    private Body tearUpStaticBody(Entity entity)
-    {
-        StaticBodyComponent staticBodyComponent
-                = staticBodyComponentComponentMapper.get(entity);
-
-        // Creating physics body representation
-        BodyDef bodyDef = new BodyDef();
-        bodyDef.type = BodyDef.BodyType.StaticBody;
-        bodyDef.position.set(staticBodyComponent.center);
-
-        // Add it to the world
-        Body body = world.createBody(bodyDef);
-
-        // Create a box (polygon) shape
-        PolygonShape polygon = new PolygonShape();
-
-        // Set the polygon shape as a box
-        polygon.setAsBox(staticBodyComponent.width, staticBodyComponent.height);
-
-        // Create a fixture definition to apply the shape to it
-        FixtureDef fixtureDef = new FixtureDef();
-        fixtureDef.shape = polygon;
-        fixtureDef.density = staticBodyComponent.density;
-        fixtureDef.friction = staticBodyComponent.friction;
-        fixtureDef.restitution = staticBodyComponent.restitution;
-
-        // Setup collision category and mask based on entity flags
-        switch (entity.flags)
-        {
-            // Default
-            case 1:
-                fixtureDef.filter.categoryBits = CollisionCategory.DEFAULT.bits;
-                fixtureDef.filter.maskBits = CollisionMask.DEFAULT.bits;
-                break;
-                // Player
-            case 2:
-                fixtureDef.filter.categoryBits = CollisionCategory.PLAYER.bits;
-                fixtureDef.filter.maskBits = CollisionMask.PLAYER.bits;
-                break;
-                // Enemy
-            case 4:
-                fixtureDef.filter.categoryBits = CollisionCategory.ENEMY.bits;
-                fixtureDef.filter.maskBits = CollisionMask.ENEMY.bits;
-                break;
-                // Bullet
-            case 8:
-                fixtureDef.filter.categoryBits = CollisionCategory.BULLET.bits;
-                fixtureDef.filter.maskBits = CollisionMask.BULLET.bits;
-                break;
-                // Power up
-            case 16:
-                fixtureDef.filter.categoryBits = CollisionCategory.POWERUP.bits;
-                fixtureDef.filter.maskBits = CollisionMask.POWERUP.bits;
-                break;
-        }
-
-        // Create a fixture from the box and add it to the body
-        Fixture fixture = body.createFixture(fixtureDef);
-
-        // Pass entity for collision detection
-        fixture.setUserData(entity);
-
-        // Return body
-        return body;
+        // Add collision argument
+        body.getFixtureList().first().setUserData(entity);
     }
 }

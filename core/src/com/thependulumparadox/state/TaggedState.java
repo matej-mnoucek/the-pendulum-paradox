@@ -5,7 +5,7 @@ public class TaggedState<T> implements IState
     public final T object;
     public final String tag;
 
-    public TaggedState(T object, String tag)
+    public TaggedState(String tag, T object)
     {
         this.object = object;
         this.tag = tag;

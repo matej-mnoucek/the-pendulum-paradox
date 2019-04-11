@@ -7,6 +7,7 @@ import com.badlogic.ashley.core.EntitySystem;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.math.Vector2;
 import com.thependulumparadox.model.MoveCommands;
 import com.thependulumparadox.model.component.DynamicBodyComponent;
 import com.thependulumparadox.model.component.PlayerComponent;
@@ -46,29 +47,31 @@ public class InputSystem extends EntitySystem implements MoveCommands
         {
 
             //System.out.println(dynamicBodyComponent.impulseHorizontal);
-            dynamicBodyComponent.impulseHorizontal = 15f;
+            dynamicBodyComponent.body.applyLinearImpulse(1f, 0,0,0,true);
         }
         else if (Gdx.input.isKeyPressed(Input.Keys.LEFT) || moveLeft)
         {
-            dynamicBodyComponent.impulseHorizontal = -15f;
+            dynamicBodyComponent.body.applyLinearImpulse(-1f, 0,0,0,true);
         }
         else
         {
-            dynamicBodyComponent.impulseHorizontal = 0f;
+            //dynamicBodyComponent.impulseHorizontal = 0f;
         }
 
         if (Gdx.input.isKeyPressed(Input.Keys.UP) || jump)
         {
-            dynamicBodyComponent.impulseVertical = 15f;
+            //dynamicBodyComponent.impulseVertical = 15f;
+            dynamicBodyComponent.body.applyLinearImpulse(0, 1f,0,0,true);
             jump = false;
         }
         else if (Gdx.input.isKeyPressed(Input.Keys.DOWN))
         {
-            dynamicBodyComponent.impulseVertical = -5f;
+            //dynamicBodyComponent.impulseVertical = -5f;
+            dynamicBodyComponent.body.applyLinearImpulse(0, -1f,0,0,true);
         }
         else
         {
-            dynamicBodyComponent.impulseVertical = 0f;
+            //dynamicBodyComponent.impulseVertical = 0f;
         }
         if (shooting){
 

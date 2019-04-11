@@ -10,6 +10,13 @@ public class ComponentFactory extends AbstractComponentFactory
     @Override
     public <T extends Component> T create(Class<T> component)
     {
+        if (component == TransformComponent.class)
+        {
+
+        }
+
+
+
         return null;
     }
 }

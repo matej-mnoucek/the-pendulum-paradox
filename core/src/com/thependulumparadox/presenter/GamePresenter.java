@@ -4,6 +4,7 @@ import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.audio.Music;
@@ -20,6 +21,7 @@ import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.World;
 import com.thependulumparadox.model.component.PlayerComponent;
 import com.thependulumparadox.model.component.StateComponent;
+import com.thependulumparadox.model.system.PhysicsDebugSystem;
 import com.thependulumparadox.model.system.ShootingSystem;
 import com.thependulumparadox.model.system.StateSystem;
 import com.thependulumparadox.multiplayer.ISynchronization;
@@ -48,6 +50,8 @@ import com.thependulumparadox.view.screen.InGameScreen;
 import com.thependulumparadox.view.screen.MenuScreen;
 import com.thependulumparadox.view.screen.SettingsScreen;
 import com.thependulumparadox.view.screen.TutorialScreen;
+
+import net.java.games.input.Component;
 
 //TODO: implement "new game" pressed from GameOverScreen.
 
@@ -102,13 +106,12 @@ public class GamePresenter extends Game
     private float shootingTimer = 0;
 
     // DEBUG
-    FPSLogger fpsLogger;
-    Box2DDebugRenderer debugRenderer;
     ShapeRenderer shapeRenderer;
     Entity player;
     Entity enemy1;
     Entity enemy2;
     TransformComponent transformComponent;
+    StateComponent<String> playerState;
 
     private boolean isMultiplayer = false;
     private ISynchronization proxy;
@@ -127,11 +130,10 @@ public class GamePresenter extends Game
     public void create()
     {
         // DEBUG
-        debugRenderer = new Box2DDebugRenderer();
+        //debugRenderer = new Box2DDebugRenderer();
         shapeRenderer = new ShapeRenderer();
         shapeRenderer.setColor(Color.RED);
         shapeRenderer.setProjectionMatrix(mainCamera.combined);
-        fpsLogger = new FPSLogger();
 
         // PLAYER ENTITY
         player = new Entity();
@@ -146,19 +148,17 @@ public class GamePresenter extends Game
         animated.atlasPath = "packed/idle.atlas";
         animated.region = "idle";
         player.add(animated);
-        DynamicBodyComponent dynamicBodyComponent = new DynamicBodyComponent();
-        dynamicBodyComponent.center = transformComponent.position;
-        dynamicBodyComponent.height = 1.5f;
-        dynamicBodyComponent.width = 0.7f;
+        DynamicBodyComponent dynamicBodyComponent = new DynamicBodyComponent(world);
+        dynamicBodyComponent.position(transformComponent.position).dimension(0.7f, 1.5f);
         player.add(dynamicBodyComponent);
         PlayerComponent playerComponent = new PlayerComponent();
         player.add(playerComponent);
-        StateComponent<String> playerState = new StateComponent<>();
-        TaggedState<String> initialState = new TaggedState<String>("idle", "idle");
+        playerState = new StateComponent<>();
+        TaggedState<String> initialState = new TaggedState<String>("idle", null);
         playerState.initialState = initialState;
         playerState.states.add(initialState);
-        playerState.states.add(new TaggedState<String>("attack", "attack"));
-        playerState.states.add(new TaggedState<String>("jump", "jump"));
+        playerState.states.add(new TaggedState<String>("attack", null));
+        playerState.states.add(new TaggedState<String>("jump", null));
         player.add(playerState);
 
         // ENEMY ENTITY
@@ -174,10 +174,8 @@ public class GamePresenter extends Game
         animatedEnemy.atlasPath = "packed/ninja_enemy.atlas";
         animatedEnemy.region = "attack";
         enemy1.add(animatedEnemy);
-        DynamicBodyComponent dynamicBody = new DynamicBodyComponent();
-        dynamicBody.center = transform.position;
-        dynamicBody.height = 1.5f;
-        dynamicBody.width = 0.7f;
+        DynamicBodyComponent dynamicBody = new DynamicBodyComponent(world);
+        dynamicBody.position(transform.position).dimension(0.7f, 1.5f);
         enemy1.add(dynamicBody);
 
         enemy2 = new Entity();
@@ -192,10 +190,8 @@ public class GamePresenter extends Game
         animatedEnemy2.atlasPath = "packed/knight_enemy.atlas";
         animatedEnemy2.region = "attack";
         enemy2.add(animatedEnemy2);
-        DynamicBodyComponent dynamicBody2 = new DynamicBodyComponent();
-        dynamicBody2.center = transform2.position;
-        dynamicBody2.height = 1.5f;
-        dynamicBody2.width = 0.7f;
+        DynamicBodyComponent dynamicBody2 = new DynamicBodyComponent(world);
+        dynamicBody2.position(transform2.position).dimension(0.7f, 1.5f);
         enemy2.add(dynamicBody2);
 
 
@@ -211,7 +207,7 @@ public class GamePresenter extends Game
 
         // Control
         InputSystem input = new InputSystem();
-        ShootingSystem shooting = new ShootingSystem("sprites/bullets/circle_bullet_blue.png");
+        ShootingSystem shooting = new ShootingSystem("sprites/bullets/circle_bullet_blue.png", world);
 
         // States
         StateSystem state = new StateSystem();
@@ -261,6 +257,7 @@ public class GamePresenter extends Game
                 ecs.addSystem(shooting);
                 ecs.addSystem(physics);
                 ecs.addSystem(state);
+                ecs.addSystem(new PhysicsDebugSystem(world, mainCamera));
 
                 firstPlayThrough = false;
             }
@@ -566,19 +563,12 @@ public class GamePresenter extends Game
         });
     }
 
-    private float accumulator = 0;
-    private float timeStep = 1/60.0f;
     public void update(float delta)
     {
-        // Update ECS
-        ecs.update(delta);
-
-        // Update physics
-        float frameTime = Math.min(delta, 0.25f);
-        accumulator += frameTime;
-        while (accumulator >= timeStep) {
-            world.step(timeStep, 6, 2);
-            accumulator -= timeStep;
+        if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE))
+        {
+            playerState.requestedState = playerState.states.get(1);
+            playerState.transitionRequested = true;
         }
 
         /*if shoot button is pressed down: variable "shooting" is set to true.
@@ -598,6 +588,9 @@ public class GamePresenter extends Game
         }
 
         //proxy.handleActions();
+
+        // Update ECS
+        ecs.update(delta);
     }
 
     @Override
@@ -621,8 +614,6 @@ public class GamePresenter extends Game
         shapeRenderer.circle(transformComponent.position.x, transformComponent.position.y,100);
         shapeRenderer.end();
         */
-        //debugRenderer.render(world, mainCamera.combined);
-        fpsLogger.log();
 
         // Update method
         update(delta);
