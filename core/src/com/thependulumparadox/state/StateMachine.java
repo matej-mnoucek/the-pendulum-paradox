@@ -10,75 +10,106 @@ public class StateMachine implements IStateMachine
     private List<IState> states = new ArrayList<>();
     private List<ITransition> transitions = new ArrayList<>();
     private IState currentState = null;
+    private boolean ignoreTransitions = false;
+
+    public StateMachine()
+    {
+        this.ignoreTransitions = false;
+    }
+
+    public StateMachine(boolean ignoreTransitions)
+    {
+        this.ignoreTransitions = ignoreTransitions;
+    }
 
     @Override
-    public void addTransition(ITransition transition)
+    public boolean addTransition(ITransition transition)
     {
         if (!transitions.contains(transition))
         {
-            transitions.add(transition);
+            return transitions.add(transition);
+        }
+        else
+        {
+            return false;
         }
     }
 
     @Override
-    public void removeTransition(ITransition transition)
+    public boolean removeTransition(ITransition transition)
     {
-        transitions.remove(transition);
+        return transitions.remove(transition);
     }
 
     @Override
-    public void addState(IState state)
+    public boolean addState(IState state)
     {
         if (!states.contains(state))
         {
             states.add(state);
+            return true;
+        }
+        else
+        {
+            return false;
         }
     }
 
     @Override
-    public void removeState(IState state)
+    public boolean removeState(IState state)
     {
         if (currentState.equals(state))
         {
             currentState = null;
         }
 
-        states.remove(state);
+        return states.remove(state);
     }
 
     @Override
-    public void setInitialState(IState state) throws EStateNotAvailable
+    public boolean setInitialState(IState state)
     {
         if (states.contains(state))
         {
             currentState = state;
             currentState.execute();
+            return true;
         }
         else
         {
-            throw new EStateNotAvailable();
+            return false;
         }
     }
 
     @Override
-    public void nextState(IState nextState) throws EInvalidTransition, EStateNotAvailable
+    public boolean nextState(IState nextState)
     {
         if (currentState.equals(null))
         {
-            throw new EStateNotAvailable();
+            return false;
         }
 
-        for (ITransition transition : transitions)
+        if (ignoreTransitions)
         {
-            if (transition.getFrom().equals(currentState) && transition.getTo().equals(nextState))
+            currentState = nextState;
+            currentState.execute();
+            return true;
+        }
+        else
+        {
+            for (ITransition transition : transitions)
             {
-                currentState = nextState;
-                currentState.execute();
-                return;
+                if (transition.getFrom().equals(currentState)
+                        && transition.getTo().equals(nextState))
+                {
+                    currentState = nextState;
+                    currentState.execute();
+                    return true;
+                }
             }
         }
 
-        throw new EInvalidTransition();
+        return false;
     }
 
     @Override

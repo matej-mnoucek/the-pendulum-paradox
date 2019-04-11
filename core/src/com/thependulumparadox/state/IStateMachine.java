@@ -2,13 +2,13 @@ package com.thependulumparadox.state;
 
 public interface IStateMachine
 {
-    void addTransition(ITransition transition);
-    void removeTransition(ITransition transition);
+    boolean addTransition(ITransition transition);
+    boolean removeTransition(ITransition transition);
 
-    void addState(IState state);
-    void removeState(IState state);
+    boolean addState(IState state);
+    boolean removeState(IState state);
 
-    void setInitialState(IState state) throws EStateNotAvailable;
-    void nextState(IState nextState) throws EInvalidTransition, EStateNotAvailable;
+    boolean setInitialState(IState state);
+    boolean nextState(IState nextState);
     IState getCurrentState();
 }

@@ -19,7 +19,9 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.World;
 import com.thependulumparadox.model.component.PlayerComponent;
+import com.thependulumparadox.model.component.StateComponent;
 import com.thependulumparadox.model.system.ShootingSystem;
+import com.thependulumparadox.model.system.StateSystem;
 import com.thependulumparadox.multiplayer.ISynchronization;
 import com.thependulumparadox.misc.Constants;
 import com.thependulumparadox.model.component.AbstractComponentFactory;
@@ -33,10 +35,9 @@ import com.thependulumparadox.model.system.CameraFollowSystem;
 import com.thependulumparadox.model.system.InputSystem;
 import com.thependulumparadox.model.system.RenderingSystem;
 import com.thependulumparadox.model.system.PhysicsSystem;
-import com.thependulumparadox.state.EInvalidTransition;
-import com.thependulumparadox.state.EStateNotAvailable;
 import com.thependulumparadox.state.IStateMachine;
 import com.thependulumparadox.state.StateMachine;
+import com.thependulumparadox.state.TaggedState;
 import com.thependulumparadox.state.Transition;
 import com.thependulumparadox.view.ViewState;
 import com.thependulumparadox.view.scene.GameScene;
@@ -152,6 +153,13 @@ public class GamePresenter extends Game
         player.add(dynamicBodyComponent);
         PlayerComponent playerComponent = new PlayerComponent();
         player.add(playerComponent);
+        StateComponent<String> playerState = new StateComponent<>();
+        TaggedState<String> initialState = new TaggedState<String>("idle", "idle");
+        playerState.initialState = initialState;
+        playerState.states.add(initialState);
+        playerState.states.add(new TaggedState<String>("attack", "attack"));
+        playerState.states.add(new TaggedState<String>("jump", "jump"));
+        player.add(playerState);
 
         // ENEMY ENTITY
         enemy1 = new Entity();
@@ -205,6 +213,9 @@ public class GamePresenter extends Game
         InputSystem input = new InputSystem();
         ShootingSystem shooting = new ShootingSystem("sprites/bullets/circle_bullet_blue.png");
 
+        // States
+        StateSystem state = new StateSystem();
+
 
         //populate assetmanager with assets
         assetManager.load("sounds/single_gunshot.mp3", Sound.class);
@@ -249,6 +260,7 @@ public class GamePresenter extends Game
                 ecs.addSystem(input);
                 ecs.addSystem(shooting);
                 ecs.addSystem(physics);
+                ecs.addSystem(state);
 
                 firstPlayThrough = false;
             }
@@ -265,13 +277,7 @@ public class GamePresenter extends Game
                 inGameMusic.play();
             }
             // call on state machine to change state
-            try {
-                viewMachine.nextState(viewStateInGame);
-            } catch (EInvalidTransition eInvalidTransition) {
-                eInvalidTransition.printStackTrace();
-            } catch (EStateNotAvailable eStateNotAvailable) {
-                eStateNotAvailable.printStackTrace();
-            }
+            viewMachine.nextState(viewStateInGame);
         });
 
         // Link game start
@@ -308,13 +314,8 @@ public class GamePresenter extends Game
                 inGameMusic.play();
             }
             // call on state machine to change state
-            try {
-                viewMachine.nextState(viewStateInGame);
-            } catch (EInvalidTransition eInvalidTransition) {
-                eInvalidTransition.printStackTrace();
-            } catch (EStateNotAvailable eStateNotAvailable) {
-                eStateNotAvailable.printStackTrace();
-            }
+            viewMachine.nextState(viewStateInGame);
+
         });
 
         // Create screen and scene for future view state assembly
@@ -367,11 +368,8 @@ public class GamePresenter extends Game
         viewMachine.addTransition(tutorialToMenu);
 
         // Setting the entry point == initial state
-        try {
-            viewMachine.setInitialState(viewStateMenu);
-        } catch (EStateNotAvailable eStateNotAvailable) {
-            eStateNotAvailable.printStackTrace();
-        }
+        viewMachine.setInitialState(viewStateMenu);
+
         // Set inputProcessor to entry point's BaseScreen's Stage
         Gdx.input.setInputProcessor(menuScreen.getStage());
 
@@ -389,13 +387,7 @@ public class GamePresenter extends Game
             // set input processor to new State's BaseScreen stage
             Gdx.input.setInputProcessor(settingsScreen.getStage());
             // call on state machine to change state
-            try {
-                viewMachine.nextState(viewStateSettings);
-            } catch (EInvalidTransition eInvalidTransition) {
-                eInvalidTransition.printStackTrace();
-            } catch (EStateNotAvailable eStateNotAvailable) {
-                eStateNotAvailable.printStackTrace();
-            }
+            viewMachine.nextState(viewStateSettings);
         });
 
         //highscore button pressed from main menu
@@ -403,13 +395,7 @@ public class GamePresenter extends Game
             // set input processor to new State's BaseScreen stage
             Gdx.input.setInputProcessor(highScoreScreen.getStage());
             // call on state machine to change state
-            try {
-                viewMachine.nextState(viewStateHighScore);
-            } catch (EInvalidTransition eInvalidTransition) {
-                eInvalidTransition.printStackTrace();
-            } catch (EStateNotAvailable eStateNotAvailable) {
-                eStateNotAvailable.printStackTrace();
-            }
+            viewMachine.nextState(viewStateHighScore);
         });
 
         //tutorial button pressed in main menu
@@ -417,13 +403,7 @@ public class GamePresenter extends Game
             // set input processor to new State's BaseScreen stage
             Gdx.input.setInputProcessor(tutorialScreen.getStage());
             // call on state machine to change state
-            try {
-                viewMachine.nextState(viewStateTutorial);
-            } catch (EInvalidTransition eInvalidTransition) {
-                eInvalidTransition.printStackTrace();
-            } catch (EStateNotAvailable eStateNotAvailable) {
-                eStateNotAvailable.printStackTrace();
-            }
+            viewMachine.nextState(viewStateTutorial);
         });
 
         //google log in button pressed in main menu
@@ -525,13 +505,7 @@ public class GamePresenter extends Game
             // set input processor to new State's BaseScreen stage
             Gdx.input.setInputProcessor(inGameScreen.getStage());
             // call on state machine to change state
-            try {
-                viewMachine.nextState(viewStateInGame);
-            } catch (EInvalidTransition eInvalidTransition) {
-                eInvalidTransition.printStackTrace();
-            } catch (EStateNotAvailable eStateNotAvailable) {
-                eStateNotAvailable.printStackTrace();
-            }
+            viewMachine.nextState(viewStateInGame);
         });
 
         //press highscore button from game over screen
@@ -539,13 +513,7 @@ public class GamePresenter extends Game
             // set input processor to new State's BaseScreen stage
             Gdx.input.setInputProcessor(highScoreScreen.getStage());
             // call on state machine to change state
-            try {
-                viewMachine.nextState(viewStateHighScore);
-            } catch (EInvalidTransition eInvalidTransition) {
-                eInvalidTransition.printStackTrace();
-            } catch (EStateNotAvailable eStateNotAvailable) {
-                eStateNotAvailable.printStackTrace();
-            }
+            viewMachine.nextState(viewStateHighScore);
         });
 
         //main menu button pressed from game over screen
@@ -553,13 +521,7 @@ public class GamePresenter extends Game
             // set input processor to new State's BaseScreen stage
             Gdx.input.setInputProcessor(menuScreen.getStage());
             // call on state machine to change state
-            try {
-                viewMachine.nextState(viewStateMenu);
-            } catch (EInvalidTransition eInvalidTransition) {
-                eInvalidTransition.printStackTrace();
-            } catch (EStateNotAvailable eStateNotAvailable) {
-                eStateNotAvailable.printStackTrace();
-            }
+            viewMachine.nextState(viewStateMenu);
         });
 
         //Highscore button pressed from main menu screen
@@ -567,13 +529,7 @@ public class GamePresenter extends Game
             // set input processor to new State's BaseScreen stage
             Gdx.input.setInputProcessor(menuScreen.getStage());
             // call on state machine to change state
-            try {
-                viewMachine.nextState(viewStateMenu);
-            } catch (EInvalidTransition eInvalidTransition) {
-                eInvalidTransition.printStackTrace();
-            } catch (EStateNotAvailable eStateNotAvailable) {
-                eStateNotAvailable.printStackTrace();
-            }
+            viewMachine.nextState(viewStateMenu);
         });
 
         //sound button pressed from settings screen
@@ -598,13 +554,7 @@ public class GamePresenter extends Game
             // set input processor to new State's BaseScreen stage
             Gdx.input.setInputProcessor(menuScreen.getStage());
             // call on state machine to change state
-            try {
-                viewMachine.nextState(viewStateMenu);
-            } catch (EInvalidTransition eInvalidTransition) {
-                eInvalidTransition.printStackTrace();
-            } catch (EStateNotAvailable eStateNotAvailable) {
-                eStateNotAvailable.printStackTrace();
-            }
+            viewMachine.nextState(viewStateMenu);
         });
 
         //tutorial button pressed from main menu screen
@@ -612,13 +562,7 @@ public class GamePresenter extends Game
             // set input processor to new State's BaseScreen stage
             Gdx.input.setInputProcessor(menuScreen.getStage());
             // call on state machine to change state
-            try {
-                viewMachine.nextState(viewStateMenu);
-            } catch (EInvalidTransition eInvalidTransition) {
-                eInvalidTransition.printStackTrace();
-            } catch (EStateNotAvailable eStateNotAvailable) {
-                eStateNotAvailable.printStackTrace();
-            }
+            viewMachine.nextState(viewStateMenu);
         });
     }
 
