@@ -21,6 +21,7 @@ import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.World;
 import com.thependulumparadox.model.component.PlayerComponent;
 import com.thependulumparadox.model.component.StateComponent;
+import com.thependulumparadox.model.system.FPSDebugSystem;
 import com.thependulumparadox.model.system.PhysicsDebugSystem;
 import com.thependulumparadox.model.system.ShootingSystem;
 import com.thependulumparadox.model.system.StateSystem;
@@ -141,15 +142,15 @@ public class GamePresenter extends Game
         transformComponent = new TransformComponent();
         transformComponent.position = new Vector2(3, 8);
         player.add(transformComponent);
-        AnimatedSpriteComponent animated = new AnimatedSpriteComponent();
-        animated.frameDuration = 0.1f;
+        AnimatedSpriteComponent animated = new AnimatedSpriteComponent("packed/idle.atlas");
+        animated.frameDuration(0.1f);
         animated.height = 1.8f;
         animated.width = 1.8f;
-        animated.atlasPath = "packed/idle.atlas";
-        animated.region = "idle";
+        animated.currentAnimation = "idle";
         player.add(animated);
         DynamicBodyComponent dynamicBodyComponent = new DynamicBodyComponent(world);
-        dynamicBodyComponent.position(transformComponent.position).dimension(0.7f, 1.5f);
+        dynamicBodyComponent.position(transformComponent.position)
+                .dimension(0.7f, 1.5f).trigger(2f);
         player.add(dynamicBodyComponent);
         PlayerComponent playerComponent = new PlayerComponent();
         player.add(playerComponent);
@@ -167,15 +168,15 @@ public class GamePresenter extends Game
         TransformComponent transform = new TransformComponent();
         transform.position = new Vector2(10, 8);
         enemy1.add(transform);
-        AnimatedSpriteComponent animatedEnemy = new AnimatedSpriteComponent();
-        animatedEnemy.frameDuration = 0.07f;
+        AnimatedSpriteComponent animatedEnemy = new AnimatedSpriteComponent("packed/ninja_enemy.atlas");
+        animatedEnemy.frameDuration(0.07f);
         animatedEnemy.height = 1.8f;
         animatedEnemy.width = 1.8f;
-        animatedEnemy.atlasPath = "packed/ninja_enemy.atlas";
-        animatedEnemy.region = "attack";
+        animatedEnemy.currentAnimation = "attack";
         enemy1.add(animatedEnemy);
         DynamicBodyComponent dynamicBody = new DynamicBodyComponent(world);
-        dynamicBody.position(transform.position).dimension(0.7f, 1.5f);
+        dynamicBody.position(transform.position)
+                .dimension(0.7f, 1.5f).activate(true);
         enemy1.add(dynamicBody);
 
         enemy2 = new Entity();
@@ -183,15 +184,15 @@ public class GamePresenter extends Game
         TransformComponent transform2 = new TransformComponent();
         transform2.position = new Vector2(20, 8);
         enemy2.add(transform2);
-        AnimatedSpriteComponent animatedEnemy2 = new AnimatedSpriteComponent();
-        animatedEnemy2.frameDuration = 0.07f;
+        AnimatedSpriteComponent animatedEnemy2 = new AnimatedSpriteComponent("packed/knight_enemy.atlas");
+        animatedEnemy2.frameDuration(0.07f);
         animatedEnemy2.height = 1.8f;
         animatedEnemy2.width = 1.8f;
-        animatedEnemy2.atlasPath = "packed/knight_enemy.atlas";
-        animatedEnemy2.region = "attack";
+        animatedEnemy2.currentAnimation = "attack";
         enemy2.add(animatedEnemy2);
         DynamicBodyComponent dynamicBody2 = new DynamicBodyComponent(world);
-        dynamicBody2.position(transform2.position).dimension(0.7f, 1.5f);
+        dynamicBody2.position(transform2.position)
+                .dimension(0.7f, 1.5f).activate(true);
         enemy2.add(dynamicBody2);
 
 
@@ -258,6 +259,7 @@ public class GamePresenter extends Game
                 ecs.addSystem(physics);
                 ecs.addSystem(state);
                 ecs.addSystem(new PhysicsDebugSystem(world, mainCamera));
+                ecs.addSystem(new FPSDebugSystem());
 
                 firstPlayThrough = false;
             }
