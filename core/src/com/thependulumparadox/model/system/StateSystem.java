@@ -57,8 +57,6 @@ public class StateSystem extends EntitySystem
             IStateMachine machine = stateMachines.get(i);
             StateComponent stateComponent = stateComponentMapper.get(entity);
 
-            //System.out.println("Player State: " + stateComponent.currentState.tag);
-
             if (stateComponent.transitionRequested)
             {
                 if (stateComponent.states.contains(stateComponent.requestedState))

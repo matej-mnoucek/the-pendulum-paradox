@@ -2,12 +2,12 @@ package com.thependulumparadox.misc;
 
 public class Tuple<X, Y>
 {
-    public final X first;
-    public final Y second;
+    public final X key;
+    public final Y value;
 
-    public Tuple(X first, Y second)
+    public Tuple(X key, Y value)
     {
-        this.first = first;
-        this.second = second;
+        this.key = key;
+        this.value = value;
     }
 }

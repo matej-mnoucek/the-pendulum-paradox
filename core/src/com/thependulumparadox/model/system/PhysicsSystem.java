@@ -11,8 +11,10 @@ import com.badlogic.gdx.physics.box2d.Contact;
 import com.badlogic.gdx.physics.box2d.ContactImpulse;
 import com.badlogic.gdx.physics.box2d.ContactListener;
 import com.badlogic.gdx.physics.box2d.Filter;
+import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.Manifold;
 import com.badlogic.gdx.physics.box2d.World;
+import com.thependulumparadox.model.component.InteractionComponent;
 import com.thependulumparadox.model.component.DynamicBodyComponent;
 import com.thependulumparadox.model.component.StaticBodyComponent;
 import com.thependulumparadox.model.component.TransformComponent;
@@ -26,30 +28,28 @@ import java.util.Iterator;
 public class PhysicsSystem extends EntitySystem
 {
     // Constants
-    private static final float TIME_STEP = 1/60f;
-    private static final float MAX_TIME_STEP = 1/4f;
-    private static final int VELOCITY_ITERATIONS = 12;
-    private static final int POSITION_ITERATIONS = 2;
+    private static final float TIME_STEP = 1/120f;
+    private static final float MAX_TIME_STEP = 1/16f;
+    private static final int VELOCITY_ITERATIONS = 6;
+    private static final int POSITION_ITERATIONS = 4;
 
     // Collision category (bit masks) - 15 bits
     // 000000000000001 = 1 = ground group
     // 000000000000010 = 2 = player group
     // 000000000000100 = 4 = enemy group
     // 000000000001000 = 8 = bullet group
-    // 000000000010000 = 16 = power-up group
+    // 000000000010000 = 16 = enhancement group
     // 000000000100000 = 32 = player trigger group
     // 000000001000000 = 64 = enemy trigger group
-    // 000000010000000 = 128 = power-up trigger group
     public enum CollisionCategory
     {
         DEFAULT(1),
         PLAYER(2),
         ENEMY(4),
         BULLET(8),
-        POWERUP(16),
+        ENHANCEMENT(16),
         PLAYER_TRIGGER(32),
-        ENEMY_TRIGGER(64),
-        POWERUP_TRIGGER(128);
+        ENEMY_TRIGGER(64);
 
         public final short bits;
         private CollisionCategory(int bits)
@@ -60,23 +60,21 @@ public class PhysicsSystem extends EntitySystem
 
     // Collision masks (bit masks) - 15 bits
     // Default group = collides with everything = 111111111111111
-    // Player group = collides with default, enemy and power-up group = 000000000010101
+    // Player group = collides with default, enemy and enhancement group = 000000000010101
     // Enemy group = collides with default, bullets and player group = 000000000001011
     // Bullet group = collides with default and enemy group = 000000000000101
     // Power-up group = collides with default and player group = 000000000000011
-    // Player trigger group = collides with enemy and power-up group = 000000000010100
+    // Player trigger group = collides with enemy and enhancement group = 000000000010100
     // Enemy trigger group = collides with bullets and player group = 000000000001010
-    // Power-up trigger group = collides with player group = 000000000000010
     public enum CollisionMask
     {
         DEFAULT(32767),
         PLAYER(21),
         ENEMY(11),
         BULLET(5),
-        POWERUP(3),
+        ENHANCEMENT(3),
         PLAYER_TRIGGER(20),
-        ENEMY_TRIGGER(10),
-        POWERUP_TRIGGER(2);
+        ENEMY_TRIGGER(10);
 
         public final short bits;
         private CollisionMask(int bits)
@@ -130,89 +128,6 @@ public class PhysicsSystem extends EntitySystem
             initializeBody(entity, component.body);
             component.initialized = true;
         }
-
-        // Define collision handling
-        world.setContactListener(new ContactListener()
-        {
-            @Override
-            public void beginContact(Contact contact)
-            {
-                if(contact.getFixtureA().getUserData() instanceof Entity
-                        && contact.getFixtureB().getUserData() instanceof Entity)
-                {
-                    Entity entityA = (Entity) contact.getFixtureA().getUserData();
-                    Entity entityB = (Entity) contact.getFixtureB().getUserData();
-
-                    // If bullet and enemy kill it
-                    if(entityA.flags == 4 && entityB.flags == 8)
-                    {
-                        engine.removeEntity(entityA);
-                        engine.removeEntity(entityB);
-
-                        bodiesToDestroy.add(contact.getFixtureA().getBody());
-                        bodiesToDestroy.add(contact.getFixtureB().getBody());
-
-                        return;
-                    }
-
-                    if(entityB.flags == 4 && entityA.flags == 8)
-                    {
-                        engine.removeEntity(entityA);
-                        engine.removeEntity(entityB);
-
-                        bodiesToDestroy.add(contact.getFixtureA().getBody());
-                        bodiesToDestroy.add(contact.getFixtureB().getBody());
-
-                        return;
-                    }
-                }
-
-                if(contact.getFixtureA().getUserData() instanceof Entity)
-                {
-                    Entity entity = (Entity) contact.getFixtureA().getUserData();
-
-                    //System.out.println("FLAG_A:" + entity.flags);
-
-                    // If bullet then remove it
-                    if (entity.flags == 8)
-                    {
-                        engine.removeEntity(entity);
-                        bodiesToDestroy.add(contact.getFixtureA().getBody());
-                        return;
-                    }
-                }
-
-                if(contact.getFixtureB().getUserData() instanceof Entity)
-                {
-                    Entity entity = (Entity) contact.getFixtureB().getUserData();
-
-                    //System.out.println("FLAG_B:" + entity.flags);
-
-                    // If bullet then remove it
-                    if (entity.flags == 8)
-                    {
-                        engine.removeEntity(entity);
-                        bodiesToDestroy.add(contact.getFixtureB().getBody());
-                        return;
-                    }
-                }
-            }
-
-            @Override
-            public void endContact(Contact contact) {
-
-            }
-
-            @Override
-            public void preSolve(Contact contact, Manifold oldManifold) {
-
-            }
-
-            @Override
-            public void postSolve(Contact contact, ContactImpulse impulse) {
-
-            }
-        });
     }
 
     private float accumulator = 0;
@@ -243,7 +158,18 @@ public class PhysicsSystem extends EntitySystem
             }
         }
 
-        // Update positions of dynamic bodies
+
+        // Update physics
+        float frameTime = Math.min(deltaTime, MAX_TIME_STEP);
+        accumulator += frameTime;
+        while (accumulator >= TIME_STEP)
+        {
+            world.step(TIME_STEP, VELOCITY_ITERATIONS, POSITION_ITERATIONS);
+            accumulator -= TIME_STEP;
+        }
+
+
+        // Update dynamic bodies
         for (int i = 0; i < dynamicBodyEntities.size(); i++)
         {
             Entity entity = dynamicBodyEntities.get(i);
@@ -254,25 +180,13 @@ public class PhysicsSystem extends EntitySystem
 
             // Update position
             transformComponent.position = dynamicBodyComponent.body.getPosition();
-        }
 
-        // Bodies to destroy
-        Iterator<Body> iterator = bodiesToDestroy.iterator();
-        while(iterator.hasNext())
-        {
-            Body body = iterator.next();
-            world.destroyBody(body);
-        }
-        bodiesToDestroy.clear();
-
-
-        // Update physics
-        float frameTime = Math.min(deltaTime, MAX_TIME_STEP);
-        accumulator += frameTime;
-        while (accumulator >= TIME_STEP)
-        {
-            world.step(TIME_STEP, VELOCITY_ITERATIONS, POSITION_ITERATIONS);
-            accumulator -= TIME_STEP;
+            // Destroy
+            if(dynamicBodyComponent.toDestroy)
+            {
+                world.destroyBody(dynamicBodyComponent.body);
+                getEngine().removeEntity(entity);
+            }
         }
     }
 
@@ -310,10 +224,8 @@ public class PhysicsSystem extends EntitySystem
                 break;
             // Power up
             case 16:
-                filter1.categoryBits = CollisionCategory.POWERUP.bits;
-                filter1.maskBits = CollisionMask.POWERUP.bits;
-                filter2.categoryBits = CollisionCategory.POWERUP_TRIGGER.bits;
-                filter2.maskBits = CollisionMask.POWERUP_TRIGGER.bits;
+                filter1.categoryBits = CollisionCategory.ENHANCEMENT.bits;
+                filter1.maskBits = CollisionMask.ENHANCEMENT.bits;
                 break;
         }
         body.getFixtureList().first().setFilterData(filter1);

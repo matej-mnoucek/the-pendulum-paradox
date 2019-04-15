@@ -15,7 +15,9 @@ import com.thependulumparadox.model.system.PhysicsSystem;
 public class DynamicBodyComponent implements Component
 {
     public final Body body;
+    public boolean grounded = false;
     public boolean initialized = false;
+    public boolean toDestroy = false;
 
     public DynamicBodyComponent(World world)
     {
@@ -87,8 +89,8 @@ public class DynamicBodyComponent implements Component
         fixtureDef.shape = circleShape;
         fixtureDef.isSensor = true;
 
-        Fixture fixture = body.createFixture(fixtureDef);
-        fixture.setDensity(0.00001f);
+        //Fixture fixture = body.createFixture(fixtureDef);
+        //fixture.setDensity(0.00001f);
         circleShape.dispose();
 
         return this;

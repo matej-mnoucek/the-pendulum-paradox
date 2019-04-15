@@ -5,7 +5,6 @@ import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.util.Log;
 import android.view.KeyEvent;
 
 import com.badlogic.gdx.backends.android.AndroidApplication;
@@ -40,7 +39,7 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.thependulumparadox.model.MoveCommands;
-import com.thependulumparadox.model.system.InputSystem;
+import com.thependulumparadox.model.system.ControlSystem;
 import com.thependulumparadox.multiplayer.ISynchronization;
 
 import java.util.ArrayList;
@@ -77,7 +76,7 @@ public class NetworkSynchronizationProxy extends AndroidApplication implements I
     // Client used to interact with the Invitation system.
     private InvitationsClient mInvitationsClient = null;
 
-    private MoveCommands InputHandler = new InputSystem();
+    private MoveCommands InputHandler = new ControlSystem();
 
     // Room ID where the currently active game is taking place; null if we're
     // not playing.
