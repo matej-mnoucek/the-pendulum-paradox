@@ -193,6 +193,9 @@ public class InteractionSystem extends EntitySystem
             InteractionComponent interactionComponent = interactionComponentMapper.get(player);
             PlayerComponent playerComponent = playerComponentMapper.get(player);
 
+            // Apply enhancements
+            applyEnhancementChain(playerComponent);
+
             for (int j = 0; j < interactionComponent.interactions.size(); j++)
             {
                 Entity interactionEntity = interactionComponent.interactions.get(j);
@@ -232,8 +235,6 @@ public class InteractionSystem extends EntitySystem
                     }
                     else
                     {
-
-
                         if (enhancementChain == null)
                         {
                             enhancementChain = enhancement.enhancement;
@@ -244,9 +245,6 @@ public class InteractionSystem extends EntitySystem
                         }
                     }
                 }
-
-                // Apply enhancements
-
             }
             // All processed, clear the list
             interactionComponent.interactions.clear();
@@ -269,14 +267,17 @@ public class InteractionSystem extends EntitySystem
                     PlayerComponent playerComponent = playerComponentMapper.get(interactionEntity);
 
                     // Apply damage to player
-                    playerComponent.current.health -= enemyComponent.current.damage;
+                    playerComponent.base.health -= enemyComponent.current.damage;
+
+                    applyEnhancementChain(playerComponent);
                     if (playerComponent.current.health <= 0)
                     {
-                        playerComponent.current.lives--;
-                        playerComponent.current.health = playerComponent.current.defense;
+                        playerComponent.base.lives--;
+                        playerComponent.base.health = playerComponent.base.defense;
                     }
 
                     // If he is dead, finish him!!!
+                    applyEnhancementChain(playerComponent);
                     if (playerComponent.current.lives <= 0)
                     {
                         DynamicBodyComponent body = dynamicBodyComponentMapper.get(interactionEntity);
@@ -295,11 +296,15 @@ public class InteractionSystem extends EntitySystem
         try
         {
             playerComponent.current = (StandardAttributes) playerComponent.base.clone();
-            enhancementChain.apply(playerComponent.current);
         }
         catch (Exception e)
         {
             e.printStackTrace();
+        }
+
+        if (enhancementChain != null)
+        {
+            enhancementChain.apply(playerComponent.current);
         }
     }
 }
