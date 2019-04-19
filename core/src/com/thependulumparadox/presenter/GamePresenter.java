@@ -19,10 +19,13 @@ import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.World;
+import com.thependulumparadox.model.component.MusicComponent;
 import com.thependulumparadox.model.component.PlayerComponent;
+import com.thependulumparadox.model.component.SoundComponent;
 import com.thependulumparadox.model.component.StateComponent;
 import com.thependulumparadox.model.system.PhysicsDebugSystem;
 import com.thependulumparadox.model.system.ShootingSystem;
+import com.thependulumparadox.model.system.SoundSystem;
 import com.thependulumparadox.model.system.StateSystem;
 import com.thependulumparadox.multiplayer.ISynchronization;
 import com.thependulumparadox.misc.Constants;
@@ -99,8 +102,7 @@ public class GamePresenter extends Game
 
     private Boolean firstPlayThrough = true;
 
-    private Music menuMusic;
-    private Music inGameMusic;
+
     private boolean soundOn;
     private boolean shooting;
     private float shootingTimer = 0;
@@ -115,6 +117,7 @@ public class GamePresenter extends Game
 
     private boolean isMultiplayer = false;
     private ISynchronization proxy;
+
 
     // Single player
     public GamePresenter() { isMultiplayer = false; };
@@ -194,8 +197,8 @@ public class GamePresenter extends Game
         dynamicBody2.position(transform2.position).dimension(0.7f, 1.5f);
         enemy2.add(dynamicBody2);
 
-
         // ECS Systems
+
         // Camera follow
         CameraFollowSystem cameraFollowSystem = new CameraFollowSystem(mainCamera);
 
@@ -212,7 +215,9 @@ public class GamePresenter extends Game
         // States
         StateSystem state = new StateSystem();
 
-
+        //Sound
+        SoundSystem sound = new SoundSystem();
+        ecs.addSystem(sound);
         //populate assetmanager with assets
         assetManager.load("sounds/single_gunshot.mp3", Sound.class);
         assetManager.load("sounds/coin_collect.mp3", Sound.class);
@@ -221,19 +226,30 @@ public class GamePresenter extends Game
         assetManager.load("sounds/GameOver.mp3", Sound.class);
         assetManager.load("sounds/reload.mp3", Sound.class);
         //assetManager.load("sounds/enemy_dead.mp3", Sound.class);
+
         assetManager.finishLoading();
+
+        //soundEntities
+        Entity shootSound = new Entity();
+        shootSound.add(new SoundComponent(assetManager.get("sounds/single_gunshot.mp3",Sound.class),true));
+
+        Entity menuMusic = new Entity();
+        menuMusic.add(new MusicComponent(Gdx.audio.newMusic(Gdx.files.internal("sounds/menuMusic.mp3"))));
+        ecs.addEntity(menuMusic);
+        Entity inGameMusic = new Entity();
+        inGameMusic.add(new MusicComponent(Gdx.audio.newMusic(Gdx.files.internal("sounds/inGameMusic.mp3"))));
 
         /*set music for menu and start playing.
         Set music for gameplay, but do not start it.
         Music not in assetManager because larger sound files needs to be streamed as Gdx.audio-type
         and not Gdx.Sound type*/
         soundOn = true;
-        menuMusic = Gdx.audio.newMusic(Gdx.files.internal("sounds/menuMusic.mp3"));
-        inGameMusic = Gdx.audio.newMusic(Gdx.files.internal("sounds/inGameMusic.mp3"));
-        inGameMusic.setVolume(0.5f);
-        menuMusic.setLooping(true);
-        inGameMusic.setLooping(true);
-        menuMusic.play();
+        //menuMusic = Gdx.audio.newMusic(Gdx.files.internal("sounds/menuMusic.mp3"));
+        //inGameMusic = Gdx.audio.newMusic(Gdx.files.internal("sounds/inGameMusic.mp3"));
+        //inGameMusic.setVolume(0.5f);
+        //menuMusic.setLooping(true);
+        //inGameMusic.setLooping(true);
+        //menuMusic.play();
 
         //define screens
         inGameScreen = new InGameScreen();
@@ -258,6 +274,7 @@ public class GamePresenter extends Game
                 ecs.addSystem(physics);
                 ecs.addSystem(state);
                 ecs.addSystem(new PhysicsDebugSystem(world, mainCamera));
+                ecs.addSystem(sound);
 
                 firstPlayThrough = false;
             }
@@ -268,10 +285,10 @@ public class GamePresenter extends Game
             //set inGameScreen's stage as the input processor
             Gdx.input.setInputProcessor(inGameScreen.getStage());
             //stop menu music. will call stop() method on menu music even if sound is currently turned off
-            menuMusic.stop();
+            ecs.removeEntity(menuMusic);
             //if sound is turned on: start playing in-game music
             if(soundOn) {
-                inGameMusic.play();
+                ecs.addEntity(inGameMusic);
             }
             // call on state machine to change state
             viewMachine.nextState(viewStateInGame);
@@ -294,7 +311,7 @@ public class GamePresenter extends Game
                 ecs.addSystem(renderingSystem);
                 ecs.addSystem(physics);
                 ecs.addSystem(input);
-
+                ecs.addSystem(sound);
                 firstPlayThrough = false;
             }
 
@@ -305,10 +322,10 @@ public class GamePresenter extends Game
             //set inGameScreen's stage as the input processor
             Gdx.input.setInputProcessor(inGameScreen.getStage());
             //stop menu music. will call stop() method on menu music even if sound is currently turned off
-            menuMusic.stop();
+            ecs.removeEntity(menuMusic);
             //if sound is turned on: start playing in-game music
             if(soundOn) {
-                inGameMusic.play();
+                ecs.addEntity(inGameMusic);
             }
             // call on state machine to change state
             viewMachine.nextState(viewStateInGame);
@@ -416,11 +433,11 @@ public class GamePresenter extends Game
             //if sound is turned on: pause game music. Set the sound-button in settingsscreen to
             //not be toggled, and vice versa
             if(soundOn){
-                inGameMusic.pause();
+                ecs.removeEntity(inGameMusic);
                 ((SettingsScreen) settingsScreen).setSoundOn(false);
                 soundOn = false;
             } else {
-                inGameMusic.play();
+                ecs.addEntity(inGameMusic);
                 ((SettingsScreen) settingsScreen).setSoundOn(true);
                 soundOn = true;
             }
@@ -451,6 +468,10 @@ public class GamePresenter extends Game
         //GamePresenter's update method to perform shooting action
         ((InGameScreen) inGameScreen).getShootEvent().addHandler((args) -> {
             //proxy.sendAction("S");
+       //     assetManager.get("sounds/single_gunshot.mp3", Sound.class).play();
+
+            ecs.addEntity(shootSound);
+
             input.startShooting();
 /*            if(shooting){
                 shooting = false;
@@ -534,13 +555,13 @@ public class GamePresenter extends Game
             //if sound is currently playing: pause menu-music. Set in-game sound to be off.
             //set boolean variable "soundOn" to false
             if(soundOn) {
-                menuMusic.pause();
+                ecs.removeEntity(menuMusic);
                 ((InGameScreen) inGameScreen).setSoundOn(false);
                 soundOn = false;
             //if sound is currently not playing: start playing menu-music. set in-game music to be on
             //set boolean "soundOn" to true
             } else {
-                menuMusic.play();
+                ecs.addEntity(menuMusic);
                 ((InGameScreen) inGameScreen).setSoundOn(true);
                 soundOn = true;
             }
