@@ -5,22 +5,36 @@ import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.EntitySystem;
 import com.badlogic.ashley.core.Family;
+import com.badlogic.ashley.core.PooledEngine;
+import com.badlogic.ashley.utils.ImmutableArray;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.thependulumparadox.model.MoveCommands;
+import com.thependulumparadox.model.component.BulletComponent;
+import com.thependulumparadox.model.component.ControlComponent;
+import com.thependulumparadox.model.component.ControlModule;
 import com.thependulumparadox.model.component.DynamicBodyComponent;
+import com.thependulumparadox.model.component.InteractionComponent;
 import com.thependulumparadox.model.component.PlayerComponent;
+import com.thependulumparadox.model.component.SpriteComponent;
 import com.thependulumparadox.model.component.TransformComponent;
+import com.thependulumparadox.observer.EventArgs;
+import com.thependulumparadox.observer.IEventHandler;
 
 /**
  * All the logic for handling input from the user (locally)
  */
 public class ControlSystem extends EntitySystem implements MoveCommands
 {
-    private Entity controlledEntity;
-    private DynamicBodyComponent dynamicBodyComponent;
+    private PooledEngine entityPool = new PooledEngine();
+
+    private ImmutableArray<Entity> controlledEntities;
     private ComponentMapper<DynamicBodyComponent> dynamicBodyComponentMapper
             = ComponentMapper.getFor(DynamicBodyComponent.class);
+    private ComponentMapper<ControlComponent> controlComponentMapper
+            = ComponentMapper.getFor(ControlComponent.class);
+    private ComponentMapper<TransformComponent> transformComponentMapper
+            = ComponentMapper.getFor(TransformComponent.class);
 
 
     private boolean moveLeft = false;
@@ -34,46 +48,86 @@ public class ControlSystem extends EntitySystem implements MoveCommands
 
     public void addedToEngine(Engine engine)
     {
-        controlledEntity = engine.getEntitiesFor(Family.all(PlayerComponent.class,
-                TransformComponent.class).get()).first();
-        dynamicBodyComponent = dynamicBodyComponentMapper.get(controlledEntity);
+        controlledEntities = engine.getEntitiesFor(Family.all(DynamicBodyComponent.class,
+                ControlComponent.class, PlayerComponent.class, TransformComponent.class).get());
+
+        for (int i = 0; i < controlledEntities.size(); i++)
+        {
+            Entity entity = controlledEntities.get(i);
+            ControlComponent controlComponent = controlComponentMapper.get(entity);
+            DynamicBodyComponent dynamicBodyComponent = dynamicBodyComponentMapper.get(entity);
+            TransformComponent transformComponent = transformComponentMapper.get(entity);
+
+            controlComponent.controlModule.right.addHandler((args)->
+            {
+                // Limit max speed right
+                if(dynamicBodyComponent.body.getLinearVelocity().x > 8.0f)
+                {
+                    return;
+                }
+
+                dynamicBodyComponent.body.applyLinearImpulse(1f, 0,0,0,true);
+            });
+
+            controlComponent.controlModule.left.addHandler((args)->
+            {
+                // Limit max speed left
+                if(dynamicBodyComponent.body.getLinearVelocity().x < -8.0f)
+                {
+                    return;
+                }
+
+                dynamicBodyComponent.body.applyLinearImpulse(-1f, 0,0,0,true);
+            });
+
+            controlComponent.controlModule.jump.addHandler((args)->
+            {
+                // Limit jump in the air
+                if (Math.abs(dynamicBodyComponent.body.getLinearVelocity().y) > 0.1f)
+                {
+                    return;
+                }
+
+                dynamicBodyComponent.body.applyLinearImpulse(0, 8f,0,0,true);
+            });
+
+            controlComponent.controlModule.attack.addHandler((args)->{
+
+                // Create new bullet
+                Entity bullet = entityPool.createEntity();
+                bullet.flags = 8;
+                TransformComponent transform = new TransformComponent();
+                transform.position = transformComponent.position;
+                SpriteComponent sprite = new SpriteComponent("sprites/bullets/circle_bullet_blue.png");
+                sprite.height = 0.3f;
+                sprite.width = 0.3f;
+                BulletComponent bulletComponent = new BulletComponent(entity);
+                DynamicBodyComponent dynamic = new DynamicBodyComponent(dynamicBodyComponent.body.getWorld());
+                dynamic.position(transformComponent.position).dimension(sprite.width, sprite.height)
+                        .gravityScale(0.0f).activate(true);
+                dynamic.body.applyLinearImpulse(5,0,0,0,false);
+
+                // Add all components
+                bullet.add(transform);
+                bullet.add(sprite);
+                bullet.add(bulletComponent);
+                bullet.add(dynamic);
+
+                // Add to engine
+                engine.addEntity(bullet);
+            });
+
+        }
     }
 
     public void update(float deltaTime)
     {
-
-        if (Gdx.input.isKeyPressed(Input.Keys.RIGHT) || moveRight )
+        // Update control modules
+        for (int i = 0; i < controlledEntities.size(); i++)
         {
-
-            //System.out.println(dynamicBodyComponent.impulseHorizontal);
-            dynamicBodyComponent.body.applyLinearImpulse(1f, 0,0,0,true);
-        }
-        else if (Gdx.input.isKeyPressed(Input.Keys.LEFT) || moveLeft)
-        {
-            dynamicBodyComponent.body.applyLinearImpulse(-1f, 0,0,0,true);
-        }
-        else
-        {
-            //dynamicBodyComponent.impulseHorizontal = 0f;
-        }
-
-        if (Gdx.input.isKeyPressed(Input.Keys.UP) || jump)
-        {
-            //dynamicBodyComponent.impulseVertical = 15f;
-            dynamicBodyComponent.body.applyLinearImpulse(0, 1f,0,0,true);
-            jump = false;
-        }
-        else if (Gdx.input.isKeyPressed(Input.Keys.DOWN))
-        {
-            //dynamicBodyComponent.impulseVertical = -5f;
-            dynamicBodyComponent.body.applyLinearImpulse(0, -1f,0,0,true);
-        }
-        else
-        {
-            //dynamicBodyComponent.impulseVertical = 0f;
-        }
-        if (shooting){
-
+            Entity entity = controlledEntities.get(i);
+            ControlComponent controlComponent = controlComponentMapper.get(entity);
+            controlComponent.controlModule.update(deltaTime);
         }
     }
 

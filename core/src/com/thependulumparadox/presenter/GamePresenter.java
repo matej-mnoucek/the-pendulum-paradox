@@ -4,7 +4,6 @@ import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.audio.Music;
@@ -17,21 +16,23 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
+import com.thependulumparadox.model.component.ControlComponent;
+import com.thependulumparadox.model.component.ControlModule;
 import com.thependulumparadox.model.component.EnemyComponent;
 import com.thependulumparadox.model.component.InteractionComponent;
+import com.thependulumparadox.model.component.KeyboardControlModule;
 import com.thependulumparadox.model.component.PlayerComponent;
 import com.thependulumparadox.model.component.StateComponent;
 import com.thependulumparadox.model.system.AnimationControlSystem;
 import com.thependulumparadox.model.system.InteractionSystem;
 import com.thependulumparadox.model.system.FPSDebugSystem;
 import com.thependulumparadox.model.system.PhysicsDebugSystem;
-import com.thependulumparadox.model.system.SHOOTSystem;
 import com.thependulumparadox.model.system.StateSystem;
 import com.thependulumparadox.multiplayer.ISynchronization;
 import com.thependulumparadox.misc.Constants;
-import com.thependulumparadox.model.component.AbstractComponentFactory;
+import com.thependulumparadox.model.entity.AbstractEntityFactory;
 import com.thependulumparadox.model.component.AnimatedSpriteComponent;
-import com.thependulumparadox.model.component.ComponentFactory;
+import com.thependulumparadox.model.entity.EntityFactory;
 import com.thependulumparadox.model.component.DynamicBodyComponent;
 import com.thependulumparadox.model.component.TransformComponent;
 import com.thependulumparadox.model.entity.EntityBuilder;
@@ -66,7 +67,7 @@ public class GamePresenter extends Game
     Engine ecs = new Engine();
 
     // Component factory
-    AbstractComponentFactory componentFactory = new ComponentFactory();
+    AbstractEntityFactory componentFactory = new EntityFactory();
 
     // Entity builder
     IEntityBuilder entityBuilder = new EntityBuilder();
@@ -150,7 +151,8 @@ public class GamePresenter extends Game
         player.add(animated);
         DynamicBodyComponent dynamicBodyComponent = new DynamicBodyComponent(world);
         dynamicBodyComponent.position(transformComponent.position)
-                .dimension(0.7f, 1.5f).trigger(2f);
+                .dimension(0.7f, 1.5f).trigger(2f)
+                .properties(0, 50f, 10f, 0f);
         player.add(dynamicBodyComponent);
         PlayerComponent playerComponent = new PlayerComponent();
         player.add(playerComponent);
@@ -160,6 +162,9 @@ public class GamePresenter extends Game
         player.add(playerState);
         InteractionComponent interaction = new InteractionComponent();
         player.add(interaction);
+        ControlModule module = new KeyboardControlModule();
+        ControlComponent control = new ControlComponent(module);
+        player.add(control);
 
         // ENEMY ENTITY
         enemy1 = new Entity();
@@ -214,8 +219,7 @@ public class GamePresenter extends Game
         PhysicsSystem physics = new PhysicsSystem(world);
 
         // Control
-        ControlSystem input = new ControlSystem();
-        SHOOTSystem shooting = new SHOOTSystem("sprites/bullets/circle_bullet_blue.png", world);
+        ControlSystem controlSystem = new ControlSystem();
 
         // States
         StateSystem state = new StateSystem();
@@ -261,8 +265,7 @@ public class GamePresenter extends Game
                 ecs.addEntity(enemy2);
                 ecs.addSystem(cameraFollowSystem);
                 ecs.addSystem(renderingSystem);
-                ecs.addSystem(input);
-                ecs.addSystem(shooting);
+                ecs.addSystem(controlSystem);
                 ecs.addSystem(physics);
                 ecs.addSystem(state);
                 ecs.addSystem(new PhysicsDebugSystem(world, mainCamera));
@@ -295,7 +298,7 @@ public class GamePresenter extends Game
 
             proxy.startQuickGame();
 
-            proxy.setInputHandler(input);
+            //proxy.setInputHandler(input);
 
             //on first play through set the following entities to ECS
 
@@ -304,7 +307,7 @@ public class GamePresenter extends Game
                 ecs.addSystem(cameraFollowSystem);
                 ecs.addSystem(renderingSystem);
                 ecs.addSystem(physics);
-                ecs.addSystem(input);
+                //ecs.addSystem(input);
 
                 firstPlayThrough = false;
             }
@@ -439,22 +442,22 @@ public class GamePresenter extends Game
 
         ((InGameScreen) inGameScreen).getLeftEvent().addHandler((args) -> {
             //proxy.sendAction("L");
-            input.moveLeft();
+            //input.moveLeft();
         });
 
         ((InGameScreen) inGameScreen).getStopLeftEvent().addHandler((args) -> {
             //proxy.sendAction("SL");
-            input.stopMoveLeft();
+            //input.stopMoveLeft();
         });
 
         ((InGameScreen) inGameScreen).getRightEvent().addHandler((args) -> {
             //proxy.sendAction("R");
-            input.moveRight();
+            //input.moveRight();
         });
 
         ((InGameScreen) inGameScreen).getStopRightEvent().addHandler((args) -> {
             //proxy.sendAction("SR");
-            input.stopMoveRight();
+            //input.stopMoveRight();
         });
 
 
@@ -462,7 +465,7 @@ public class GamePresenter extends Game
         //GamePresenter's update method to perform shooting action
         ((InGameScreen) inGameScreen).getShootEvent().addHandler((args) -> {
             //proxy.sendAction("S");
-            input.startShooting();
+            //input.startShooting();
 /*            if(shooting){
                 shooting = false;
             } else{
@@ -472,14 +475,14 @@ public class GamePresenter extends Game
 
         ((InGameScreen) inGameScreen).getStopshootEvent().addHandler((args) -> {
             //proxy.sendAction("SS");
-            input.stopShooting();
+            //input.stopShooting();
         });
 
         //jump button pressed in-game. Currently this causes the the game to go from play-state to
         //gameOver-state
         ((InGameScreen) inGameScreen).getJumpEvent().addHandler((args) -> {
 
-            input.jump();
+            //input.jump();
             //proxy.sendAction("J");
 
             /*// set input processor to new State's BaseScreen stage
