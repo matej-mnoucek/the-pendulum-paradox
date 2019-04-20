@@ -9,6 +9,7 @@ import com.badlogic.ashley.core.PooledEngine;
 import com.badlogic.ashley.utils.ImmutableArray;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.utils.Timer;
 import com.thependulumparadox.model.MoveCommands;
 import com.thependulumparadox.model.component.BulletComponent;
 import com.thependulumparadox.model.component.ControlComponent;
@@ -17,6 +18,7 @@ import com.thependulumparadox.model.component.DynamicBodyComponent;
 import com.thependulumparadox.model.component.InteractionComponent;
 import com.thependulumparadox.model.component.PlayerComponent;
 import com.thependulumparadox.model.component.SpriteComponent;
+import com.thependulumparadox.model.component.StateComponent;
 import com.thependulumparadox.model.component.TransformComponent;
 import com.thependulumparadox.observer.EventArgs;
 import com.thependulumparadox.observer.IEventHandler;
@@ -35,7 +37,8 @@ public class ControlSystem extends EntitySystem implements MoveCommands
             = ComponentMapper.getFor(ControlComponent.class);
     private ComponentMapper<TransformComponent> transformComponentMapper
             = ComponentMapper.getFor(TransformComponent.class);
-
+    private ComponentMapper<StateComponent> stateComponentMapper
+            = ComponentMapper.getFor(StateComponent.class);
 
     private boolean moveLeft = false;
     private boolean moveRight = false;
@@ -57,30 +60,37 @@ public class ControlSystem extends EntitySystem implements MoveCommands
             ControlComponent controlComponent = controlComponentMapper.get(entity);
             DynamicBodyComponent dynamicBodyComponent = dynamicBodyComponentMapper.get(entity);
             TransformComponent transformComponent = transformComponentMapper.get(entity);
+            StateComponent stateComponent = stateComponentMapper.get(entity);
 
             controlComponent.controlModule.right.addHandler((args)->
             {
                 // Limit max speed right
-                if(dynamicBodyComponent.body.getLinearVelocity().x > 8.0f)
+                if(dynamicBodyComponent.body.getLinearVelocity().x > 6.0f)
                 {
                     return;
                 }
 
+                // Apply impulse
                 dynamicBodyComponent.body.applyLinearImpulse(1f, 0,0,0,true);
+                // Change state
+                stateComponent.transition("runRight");
             });
 
             controlComponent.controlModule.left.addHandler((args)->
             {
                 // Limit max speed left
-                if(dynamicBodyComponent.body.getLinearVelocity().x < -8.0f)
+                if(dynamicBodyComponent.body.getLinearVelocity().x < -6.0f)
                 {
                     return;
                 }
 
+                // Apply impulse
                 dynamicBodyComponent.body.applyLinearImpulse(-1f, 0,0,0,true);
+                // Change state
+                stateComponent.transition("runLeft");
             });
 
-            controlComponent.controlModule.jump.addHandler((args)->
+            controlComponent.controlModule.jumpStart.addHandler((args)->
             {
                 // Limit jump in the air
                 if (Math.abs(dynamicBodyComponent.body.getLinearVelocity().y) > 0.1f)
@@ -89,15 +99,32 @@ public class ControlSystem extends EntitySystem implements MoveCommands
                 }
 
                 dynamicBodyComponent.body.applyLinearImpulse(0, 8f,0,0,true);
+
+
+                // Jump to the right direction
+                String current = stateComponent.currentState.tag;
+                if (current == "runRight")
+                {
+                    stateComponent.transition("jumpRight");
+                }
+                else if(current == "runLeft")
+                {
+                    stateComponent.transition("jumpLeft");
+                }
+                else
+                {
+                    stateComponent.transition("jumpRight");
+                }
             });
 
-            controlComponent.controlModule.attack.addHandler((args)->{
+            controlComponent.controlModule.attackStart.addHandler((args)->{
 
                 // Create new bullet
                 Entity bullet = entityPool.createEntity();
                 bullet.flags = 8;
                 TransformComponent transform = new TransformComponent();
                 transform.position = transformComponent.position;
+                transform.position.x += 0.35f;
                 SpriteComponent sprite = new SpriteComponent("sprites/bullets/circle_bullet_blue.png");
                 sprite.height = 0.3f;
                 sprite.width = 0.3f;
@@ -115,8 +142,9 @@ public class ControlSystem extends EntitySystem implements MoveCommands
 
                 // Add to engine
                 engine.addEntity(bullet);
-            });
 
+                stateComponent.transition("shootRight");
+            });
         }
     }
 
@@ -128,6 +156,25 @@ public class ControlSystem extends EntitySystem implements MoveCommands
             Entity entity = controlledEntities.get(i);
             ControlComponent controlComponent = controlComponentMapper.get(entity);
             controlComponent.controlModule.update(deltaTime);
+
+            // Handle idle transition
+            DynamicBodyComponent bodyComponent = dynamicBodyComponentMapper.get(entity);
+            if (Math.abs(bodyComponent.body.getLinearVelocity().x) < 0.1f
+                && Math.abs(bodyComponent.body.getLinearVelocity().y) < 0.1f)
+            {
+                StateComponent stateComponent = stateComponentMapper.get(entity);
+                if (stateComponent.currentState.tag != "idle")
+                {
+                    // Delay idle transition a bit
+                    Timer.Task task = new Timer.Task(){
+                        @Override
+                        public void run() {
+                            stateComponent.transition("idle");
+                            Timer.instance().clear();
+                        }};
+                    Timer.schedule(task, 0.1f);
+                }
+            }
         }
     }
 

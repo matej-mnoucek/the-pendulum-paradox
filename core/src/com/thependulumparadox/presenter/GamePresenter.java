@@ -143,7 +143,7 @@ public class GamePresenter extends Game
         transformComponent = new TransformComponent();
         transformComponent.position = new Vector2(3, 8);
         player.add(transformComponent);
-        AnimatedSpriteComponent animated = new AnimatedSpriteComponent("packed/idle.atlas");
+        AnimatedSpriteComponent animated = new AnimatedSpriteComponent("packed/hero_player.atlas");
         animated.frameDuration(0.1f);
         animated.height = 1.8f;
         animated.width = 1.8f;
@@ -157,8 +157,10 @@ public class GamePresenter extends Game
         PlayerComponent playerComponent = new PlayerComponent();
         player.add(playerComponent);
         playerState = new StateComponent();
-        playerState.add(new TaggedState("idle")).add(new TaggedState("attack"))
-                .add(new TaggedState("jump")).initial("idle");
+        playerState.add(new TaggedState("idle")).add(new TaggedState("runLeft"))
+                .add(new TaggedState("runRight")).add(new TaggedState("jumpRight"))
+                .add(new TaggedState("jumpLeft")).add(new TaggedState("shootRight"))
+                .initial("idle");
         player.add(playerState);
         InteractionComponent interaction = new InteractionComponent();
         player.add(interaction);
