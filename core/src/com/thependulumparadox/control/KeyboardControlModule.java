@@ -1,4 +1,4 @@
-package com.thependulumparadox.model.component;
+package com.thependulumparadox.control;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;

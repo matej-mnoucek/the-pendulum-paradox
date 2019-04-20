@@ -4,134 +4,134 @@ size: 2048,2048
 format: RGBA8888
 filter: Nearest,Nearest
 repeat: none
-idle
-  rotate: false
-  xy: 1140, 1118
-  size: 567, 556
-  orig: 567, 556
-  offset: 0, 0
-  index: 0
-idle
-  rotate: false
-  xy: 571, 2
-  size: 567, 556
-  orig: 567, 556
-  offset: 0, 0
-  index: 1
-idle
-  rotate: false
-  xy: 1140, 560
-  size: 567, 556
-  orig: 567, 556
-  offset: 0, 0
-  index: 2
-idle
-  rotate: false
-  xy: 1140, 2
-  size: 567, 556
-  orig: 567, 556
-  offset: 0, 0
-  index: 3
-jumpRight
+idleRight
   rotate: false
   xy: 2, 1118
   size: 567, 556
   orig: 567, 556
   offset: 0, 0
-  index: 1
-jumpRight
-  rotate: false
-  xy: 2, 560
-  size: 567, 556
-  orig: 567, 556
-  offset: 0, 0
-  index: 2
-jumpRight
+  index: 5
+idleRight
   rotate: false
   xy: 2, 2
   size: 567, 556
   orig: 567, 556
   offset: 0, 0
-  index: 4
-runRight
+  index: 1
+jumpLeft
   rotate: false
-  xy: 571, 1118
+  xy: 1140, 560
   size: 567, 556
   orig: 567, 556
   offset: 0, 0
-  index: 0
-runRight
+  index: 5
+jumpRight
   rotate: false
   xy: 571, 560
   size: 567, 556
   orig: 567, 556
   offset: 0, 0
+  index: 4
+jumpRight
+  rotate: false
+  xy: 571, 2
+  size: 567, 556
+  orig: 567, 556
+  offset: 0, 0
+  index: 5
+runLeft
+  rotate: false
+  xy: 571, 1118
+  size: 567, 556
+  orig: 567, 556
+  offset: 0, 0
   index: 2
+runLeft
+  rotate: false
+  xy: 1140, 1118
+  size: 567, 556
+  orig: 567, 556
+  offset: 0, 0
+  index: 5
+shootRight
+  rotate: false
+  xy: 2, 560
+  size: 567, 556
+  orig: 567, 556
+  offset: 0, 0
+  index: 0
+shootRight
+  rotate: false
+  xy: 1140, 2
+  size: 567, 556
+  orig: 567, 556
+  offset: 0, 0
+  index: 1
 
 hero_player2.png
 size: 2048,2048
 format: RGBA8888
 filter: Nearest,Nearest
 repeat: none
-idle
-  rotate: false
-  xy: 2, 1118
-  size: 567, 556
-  orig: 567, 556
-  offset: 0, 0
-  index: 4
-idle
+jumpLeft
   rotate: false
   xy: 571, 1118
   size: 567, 556
   orig: 567, 556
   offset: 0, 0
   index: 6
-idle
-  rotate: false
-  xy: 571, 560
-  size: 567, 556
-  orig: 567, 556
-  offset: 0, 0
-  index: 8
-idle
-  rotate: false
-  xy: 1140, 1118
-  size: 567, 556
-  orig: 567, 556
-  offset: 0, 0
-  index: 9
-jumpLeft
+jumpRight
   rotate: false
   xy: 2, 560
   size: 567, 556
   orig: 567, 556
   offset: 0, 0
-  index: 3
-jumpLeft
-  rotate: false
-  xy: 571, 2
-  size: 567, 556
-  orig: 567, 556
-  offset: 0, 0
   index: 9
-jumpLeft
-  rotate: false
-  xy: 1140, 2
-  size: 567, 556
-  orig: 567, 556
-  offset: 0, 0
-  index: 8
 jumpRight
   rotate: false
   xy: 2, 2
   size: 567, 556
   orig: 567, 556
   offset: 0, 0
-  index: 3
-shootRight
+  index: 6
+jumpRight
+  rotate: false
+  xy: 571, 560
+  size: 567, 556
+  orig: 567, 556
+  offset: 0, 0
+  index: 0
+jumpRight
+  rotate: false
+  xy: 1140, 1118
+  size: 567, 556
+  orig: 567, 556
+  offset: 0, 0
+  index: 1
+jumpRight
+  rotate: false
+  xy: 571, 2
+  size: 567, 556
+  orig: 567, 556
+  offset: 0, 0
+  index: 2
+runRight
   rotate: false
   xy: 1140, 560
+  size: 567, 556
+  orig: 567, 556
+  offset: 0, 0
+  index: 0
+runRight
+  rotate: false
+  xy: 1140, 2
+  size: 567, 556
+  orig: 567, 556
+  offset: 0, 0
+  index: 1
+shootRight
+  rotate: false
+  xy: 2, 1118
   size: 567, 556
   orig: 567, 556
   offset: 0, 0
@@ -142,55 +142,34 @@ size: 2048,2048
 format: RGBA8888
 filter: Nearest,Nearest
 repeat: none
-idle
-  rotate: false
-  xy: 1140, 1118
-  size: 567, 556
-  orig: 567, 556
-  offset: 0, 0
-  index: 5
-jumpLeft
-  rotate: false
-  xy: 571, 560
-  size: 567, 556
-  orig: 567, 556
-  offset: 0, 0
-  index: 5
 jumpLeft
   rotate: false
   xy: 571, 2
   size: 567, 556
   orig: 567, 556
   offset: 0, 0
-  index: 1
-jumpLeft
+  index: 4
+jumpRight
+  rotate: false
+  xy: 1140, 560
+  size: 567, 556
+  orig: 567, 556
+  offset: 0, 0
+  index: 8
+jumpRight
   rotate: false
   xy: 1140, 2
   size: 567, 556
   orig: 567, 556
   offset: 0, 0
-  index: 4
-jumpRight
+  index: 7
+runRight
   rotate: false
   xy: 2, 1118
   size: 567, 556
   orig: 567, 556
   offset: 0, 0
-  index: 9
-jumpRight
-  rotate: false
-  xy: 2, 2
-  size: 567, 556
-  orig: 567, 556
-  offset: 0, 0
-  index: 6
-runLeft
-  rotate: false
-  xy: 571, 1118
-  size: 567, 556
-  orig: 567, 556
-  offset: 0, 0
-  index: 1
+  index: 2
 runRight
   rotate: false
   xy: 2, 560
@@ -200,187 +179,318 @@ runRight
   index: 3
 runRight
   rotate: false
-  xy: 1140, 560
+  xy: 571, 1118
+  size: 567, 556
+  orig: 567, 556
+  offset: 0, 0
+  index: 4
+runRight
+  rotate: false
+  xy: 2, 2
+  size: 567, 556
+  orig: 567, 556
+  offset: 0, 0
+  index: 5
+runRight
+  rotate: false
+  xy: 571, 560
   size: 567, 556
   orig: 567, 556
   offset: 0, 0
   index: 6
+runRight
+  rotate: false
+  xy: 1140, 1118
+  size: 567, 556
+  orig: 567, 556
+  offset: 0, 0
+  index: 7
 
 hero_player4.png
 size: 2048,2048
 format: RGBA8888
 filter: Nearest,Nearest
 repeat: none
+idleRight
+  rotate: false
+  xy: 1140, 1118
+  size: 567, 556
+  orig: 567, 556
+  offset: 0, 0
+  index: 0
+idleRight
+  rotate: false
+  xy: 1140, 560
+  size: 567, 556
+  orig: 567, 556
+  offset: 0, 0
+  index: 2
+idleRight
+  rotate: false
+  xy: 1140, 2
+  size: 567, 556
+  orig: 567, 556
+  offset: 0, 0
+  index: 3
+jumpLeft
+  rotate: false
+  xy: 2, 1118
+  size: 567, 556
+  orig: 567, 556
+  offset: 0, 0
+  index: 7
+jumpLeft
+  rotate: false
+  xy: 2, 560
+  size: 567, 556
+  orig: 567, 556
+  offset: 0, 0
+  index: 8
 jumpLeft
   rotate: false
   xy: 2, 2
   size: 567, 556
   orig: 567, 556
   offset: 0, 0
-  index: 2
-jumpRight
-  rotate: false
-  xy: 1140, 2
-  size: 567, 556
-  orig: 567, 556
-  offset: 0, 0
-  index: 8
-runLeft
-  rotate: false
-  xy: 2, 1118
-  size: 567, 556
-  orig: 567, 556
-  offset: 0, 0
-  index: 0
-runLeft
-  rotate: false
-  xy: 2, 560
-  size: 567, 556
-  orig: 567, 556
-  offset: 0, 0
   index: 3
-runLeft
-  rotate: false
-  xy: 571, 1118
-  size: 567, 556
-  orig: 567, 556
-  offset: 0, 0
-  index: 2
-runLeft
+jumpLeft
   rotate: false
   xy: 571, 560
   size: 567, 556
   orig: 567, 556
   offset: 0, 0
-  index: 4
-runLeft
-  rotate: false
-  xy: 1140, 1118
-  size: 567, 556
-  orig: 567, 556
-  offset: 0, 0
-  index: 5
-runLeft
+  index: 2
+jumpLeft
   rotate: false
   xy: 571, 2
   size: 567, 556
   orig: 567, 556
   offset: 0, 0
-  index: 6
-runLeft
+  index: 9
+jumpRight
   rotate: false
-  xy: 1140, 560
+  xy: 571, 1118
   size: 567, 556
   orig: 567, 556
   offset: 0, 0
-  index: 7
+  index: 3
 
 hero_player5.png
 size: 2048,2048
 format: RGBA8888
 filter: Nearest,Nearest
 repeat: none
-jumpLeft
+idleRight
   rotate: false
   xy: 2, 1118
   size: 567, 556
   orig: 567, 556
   offset: 0, 0
-  index: 7
-jumpLeft
-  rotate: false
-  xy: 2, 2
-  size: 567, 556
-  orig: 567, 556
-  offset: 0, 0
-  index: 0
-jumpRight
-  rotate: false
-  xy: 571, 2
-  size: 567, 556
-  orig: 567, 556
-  offset: 0, 0
-  index: 5
-runRight
-  rotate: false
-  xy: 571, 560
-  size: 567, 556
-  orig: 567, 556
-  offset: 0, 0
-  index: 7
-runRight
-  rotate: false
-  xy: 1140, 560
-  size: 567, 556
-  orig: 567, 556
-  offset: 0, 0
-  index: 5
-runRight
-  rotate: false
-  xy: 1140, 2
-  size: 567, 556
-  orig: 567, 556
-  offset: 0, 0
   index: 4
-shootRight
-  rotate: false
-  xy: 2, 560
-  size: 567, 556
-  orig: 567, 556
-  offset: 0, 0
-  index: 1
-shootRight
-  rotate: false
-  xy: 571, 1118
-  size: 567, 556
-  orig: 567, 556
-  offset: 0, 0
-  index: 0
-shootRight
-  rotate: false
-  xy: 1140, 1118
-  size: 567, 556
-  orig: 567, 556
-  offset: 0, 0
-  index: 3
-
-hero_player6.png
-size: 2048,2048
-format: RGBA8888
-filter: Nearest,Nearest
-repeat: none
-idle
-  rotate: false
-  xy: 2, 560
-  size: 567, 556
-  orig: 567, 556
-  offset: 0, 0
-  index: 7
-jumpLeft
+idleRight
   rotate: false
   xy: 571, 1118
   size: 567, 556
   orig: 567, 556
   offset: 0, 0
   index: 6
-jumpRight
+idleRight
   rotate: false
   xy: 2, 2
   size: 567, 556
   orig: 567, 556
   offset: 0, 0
   index: 7
-jumpRight
+idleRight
   rotate: false
   xy: 571, 560
   size: 567, 556
   orig: 567, 556
   offset: 0, 0
+  index: 8
+idleRight
+  rotate: false
+  xy: 1140, 1118
+  size: 567, 556
+  orig: 567, 556
+  offset: 0, 0
+  index: 9
+jumpLeft
+  rotate: false
+  xy: 1140, 2
+  size: 567, 556
+  orig: 567, 556
+  offset: 0, 0
   index: 0
-runRight
+runLeft
+  rotate: false
+  xy: 571, 2
+  size: 567, 556
+  orig: 567, 556
+  offset: 0, 0
+  index: 0
+runLeft
+  rotate: false
+  xy: 1140, 560
+  size: 567, 556
+  orig: 567, 556
+  offset: 0, 0
+  index: 1
+shootLeft
+  rotate: false
+  xy: 2, 560
+  size: 567, 556
+  orig: 567, 556
+  offset: 0, 0
+  index: 0
+
+hero_player6.png
+size: 2048,2048
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+idleLeft
+  rotate: false
+  xy: 1140, 1118
+  size: 567, 556
+  orig: 567, 556
+  offset: 0, 0
+  index: 0
+idleLeft
+  rotate: false
+  xy: 571, 2
+  size: 567, 556
+  orig: 567, 556
+  offset: 0, 0
+  index: 1
+idleLeft
+  rotate: false
+  xy: 1140, 560
+  size: 567, 556
+  orig: 567, 556
+  offset: 0, 0
+  index: 2
+idleLeft
+  rotate: false
+  xy: 1140, 2
+  size: 567, 556
+  orig: 567, 556
+  offset: 0, 0
+  index: 3
+jumpLeft
+  rotate: false
+  xy: 571, 1118
+  size: 567, 556
+  orig: 567, 556
+  offset: 0, 0
+  index: 1
+runLeft
   rotate: false
   xy: 2, 1118
   size: 567, 556
   orig: 567, 556
   offset: 0, 0
+  index: 3
+runLeft
+  rotate: false
+  xy: 2, 560
+  size: 567, 556
+  orig: 567, 556
+  offset: 0, 0
+  index: 4
+runLeft
+  rotate: false
+  xy: 2, 2
+  size: 567, 556
+  orig: 567, 556
+  offset: 0, 0
+  index: 6
+runLeft
+  rotate: false
+  xy: 571, 560
+  size: 567, 556
+  orig: 567, 556
+  offset: 0, 0
+  index: 7
+
+hero_player7.png
+size: 2048,2048
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+idleLeft
+  rotate: false
+  xy: 2, 1118
+  size: 567, 556
+  orig: 567, 556
+  offset: 0, 0
+  index: 4
+idleLeft
+  rotate: false
+  xy: 2, 560
+  size: 567, 556
+  orig: 567, 556
+  offset: 0, 0
+  index: 5
+idleLeft
+  rotate: false
+  xy: 571, 1118
+  size: 567, 556
+  orig: 567, 556
+  offset: 0, 0
+  index: 6
+idleLeft
+  rotate: false
+  xy: 2, 2
+  size: 567, 556
+  orig: 567, 556
+  offset: 0, 0
+  index: 7
+idleLeft
+  rotate: false
+  xy: 571, 560
+  size: 567, 556
+  orig: 567, 556
+  offset: 0, 0
+  index: 8
+idleLeft
+  rotate: false
+  xy: 1140, 1118
+  size: 567, 556
+  orig: 567, 556
+  offset: 0, 0
+  index: 9
+shootLeft
+  rotate: false
+  xy: 1140, 560
+  size: 567, 556
+  orig: 567, 556
+  offset: 0, 0
   index: 1
+shootLeft
+  rotate: false
+  xy: 1140, 2
+  size: 567, 556
+  orig: 567, 556
+  offset: 0, 0
+  index: 2
+shootRight
+  rotate: false
+  xy: 571, 2
+  size: 567, 556
+  orig: 567, 556
+  offset: 0, 0
+  index: 3
+
+hero_player8.png
+size: 1024,1024
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+shootLeft
+  rotate: false
+  xy: 2, 2
+  size: 567, 556
+  orig: 567, 556
+  offset: 0, 0
+  index: 3

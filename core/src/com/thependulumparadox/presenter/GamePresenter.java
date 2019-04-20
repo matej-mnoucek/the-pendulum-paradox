@@ -16,11 +16,12 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
+import com.thependulumparadox.control.AIControlModule;
 import com.thependulumparadox.model.component.ControlComponent;
-import com.thependulumparadox.model.component.ControlModule;
+import com.thependulumparadox.control.ControlModule;
 import com.thependulumparadox.model.component.EnemyComponent;
 import com.thependulumparadox.model.component.InteractionComponent;
-import com.thependulumparadox.model.component.KeyboardControlModule;
+import com.thependulumparadox.control.KeyboardControlModule;
 import com.thependulumparadox.model.component.PlayerComponent;
 import com.thependulumparadox.model.component.StateComponent;
 import com.thependulumparadox.model.system.AnimationControlSystem;
@@ -147,7 +148,7 @@ public class GamePresenter extends Game
         animated.frameDuration(0.1f);
         animated.height = 1.8f;
         animated.width = 1.8f;
-        animated.currentAnimation = "idle";
+        //animated.currentAnimation = "idleRight";
         player.add(animated);
         DynamicBodyComponent dynamicBodyComponent = new DynamicBodyComponent(world);
         dynamicBodyComponent.position(transformComponent.position)
@@ -157,10 +158,11 @@ public class GamePresenter extends Game
         PlayerComponent playerComponent = new PlayerComponent();
         player.add(playerComponent);
         playerState = new StateComponent();
-        playerState.add(new TaggedState("idle")).add(new TaggedState("runLeft"))
-                .add(new TaggedState("runRight")).add(new TaggedState("jumpRight"))
-                .add(new TaggedState("jumpLeft")).add(new TaggedState("shootRight"))
-                .initial("idle");
+        playerState.add(new TaggedState("idleLeft")).add(new TaggedState("idleRight"))
+                .add(new TaggedState("runLeft")).add(new TaggedState("runRight"))
+                .add(new TaggedState("jumpRight")).add(new TaggedState("jumpLeft"))
+                .add(new TaggedState("shootRight")).add(new TaggedState("shootLeft"))
+                .initial("idleRight");
         player.add(playerState);
         InteractionComponent interaction = new InteractionComponent();
         player.add(interaction);
@@ -174,20 +176,32 @@ public class GamePresenter extends Game
         TransformComponent transform = new TransformComponent();
         transform.position = new Vector2(10, 8);
         enemy1.add(transform);
-        AnimatedSpriteComponent animatedEnemy = new AnimatedSpriteComponent("packed/ninja_enemy.atlas");
+        AnimatedSpriteComponent animatedEnemy = new AnimatedSpriteComponent("packed/hero_player.atlas");
         animatedEnemy.frameDuration(0.07f);
         animatedEnemy.height = 1.8f;
         animatedEnemy.width = 1.8f;
-        animatedEnemy.currentAnimation = "attack";
+        //animatedEnemy.currentAnimation = "idle";
         enemy1.add(animatedEnemy);
         DynamicBodyComponent dynamicBody = new DynamicBodyComponent(world);
         dynamicBody.position(transform.position)
-                .dimension(0.7f, 1.5f).activate(true);
+                .dimension(0.7f, 1.5f)
+                .properties(0, 50f, 10f, 0f)
+                .activate(true);
         enemy1.add(dynamicBody);
         EnemyComponent enemyComponent1 = new EnemyComponent();
         enemy1.add(enemyComponent1);
         InteractionComponent interaction1 = new InteractionComponent();
         enemy1.add(interaction1);
+        ControlModule module1 = new AIControlModule();
+        StateComponent state1 = new StateComponent();
+        state1.add(new TaggedState("idleLeft")).add(new TaggedState("idleRight"))
+                .add(new TaggedState("runLeft")).add(new TaggedState("runRight"))
+                .add(new TaggedState("jumpRight")).add(new TaggedState("jumpLeft"))
+                .add(new TaggedState("shootRight")).add(new TaggedState("shootLeft"))
+                .initial("idleRight");
+        enemy1.add(state1);
+        ControlComponent control1 = new ControlComponent(module1);
+        enemy1.add(control1);
 
         enemy2 = new Entity();
         enemy2.flags = 4;
@@ -265,11 +279,11 @@ public class GamePresenter extends Game
                 ecs.addEntity(player);
                 ecs.addEntity(enemy1);
                 ecs.addEntity(enemy2);
+                ecs.addSystem(state);
                 ecs.addSystem(cameraFollowSystem);
                 ecs.addSystem(renderingSystem);
                 ecs.addSystem(controlSystem);
                 ecs.addSystem(physics);
-                ecs.addSystem(state);
                 ecs.addSystem(new PhysicsDebugSystem(world, mainCamera));
                 ecs.addSystem(new FPSDebugSystem());
                 ecs.addSystem(new AnimationControlSystem());
