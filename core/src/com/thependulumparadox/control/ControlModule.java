@@ -1,4 +1,4 @@
-package com.thependulumparadox.model.component;
+package com.thependulumparadox.control;
 
 import com.thependulumparadox.observer.Event;
 import com.thependulumparadox.observer.EventArgs;

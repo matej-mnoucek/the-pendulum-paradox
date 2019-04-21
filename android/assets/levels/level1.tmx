@@ -120,7 +120,7 @@
   </object>
  </objectgroup>
  <objectgroup id="21" name="EnemySpawnLayer">
-  <object id="118" name="enemy_walking" x="2944" y="1920">
+  <object id="118" name="enemy_walking" x="828" y="1732">
    <point/>
   </object>
   <object id="119" name="enemy_walking" x="3328" y="1920">

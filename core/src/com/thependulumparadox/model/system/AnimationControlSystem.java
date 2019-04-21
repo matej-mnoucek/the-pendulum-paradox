@@ -39,12 +39,14 @@ public class AnimationControlSystem extends EntitySystem
             AnimatedSpriteComponent animatedSpriteComponent
                     = animatedSpriteComponentMapper.get(entity);
 
-
             // Change animation based on current state name
-            String tag = stateComponent.currentState.tag;
-            if (animatedSpriteComponent.animations.containsKey(tag))
+            if (stateComponent.currentState != null)
             {
-                animatedSpriteComponent.currentAnimation(tag);
+                String tag = stateComponent.currentState.tag;
+                if (animatedSpriteComponent.animations.containsKey(tag))
+                {
+                    animatedSpriteComponent.currentAnimation(tag);
+                }
             }
         }
     }

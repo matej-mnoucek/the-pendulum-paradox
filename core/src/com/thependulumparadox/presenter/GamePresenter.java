@@ -16,11 +16,12 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
+import com.thependulumparadox.control.AIControlModule;
 import com.thependulumparadox.model.component.ControlComponent;
-import com.thependulumparadox.model.component.ControlModule;
+import com.thependulumparadox.control.ControlModule;
 import com.thependulumparadox.model.component.EnemyComponent;
 import com.thependulumparadox.model.component.InteractionComponent;
-import com.thependulumparadox.model.component.KeyboardControlModule;
+import com.thependulumparadox.control.KeyboardControlModule;
 import com.thependulumparadox.model.component.PlayerComponent;
 import com.thependulumparadox.model.component.StateComponent;
 import com.thependulumparadox.model.system.AnimationControlSystem;
@@ -146,7 +147,7 @@ public class GamePresenter extends Game
         animated.frameDuration(0.1f);
         animated.height = 1.8f;
         animated.width = 1.8f;
-        animated.currentAnimation = "idle";
+        //animated.currentAnimation = "idleRight";
         player.add(animated);
         DynamicBodyComponent dynamicBodyComponent = new DynamicBodyComponent(world);
         dynamicBodyComponent.position(transformComponent.position)
@@ -156,16 +157,18 @@ public class GamePresenter extends Game
         PlayerComponent playerComponent = new PlayerComponent();
         player.add(playerComponent);
         playerState = new StateComponent();
-        playerState.add(new TaggedState("idle")).add(new TaggedState("runLeft"))
-                .add(new TaggedState("runRight")).add(new TaggedState("jumpRight"))
-                .add(new TaggedState("jumpLeft")).add(new TaggedState("shootRight"))
-                .initial("idle");
+        playerState.add(new TaggedState("idleLeft")).add(new TaggedState("idleRight"))
+                .add(new TaggedState("runLeft")).add(new TaggedState("runRight"))
+                .add(new TaggedState("jumpRight")).add(new TaggedState("jumpLeft"))
+                .add(new TaggedState("shootRight")).add(new TaggedState("shootLeft"))
+                .initial("idleRight");
         player.add(playerState);
         InteractionComponent interaction = new InteractionComponent();
         player.add(interaction);
         ControlModule module = new KeyboardControlModule();
         ControlComponent control = new ControlComponent(module);
         player.add(control);
+
 
         // ECS Systems
         // Camera follow
@@ -220,11 +223,11 @@ public class GamePresenter extends Game
             //on first play through set the following entities to ECS
             if (firstPlayThrough) {
                 ecs.addEntity(player);
+                ecs.addSystem(state);
                 ecs.addSystem(cameraFollowSystem);
                 ecs.addSystem(renderingSystem);
                 ecs.addSystem(controlSystem);
                 ecs.addSystem(physics);
-                ecs.addSystem(state);
                 ecs.addSystem(new PhysicsDebugSystem(world, mainCamera));
                 ecs.addSystem(new FPSDebugSystem());
                 ecs.addSystem(new AnimationControlSystem());

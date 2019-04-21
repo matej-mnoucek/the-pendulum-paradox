@@ -7,21 +7,16 @@ import com.badlogic.ashley.core.EntitySystem;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.core.PooledEngine;
 import com.badlogic.ashley.utils.ImmutableArray;
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Timer;
 import com.thependulumparadox.model.MoveCommands;
 import com.thependulumparadox.model.component.BulletComponent;
 import com.thependulumparadox.model.component.ControlComponent;
-import com.thependulumparadox.model.component.ControlModule;
 import com.thependulumparadox.model.component.DynamicBodyComponent;
-import com.thependulumparadox.model.component.InteractionComponent;
 import com.thependulumparadox.model.component.PlayerComponent;
 import com.thependulumparadox.model.component.SpriteComponent;
 import com.thependulumparadox.model.component.StateComponent;
 import com.thependulumparadox.model.component.TransformComponent;
-import com.thependulumparadox.observer.EventArgs;
-import com.thependulumparadox.observer.IEventHandler;
 
 
 /**
@@ -41,6 +36,9 @@ public class ControlSystem extends EntitySystem implements MoveCommands
     private ComponentMapper<StateComponent> stateComponentMapper
             = ComponentMapper.getFor(StateComponent.class);
 
+    // Timer for state transitions delays
+    Timer timer = new Timer();
+
     private boolean moveLeft = false;
     private boolean moveRight = false;
     private boolean jump = false;
@@ -53,7 +51,7 @@ public class ControlSystem extends EntitySystem implements MoveCommands
     public void addedToEngine(Engine engine)
     {
         controlledEntities = engine.getEntitiesFor(Family.all(DynamicBodyComponent.class,
-                ControlComponent.class, PlayerComponent.class, TransformComponent.class).get());
+                ControlComponent.class, StateComponent.class, TransformComponent.class).get());
 
         for (int i = 0; i < controlledEntities.size(); i++)
         {
@@ -75,6 +73,9 @@ public class ControlSystem extends EntitySystem implements MoveCommands
                 dynamicBodyComponent.body.applyLinearImpulse(1f, 0,0,0,true);
                 // Change state
                 stateComponent.transition("runRight");
+
+                // Facing direction
+                controlComponent.facingRight = true;
             });
 
             controlComponent.controlModule.left.addHandler((args)->
@@ -89,6 +90,9 @@ public class ControlSystem extends EntitySystem implements MoveCommands
                 dynamicBodyComponent.body.applyLinearImpulse(-1f, 0,0,0,true);
                 // Change state
                 stateComponent.transition("runLeft");
+
+                // Facing direction
+                controlComponent.facingRight = false;
             });
 
             controlComponent.controlModule.jumpStart.addHandler((args)->
@@ -104,18 +108,13 @@ public class ControlSystem extends EntitySystem implements MoveCommands
 
 
                 // Jump to the right direction
-                String current = stateComponent.currentState.tag;
-                if (current == "runRight")
+                if (controlComponent.facingRight)
                 {
                     stateComponent.transition("jumpRight");
-                }
-                else if(current == "runLeft")
-                {
-                    stateComponent.transition("jumpLeft");
                 }
                 else
                 {
-                    stateComponent.transition("jumpRight");
+                    stateComponent.transition("jumpLeft");
                 }
             });
 
@@ -125,8 +124,8 @@ public class ControlSystem extends EntitySystem implements MoveCommands
                 Entity bullet = entityPool.createEntity();
                 bullet.flags = 8;
                 TransformComponent transform = new TransformComponent();
-                transform.position = transformComponent.position;
-                transform.position.x += 0.35f;
+                transform.position = new Vector2(transformComponent.position);
+                //transform.position.x += 0.35f;
                 SpriteComponent sprite = new SpriteComponent("sprites/bullets/circle_bullet_blue.png");
                 sprite.height = 0.3f;
                 sprite.width = 0.3f;
@@ -134,7 +133,6 @@ public class ControlSystem extends EntitySystem implements MoveCommands
                 DynamicBodyComponent dynamic = new DynamicBodyComponent(dynamicBodyComponent.body.getWorld());
                 dynamic.position(transformComponent.position).dimension(sprite.width, sprite.height)
                         .gravityScale(0.0f).activate(true);
-                dynamic.body.applyLinearImpulse(5,0,0,0,false);
 
                 // Add all components
                 bullet.add(transform);
@@ -145,7 +143,18 @@ public class ControlSystem extends EntitySystem implements MoveCommands
                 // Add to engine
                 engine.addEntity(bullet);
 
-                stateComponent.transition("shootRight");
+
+                // Shoot to the right direction
+                if (controlComponent.facingRight)
+                {
+                    dynamic.body.applyLinearImpulse(5, 0, 0, 0, true);
+                    stateComponent.transition("shootRight");
+                }
+                else
+                {
+                    dynamic.body.applyLinearImpulse(-5, 0, 0, 0, true);
+                    stateComponent.transition("shootLeft");
+                }
             });
         }
     }
@@ -165,16 +174,26 @@ public class ControlSystem extends EntitySystem implements MoveCommands
                 && Math.abs(bodyComponent.body.getLinearVelocity().y) < 0.1f)
             {
                 StateComponent stateComponent = stateComponentMapper.get(entity);
-                if (stateComponent.currentState.tag != "idle")
+                if (stateComponent.currentState.tag != "idleRight"
+                        && stateComponent.currentState.tag != "idleLeft")
                 {
                     // Delay idle transition a bit
-                    Timer.Task task = new Timer.Task(){
+                    Timer.Task task = new Timer.Task()
+                    {
                         @Override
                         public void run() {
-                            stateComponent.transition("idle");
-                            Timer.instance().clear();
-                        }};
-                    Timer.schedule(task, 0.1f);
+                            if (controlComponent.facingRight)
+                            {
+                                stateComponent.transition("idleRight");
+                            }
+                            else
+                            {
+                                stateComponent.transition("idleLeft");
+                            }
+                            timer.clear();
+                        }
+                    };
+                    timer.schedule(task, 0.1f);
                 }
             }
 
