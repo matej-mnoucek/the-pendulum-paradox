@@ -1,29 +1,19 @@
 package com.thependulumparadox.model.component;
 
 import com.badlogic.ashley.core.Component;
+import com.badlogic.ashley.core.Entity;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
+import com.badlogic.gdx.physics.box2d.CircleShape;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
-import com.thependulumparadox.model.system.PhysicsSystem;
+import com.badlogic.gdx.utils.Array;
 
 public class StaticBodyComponent implements Component
 {
-    /*
-    public float width = 1.0f;
-    public float height = 1.0f;
-    public Vector2 center = new Vector2(0,0);
-
-    public float density = 1.0f;
-    public float friction = 0.0f;
-    public float restitution = 0.0f;
-
-    public short collisionGroup = 0;
-    */
-
     public final Body body;
     public boolean initialized = false;
 
@@ -49,7 +39,9 @@ public class StaticBodyComponent implements Component
 
         // Create a fixture from the box and add it to the body
         body.createFixture(fixtureDef);
-        body.setActive(false);
+
+        // Dispose shape
+        polygon.dispose();
     }
 
     public StaticBodyComponent position(float x, float y)
@@ -66,17 +58,37 @@ public class StaticBodyComponent implements Component
         return this;
     }
 
-    public StaticBodyComponent properties(float density, float friction, float restitution)
+    public StaticBodyComponent properties(int fixtureIndex, float density,
+                                           float friction, float restitution)
     {
-        body.getFixtureList().first().setDensity(density);
-        body.getFixtureList().first().setFriction(friction);
-        body.getFixtureList().first().setRestitution(restitution);
+        Array<Fixture> fixtures = body.getFixtureList();
+        if (fixtureIndex < fixtures.size)
+        {
+            fixtures.get(fixtureIndex).setDensity(density);
+            fixtures.get(fixtureIndex).setFriction(friction);
+            fixtures.get(fixtureIndex).setRestitution(restitution);
+        }
         return this;
     }
 
     public StaticBodyComponent gravityScale(float scale)
     {
         body.setGravityScale(scale);
+        return this;
+    }
+
+    public StaticBodyComponent trigger(float radius)
+    {
+        FixtureDef fixtureDef = new FixtureDef();
+        CircleShape circleShape = new CircleShape();
+
+        circleShape.setRadius(radius);
+        fixtureDef.shape = circleShape;
+        fixtureDef.isSensor = true;
+
+        body.createFixture(fixtureDef);
+        circleShape.dispose();
+
         return this;
     }
 

@@ -4,16 +4,20 @@ import com.badlogic.ashley.core.Component;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
+import com.badlogic.gdx.physics.box2d.CircleShape;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.utils.Array;
 import com.thependulumparadox.model.system.PhysicsSystem;
 
 public class DynamicBodyComponent implements Component
 {
     public final Body body;
+    public boolean grounded = false;
     public boolean initialized = false;
+    public boolean toDestroy = false;
 
     public DynamicBodyComponent(World world)
     {
@@ -38,7 +42,9 @@ public class DynamicBodyComponent implements Component
 
         // Create our fixture and attach it to the body
         body.createFixture(fixtureDef);
-        body.setActive(false);
+
+        // Dispose shape
+        polygon.dispose();
     }
 
     public DynamicBodyComponent position(Vector2 position)
@@ -55,17 +61,38 @@ public class DynamicBodyComponent implements Component
         return this;
     }
 
-    public DynamicBodyComponent properties(float density, float friction, float restitution)
+    public DynamicBodyComponent properties(int fixtureIndex, float density,
+                                           float friction, float restitution)
     {
-        body.getFixtureList().first().setDensity(density);
-        body.getFixtureList().first().setFriction(friction);
-        body.getFixtureList().first().setRestitution(restitution);
+        Array<Fixture> fixtures = body.getFixtureList();
+        if (fixtureIndex < fixtures.size)
+        {
+            fixtures.get(fixtureIndex).setDensity(density);
+            fixtures.get(fixtureIndex).setFriction(friction);
+            fixtures.get(fixtureIndex).setRestitution(restitution);
+        }
         return this;
     }
 
     public DynamicBodyComponent gravityScale(float scale)
     {
         body.setGravityScale(scale);
+        return this;
+    }
+
+    public DynamicBodyComponent trigger(float radius)
+    {
+        FixtureDef fixtureDef = new FixtureDef();
+        CircleShape circleShape = new CircleShape();
+
+        circleShape.setRadius(radius);
+        fixtureDef.shape = circleShape;
+        fixtureDef.isSensor = true;
+
+        //Fixture fixture = body.createFixture(fixtureDef);
+        //fixture.setDensity(0.00001f);
+        circleShape.dispose();
+
         return this;
     }
 

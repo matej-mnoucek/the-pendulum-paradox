@@ -15,7 +15,7 @@ import com.thependulumparadox.model.component.PlayerComponent;
 import com.thependulumparadox.model.component.SpriteComponent;
 import com.thependulumparadox.model.component.TransformComponent;
 
-public class ShootingSystem extends EntitySystem
+public class SHOOTSystem extends EntitySystem
 {
     private PooledEngine bulletPool = new PooledEngine();
 
@@ -32,7 +32,7 @@ public class ShootingSystem extends EntitySystem
     private Engine engine;
     private World world;
 
-    public ShootingSystem(String bulletSpritePath, World world)
+    public SHOOTSystem(String bulletSpritePath, World world)
     {
         this.bulletSpritePath = bulletSpritePath;
         this.world = world;
@@ -56,25 +56,18 @@ public class ShootingSystem extends EntitySystem
         if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE))
         {
             // Create new bullet
-            Entity bullet = new Entity(); //bulletPool.createEntity();
+            Entity bullet = bulletPool.createEntity();
             bullet.flags = 8;
             TransformComponent transform = new TransformComponent();
             transform.position = transformComponent.position;
-            SpriteComponent sprite = new SpriteComponent();
-            sprite.spritePath = bulletSpritePath;
+            SpriteComponent sprite = new SpriteComponent(bulletSpritePath);
             sprite.height = 0.3f;
             sprite.width = 0.3f;
-            BulletComponent bulletComponent = new BulletComponent();
-            bulletComponent.damage = playerComponent.damage;
+            BulletComponent bulletComponent = new BulletComponent(playerEntity);
             DynamicBodyComponent dynamic = new DynamicBodyComponent(world);
             dynamic.position(transformComponent.position).dimension(sprite.width, sprite.height)
                     .gravityScale(0.0f).activate(true);
-            dynamic.body.applyLinearImpulse(5,0,0,0,true);
-            //dynamic.center = transformComponent.position;
-            //dynamic.height = sprite.height;
-            //dynamic.width = sprite.width;
-            //dynamic.impulseHorizontal = 5f;
-            //dynamic.gravityScale = 0.0f;
+            dynamic.body.applyLinearImpulse(5,0,0,0,false);
 
             // Add all components
             bullet.add(transform);
@@ -84,9 +77,6 @@ public class ShootingSystem extends EntitySystem
 
             // Add to engine
             engine.addEntity(bullet);
-
-            // Log
-            System.out.println("SHOOT!");
         }
     }
 }

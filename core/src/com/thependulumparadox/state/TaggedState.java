@@ -1,13 +1,11 @@
 package com.thependulumparadox.state;
 
-public class TaggedState<T> implements IState
+public class TaggedState implements IState
 {
-    public final T object;
     public final String tag;
 
-    public TaggedState(String tag, T object)
+    public TaggedState(String tag)
     {
-        this.object = object;
         this.tag = tag;
     }
 

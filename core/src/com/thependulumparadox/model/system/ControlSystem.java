@@ -7,7 +7,6 @@ import com.badlogic.ashley.core.EntitySystem;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
-import com.badlogic.gdx.math.Vector2;
 import com.thependulumparadox.model.MoveCommands;
 import com.thependulumparadox.model.component.DynamicBodyComponent;
 import com.thependulumparadox.model.component.PlayerComponent;
@@ -16,7 +15,7 @@ import com.thependulumparadox.model.component.TransformComponent;
 /**
  * All the logic for handling input from the user (locally)
  */
-public class InputSystem extends EntitySystem implements MoveCommands
+public class ControlSystem extends EntitySystem implements MoveCommands
 {
     private Entity controlledEntity;
     private DynamicBodyComponent dynamicBodyComponent;
@@ -29,7 +28,7 @@ public class InputSystem extends EntitySystem implements MoveCommands
     private boolean jump = false;
     private boolean shooting = false;
 
-    public InputSystem getInputSystem(){
+    public ControlSystem getInputSystem(){
         return this;
     }
 
