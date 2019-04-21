@@ -81,20 +81,39 @@ public class GameScene extends Scene
             body.createFixture(fixtureDef);
         }
 
-        layer = level.getLayers().get("EnemySpawnLayer");
+        layer = level.getLayers().get("points");
         for (MapObject object : layer.getObjects()) {
-            if (object.getName() != null)
-            {
-                switch (object.getName())
-                {
+            if (object.getName() != null) {
+                switch (object.getName()) {
                     case "start":
                         //Create player character(s)
                         break;
                     case "goal":
                         //Create Goal
                         break;
-                    case "enemy_attacking": {
+                }
+            }
+        }
 
+        layer = level.getLayers().get("pickups");
+        for (MapObject object : layer.getObjects()) {
+            if (object.getName() != null) {
+                switch (object.getName()) {
+                    case "coin":
+                        break;
+                    case "ammo":
+                        break;
+                }
+            }
+        }
+
+        layer = level.getLayers().get("enemies");
+        for (MapObject object : layer.getObjects()) {
+            if (object.getName() != null)
+            {
+                switch (object.getName())
+                {
+                    case "attacking": {
                         Entity entity;
                         entity = new Entity();
                         entity.flags = 4;
@@ -119,8 +138,7 @@ public class GameScene extends Scene
                         engine.addEntity(entity);
                     }
                         break;
-                    case "enemy_walking": {
-
+                    case "walking": {
                         Entity entity;
                         entity = new Entity();
                         entity.flags = 4;
