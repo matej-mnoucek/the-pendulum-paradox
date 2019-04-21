@@ -84,7 +84,7 @@ public class StateMachine implements IStateMachine
     @Override
     public boolean nextState(IState nextState)
     {
-        if (currentState.equals(null))
+        if (currentState == null)
         {
             return false;
         }

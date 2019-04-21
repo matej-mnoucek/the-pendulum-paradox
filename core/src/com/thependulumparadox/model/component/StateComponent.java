@@ -27,6 +27,11 @@ public class StateComponent implements Component
         return this;
     }
 
+    public String currentStateName()
+    {
+        return currentState.tag;
+    }
+
     public boolean initial(String stateTag)
     {
         for (int i = 0; i < states.size(); i++)

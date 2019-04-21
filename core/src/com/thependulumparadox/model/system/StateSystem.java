@@ -38,7 +38,7 @@ public class StateSystem extends EntitySystem
             // Add all states
             for (int j = 0; j < stateComponent.states.size(); j++)
             {
-                machine.addState((IState) stateComponent.states.get(i));
+                machine.addState((IState) stateComponent.states.get(j));
             }
             machine.setInitialState(stateComponent.initialState);
             stateComponent.currentState = stateComponent.initialState;

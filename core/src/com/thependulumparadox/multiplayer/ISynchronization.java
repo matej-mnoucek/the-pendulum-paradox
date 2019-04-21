@@ -1,7 +1,7 @@
 package com.thependulumparadox.multiplayer;
 
 
-import com.thependulumparadox.model.MoveCommands;
+import com.thependulumparadox.control.MoveCommands;
 
 public interface ISynchronization
 {

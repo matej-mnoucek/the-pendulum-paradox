@@ -4,7 +4,6 @@ import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.audio.Music;
@@ -18,9 +17,15 @@ import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
 
+import com.thependulumparadox.control.EventControlModule;
+import com.thependulumparadox.control.NetworkControlModule;
 import com.thependulumparadox.model.component.MusicComponent;
+import com.thependulumparadox.control.AIControlModule;
+import com.thependulumparadox.model.component.ControlComponent;
+import com.thependulumparadox.control.ControlModule;
 import com.thependulumparadox.model.component.EnemyComponent;
 import com.thependulumparadox.model.component.InteractionComponent;
+import com.thependulumparadox.control.KeyboardControlModule;
 import com.thependulumparadox.model.component.PlayerComponent;
 import com.thependulumparadox.model.component.SoundComponent;
 import com.thependulumparadox.model.component.StateComponent;
@@ -30,14 +35,13 @@ import com.thependulumparadox.model.system.FPSDebugSystem;
 import com.thependulumparadox.model.system.PhysicsDebugSystem;
 
 import com.thependulumparadox.model.system.SoundSystem;
-import com.thependulumparadox.model.system.SHOOTSystem;
 
 import com.thependulumparadox.model.system.StateSystem;
 import com.thependulumparadox.multiplayer.ISynchronization;
 import com.thependulumparadox.misc.Constants;
-import com.thependulumparadox.model.component.AbstractComponentFactory;
+import com.thependulumparadox.model.entity.AbstractEntityFactory;
 import com.thependulumparadox.model.component.AnimatedSpriteComponent;
-import com.thependulumparadox.model.component.ComponentFactory;
+import com.thependulumparadox.model.entity.EntityFactory;
 import com.thependulumparadox.model.component.DynamicBodyComponent;
 import com.thependulumparadox.model.component.TransformComponent;
 import com.thependulumparadox.model.entity.EntityBuilder;
@@ -72,7 +76,7 @@ public class GamePresenter extends Game
     Engine ecs = new Engine();
 
     // Component factory
-    AbstractComponentFactory componentFactory = new ComponentFactory();
+    AbstractEntityFactory componentFactory = new EntityFactory();
 
     // Entity builder
     IEntityBuilder entityBuilder = new EntityBuilder();
@@ -114,10 +118,13 @@ public class GamePresenter extends Game
     // DEBUG
     ShapeRenderer shapeRenderer;
     Entity player;
-    Entity enemy1;
-    Entity enemy2;
     TransformComponent transformComponent;
     StateComponent playerState;
+
+    ShapeRenderer networkedshapeRenderer;
+    Entity networkedplayer;
+    TransformComponent networkedtransformComponent;
+    StateComponent networkedplayerState;
 
     private boolean isMultiplayer = false;
     private ISynchronization proxy;
@@ -140,6 +147,7 @@ public class GamePresenter extends Game
         //debugRenderer = new Box2DDebugRenderer();
         shapeRenderer = new ShapeRenderer();
         shapeRenderer.setColor(Color.RED);
+        mainCamera.zoom = 1.5f;
         shapeRenderer.setProjectionMatrix(mainCamera.combined);
 
         // PLAYER ENTITY
@@ -148,65 +156,67 @@ public class GamePresenter extends Game
         transformComponent = new TransformComponent();
         transformComponent.position = new Vector2(3, 8);
         player.add(transformComponent);
-        AnimatedSpriteComponent animated = new AnimatedSpriteComponent("packed/idle.atlas");
+        AnimatedSpriteComponent animated = new AnimatedSpriteComponent("packed/hero_player.atlas");
         animated.frameDuration(0.1f);
         animated.height = 1.8f;
         animated.width = 1.8f;
-        animated.currentAnimation = "idle";
+        //animated.currentAnimation = "idleRight";
         player.add(animated);
         DynamicBodyComponent dynamicBodyComponent = new DynamicBodyComponent(world);
         dynamicBodyComponent.position(transformComponent.position)
-                .dimension(0.7f, 1.5f).trigger(2f);
+                .dimension(0.7f, 1.5f).trigger(2f)
+                .properties(0, 50f, 10f, 0f);
         player.add(dynamicBodyComponent);
         PlayerComponent playerComponent = new PlayerComponent();
         player.add(playerComponent);
         playerState = new StateComponent();
-        playerState.add(new TaggedState("idle")).add(new TaggedState("attack"))
-                .add(new TaggedState("jump")).initial("idle");
+        playerState.add(new TaggedState("idleLeft")).add(new TaggedState("idleRight"))
+                .add(new TaggedState("runLeft")).add(new TaggedState("runRight"))
+                .add(new TaggedState("jumpRight")).add(new TaggedState("jumpLeft"))
+                .add(new TaggedState("shootRight")).add(new TaggedState("shootLeft"))
+                .initial("idleRight");
         player.add(playerState);
         InteractionComponent interaction = new InteractionComponent();
         player.add(interaction);
+        ControlModule module = new EventControlModule();
+        ControlComponent control = new ControlComponent(module);
+        player.add(control);
 
-        // ENEMY ENTITY
-        enemy1 = new Entity();
-        enemy1.flags = 4;
-        TransformComponent transform = new TransformComponent();
-        transform.position = new Vector2(10, 8);
-        enemy1.add(transform);
-        AnimatedSpriteComponent animatedEnemy = new AnimatedSpriteComponent("packed/ninja_enemy.atlas");
-        animatedEnemy.frameDuration(0.07f);
-        animatedEnemy.height = 1.8f;
-        animatedEnemy.width = 1.8f;
-        animatedEnemy.currentAnimation = "attack";
-        enemy1.add(animatedEnemy);
-        DynamicBodyComponent dynamicBody = new DynamicBodyComponent(world);
-        dynamicBody.position(transform.position)
-                .dimension(0.7f, 1.5f).activate(true);
-        enemy1.add(dynamicBody);
-        EnemyComponent enemyComponent1 = new EnemyComponent();
-        enemy1.add(enemyComponent1);
+
+
+        ////create shadow player
+        // PLAYER ENTITY
+        Entity player1 = new Entity();
+        player1.flags = 2;
+        TransformComponent transformComponent1 = new TransformComponent();
+        transformComponent1.position = new Vector2(3, 8);
+        player1.add(transformComponent1);
+        AnimatedSpriteComponent animated1 = new AnimatedSpriteComponent("packed/hero_player.atlas");
+        animated1.frameDuration(0.1f);
+        animated1.height = 1.8f;
+        animated1.width = 1.8f;
+        //animated.currentAnimation = "idleRight";
+        player1.add(animated1);
+        DynamicBodyComponent dynamicBodyComponent1 = new DynamicBodyComponent(world);
+        dynamicBodyComponent1.position(transformComponent1.position)
+                .dimension(0.7f, 1.5f)
+                .properties(0, 50f, 10f, 0f);
+        player1.add(dynamicBodyComponent1);
+        PlayerComponent playerComponent1 = new PlayerComponent();
+        player1.add(playerComponent1);
+        StateComponent playerState1 = new StateComponent();
+        playerState1.add(new TaggedState("idleLeft")).add(new TaggedState("idleRight"))
+                .add(new TaggedState("runLeft")).add(new TaggedState("runRight"))
+                .add(new TaggedState("jumpRight")).add(new TaggedState("jumpLeft"))
+                .add(new TaggedState("shootRight")).add(new TaggedState("shootLeft"))
+                .initial("idleRight");
+        player1.add(playerState1);
         InteractionComponent interaction1 = new InteractionComponent();
-        enemy1.add(interaction1);
+        player1.add(interaction1);
+        ControlModule module1 = new NetworkControlModule();
+        ControlComponent control1 = new ControlComponent(module1);
+        player1.add(control1);
 
-        enemy2 = new Entity();
-        enemy2.flags = 4;
-        TransformComponent transform2 = new TransformComponent();
-        transform2.position = new Vector2(20, 8);
-        enemy2.add(transform2);
-        AnimatedSpriteComponent animatedEnemy2 = new AnimatedSpriteComponent("packed/knight_enemy.atlas");
-        animatedEnemy2.frameDuration(0.07f);
-        animatedEnemy2.height = 1.8f;
-        animatedEnemy2.width = 1.8f;
-        animatedEnemy2.currentAnimation = "attack";
-        enemy2.add(animatedEnemy2);
-        DynamicBodyComponent dynamicBody2 = new DynamicBodyComponent(world);
-        dynamicBody2.position(transform2.position)
-                .dimension(0.7f, 1.5f).activate(true);
-        enemy2.add(dynamicBody2);
-        EnemyComponent enemyComponent2 = new EnemyComponent();
-        enemy2.add(enemyComponent2);
-        InteractionComponent interaction2 = new InteractionComponent();
-        enemy2.add(interaction2);
 
         // ECS Systems
 
@@ -220,8 +230,7 @@ public class GamePresenter extends Game
         PhysicsSystem physics = new PhysicsSystem(world);
 
         // Control
-        ControlSystem input = new ControlSystem();
-        SHOOTSystem shooting = new SHOOTSystem("sprites/bullets/circle_bullet_blue.png", world);
+        ControlSystem controlSystem = new ControlSystem();
 
         // States
         StateSystem state = new StateSystem();
@@ -276,14 +285,11 @@ public class GamePresenter extends Game
             //on first play through set the following entities to ECS
             if (firstPlayThrough) {
                 ecs.addEntity(player);
-                ecs.addEntity(enemy1);
-                ecs.addEntity(enemy2);
+                ecs.addSystem(state);
                 ecs.addSystem(cameraFollowSystem);
                 ecs.addSystem(renderingSystem);
-                ecs.addSystem(input);
-                ecs.addSystem(shooting);
+                ecs.addSystem(controlSystem);
                 ecs.addSystem(physics);
-                ecs.addSystem(state);
                 ecs.addSystem(new PhysicsDebugSystem(world, mainCamera));
                 ecs.addSystem(sound);
                 ecs.addSystem(new FPSDebugSystem());
@@ -296,6 +302,7 @@ public class GamePresenter extends Game
             else {
                 ecs.addEntity(player);
             }
+
             //set inGameScreen's stage as the input processor
             Gdx.input.setInputProcessor(inGameScreen.getStage());
             //stop menu music. will call stop() method on menu music even if sound is currently turned off
@@ -315,24 +322,35 @@ public class GamePresenter extends Game
 
             proxy.startQuickGame();
 
-            proxy.setInputHandler(input);
+            //proxy.setInputHandler(input);
 
             //on first play through set the following entities to ECS
 
             if (firstPlayThrough) {
                 ecs.addEntity(player);
+                ecs.addEntity(player1);
+                ecs.addSystem(state);
                 ecs.addSystem(cameraFollowSystem);
                 ecs.addSystem(renderingSystem);
+                ecs.addSystem(controlSystem);
                 ecs.addSystem(physics);
-                ecs.addSystem(input);
+                ecs.addSystem(new PhysicsDebugSystem(world, mainCamera));
                 ecs.addSystem(sound);
+                ecs.addSystem(new FPSDebugSystem());
+                ecs.addSystem(new AnimationControlSystem());
+                ecs.addSystem(new InteractionSystem(world));
                 firstPlayThrough = false;
             }
 
             //always set player entity when switching to in-game mode
             else {
                 ecs.addEntity(player);
+
             }
+            proxy.setInputHandler((NetworkControlModule)module1);
+
+
+
             //set inGameScreen's stage as the input processor
             Gdx.input.setInputProcessor(inGameScreen.getStage());
             //stop menu music. will call stop() method on menu music even if sound is currently turned off
@@ -348,9 +366,9 @@ public class GamePresenter extends Game
 
         // Create screen and scene for future view state assembly
         GameScene levelOneScene = new GameScene(new TmxMapLoader().load("levels/level1.tmx"),
-                world, mainCamera);
+                world, mainCamera, ecs);
         GameScene menuScene = new GameScene(new TmxMapLoader().load("levels/level1.tmx"),
-                world, mainCamera);
+                world, mainCamera, ecs);
 
         //define states. states are made up of one screen and one scene
         viewStateInGame = new ViewState(levelOneScene, inGameScreen);
@@ -458,53 +476,46 @@ public class GamePresenter extends Game
         });
 
         ((InGameScreen) inGameScreen).getLeftEvent().addHandler((args) -> {
-            //proxy.sendAction("L");
-            input.moveLeft();
+            proxy.sendAction("L");
+            ((EventControlModule) module).leftStart();
         });
 
         ((InGameScreen) inGameScreen).getStopLeftEvent().addHandler((args) -> {
-            //proxy.sendAction("SL");
-            input.stopMoveLeft();
+            proxy.sendAction("SL");
+            ((EventControlModule) module).leftEnd();
         });
 
         ((InGameScreen) inGameScreen).getRightEvent().addHandler((args) -> {
-            //proxy.sendAction("R");
-            input.moveRight();
+            proxy.sendAction("R");
+            ((EventControlModule) module).rightStart();
         });
 
         ((InGameScreen) inGameScreen).getStopRightEvent().addHandler((args) -> {
-            //proxy.sendAction("SR");
-            input.stopMoveRight();
+            proxy.sendAction("SR");
+            ((EventControlModule) module).rightEnd();
         });
 
 
         //shoot button pressed in-game. sets boolean variable "shooting" to true. this causes the
         //GamePresenter's update method to perform shooting action
         ((InGameScreen) inGameScreen).getShootEvent().addHandler((args) -> {
-            //proxy.sendAction("S");
-       //     assetManager.get("sounds/single_gunshot.mp3", Sound.class).play();
-
+            proxy.sendAction("S");
+            ((EventControlModule) module).attackStart();
             ecs.addEntity(shootSound);
 
-            input.startShooting();
-/*            if(shooting){
-                shooting = false;
-            } else{
-                shooting = true;
-            }*/
         });
 
         ((InGameScreen) inGameScreen).getStopshootEvent().addHandler((args) -> {
-            //proxy.sendAction("SS");
-            input.stopShooting();
+            proxy.sendAction("SS");
+            ((EventControlModule) module).attackEnd();
         });
 
         //jump button pressed in-game. Currently this causes the the game to go from play-state to
         //gameOver-state
         ((InGameScreen) inGameScreen).getJumpEvent().addHandler((args) -> {
+            proxy.sendAction("J");
+            ((EventControlModule) module).jumpStart();
 
-            input.jump();
-            //proxy.sendAction("J");
 
             /*// set input processor to new State's BaseScreen stage
             Gdx.input.setInputProcessor(gameOverScreen.getStage());
@@ -605,7 +616,7 @@ public class GamePresenter extends Game
         Every 100ms a gunshot sound is played,
         and decrementAmmo() subtracts 1 from inGameScreen's ammoLabel in HUD
         when shooting button is released: varuable "shooting" is set to false*/
-        if(shooting){
+      /*  if(shooting){
             shootingTimer += delta;
             if(shootingTimer > 0.1) {
                 ((InGameScreen) inGameScreen).decrementAmmo();
@@ -614,9 +625,9 @@ public class GamePresenter extends Game
                 }
                 shootingTimer = 0;
             }
-        }
+        }*/
 
-        //proxy.handleActions();
+        proxy.handleActions();
 
         // Update ECS
         ecs.update(delta);
