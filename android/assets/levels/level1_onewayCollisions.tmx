@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.2" tiledversion="1.2.2" orientation="orthogonal" renderorder="right-down" width="175" height="20" tilewidth="128" tileheight="128" infinite="0" nextlayerid="22" nextobjectid="132">
+<map version="1.2" tiledversion="1.2.2" orientation="orthogonal" renderorder="right-down" width="175" height="20" tilewidth="128" tileheight="128" infinite="0" nextlayerid="21" nextobjectid="104">
  <tileset firstgid="1" name="ForestTileset" tilewidth="129" tileheight="129" tilecount="20" columns="0">
   <grid orientation="orthogonal" width="1" height="1"/>
   <terraintypes>
@@ -112,51 +112,10 @@
   <image source="tilesets/background_tiles/background1.png" width="1000" height="750"/>
  </tileset>
  <objectgroup id="3" name="PointLayer">
-  <object id="1" name="start" x="197.333" y="1764">
+  <object id="1" name="Starting point" x="197.333" y="1764">
    <point/>
   </object>
-  <object id="3" name="goal" x="22002.9" y="2043.27">
-   <point/>
-  </object>
- </objectgroup>
- <objectgroup id="21" name="EnemySpawnLayer">
-  <object id="118" name="enemy_walking" x="2944" y="1920">
-   <point/>
-  </object>
-  <object id="119" name="enemy_walking" x="3328" y="1920">
-   <point/>
-  </object>
-  <object id="120" name="enemy_static" x="2560" y="1152">
-   <point/>
-  </object>
-  <object id="121" name="enemy_walking" x="6144" y="1664">
-   <point/>
-  </object>
-  <object id="123" name="enemy_attacking" x="7488" y="1452">
-   <point/>
-  </object>
-  <object id="124" name="Pickup_Coin" x="9088" y="2048">
-   <point/>
-  </object>
-  <object id="125" name="pickup_ammo" x="6784" y="1536">
-   <point/>
-  </object>
-  <object id="126" name="pickup_Coin" x="1792" y="1548">
-   <point/>
-  </object>
-  <object id="127" name="pickup_ammo" x="9356" y="1056">
-   <point/>
-  </object>
-  <object id="128" name="pickup_ammo" x="14668" y="1376">
-   <point/>
-  </object>
-  <object id="129" name="enemy_attacking" x="15744" y="2048">
-   <point/>
-  </object>
-  <object id="130" name="enemy_attacking" x="16128" y="2048">
-   <point/>
-  </object>
-  <object id="131" name="pickup_coin" x="15360" y="2048">
+  <object id="3" name="Goal" x="22002.9" y="2043.27">
    <point/>
   </object>
  </objectgroup>
@@ -200,19 +159,6 @@
   <object id="87" x="18432" y="1664" width="384" height="512"/>
   <object id="88" x="17408" y="1920" width="384" height="256"/>
   <object id="103" x="16768" y="2176" width="5632" height="384"/>
-  <object id="104" x="1413" y="1706" width="766" height="94"/>
-  <object id="105" x="2179" y="1326" width="510" height="84"/>
-  <object id="106" x="3333" y="1580" width="636" height="92"/>
-  <object id="107" x="5763" y="1832" width="508" height="88"/>
-  <object id="108" x="7419" y="1572" width="384" height="96"/>
-  <object id="109" x="11259" y="1960" width="520" height="92"/>
-  <object id="110" x="11771" y="1568" width="640" height="104"/>
-  <object id="111" x="12679" y="940" width="628" height="88"/>
-  <object id="112" x="13311" y="1312" width="644" height="96"/>
-  <object id="113" x="13443" y="544" width="636" height="104"/>
-  <object id="114" x="15243" y="2212" width="1524" height="96"/>
-  <object id="115" x="19467" y="1708" width="372" height="80"/>
-  <object id="116" x="20355" y="1700" width="384" height="100"/>
  </objectgroup>
  <layer id="18" name="BG layer" width="175" height="20">
   <data encoding="csv">

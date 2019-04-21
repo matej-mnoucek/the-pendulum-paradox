@@ -23,6 +23,7 @@ import com.thependulumparadox.model.component.TransformComponent;
 import com.thependulumparadox.observer.EventArgs;
 import com.thependulumparadox.observer.IEventHandler;
 
+
 /**
  * All the logic for handling input from the user (locally)
  */
@@ -93,12 +94,13 @@ public class ControlSystem extends EntitySystem implements MoveCommands
             controlComponent.controlModule.jumpStart.addHandler((args)->
             {
                 // Limit jump in the air
+                //TODO: Allows for double jumping when attempting to jump at peak
                 if (Math.abs(dynamicBodyComponent.body.getLinearVelocity().y) > 0.1f)
                 {
                     return;
                 }
 
-                dynamicBodyComponent.body.applyLinearImpulse(0, 8f,0,0,true);
+                dynamicBodyComponent.body.applyLinearImpulse(0, 10f,0,0,true);
 
 
                 // Jump to the right direction
@@ -175,6 +177,7 @@ public class ControlSystem extends EntitySystem implements MoveCommands
                     Timer.schedule(task, 0.1f);
                 }
             }
+
         }
     }
 

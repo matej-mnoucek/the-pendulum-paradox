@@ -110,8 +110,6 @@ public class GamePresenter extends Game
     // DEBUG
     ShapeRenderer shapeRenderer;
     Entity player;
-    Entity enemy1;
-    Entity enemy2;
     TransformComponent transformComponent;
     StateComponent playerState;
 
@@ -135,6 +133,7 @@ public class GamePresenter extends Game
         //debugRenderer = new Box2DDebugRenderer();
         shapeRenderer = new ShapeRenderer();
         shapeRenderer.setColor(Color.RED);
+        mainCamera.zoom = 1.5f;
         shapeRenderer.setProjectionMatrix(mainCamera.combined);
 
         // PLAYER ENTITY
@@ -167,48 +166,6 @@ public class GamePresenter extends Game
         ControlModule module = new KeyboardControlModule();
         ControlComponent control = new ControlComponent(module);
         player.add(control);
-
-        // ENEMY ENTITY
-        enemy1 = new Entity();
-        enemy1.flags = 4;
-        TransformComponent transform = new TransformComponent();
-        transform.position = new Vector2(10, 8);
-        enemy1.add(transform);
-        AnimatedSpriteComponent animatedEnemy = new AnimatedSpriteComponent("packed/ninja_enemy.atlas");
-        animatedEnemy.frameDuration(0.07f);
-        animatedEnemy.height = 1.8f;
-        animatedEnemy.width = 1.8f;
-        animatedEnemy.currentAnimation = "attack";
-        enemy1.add(animatedEnemy);
-        DynamicBodyComponent dynamicBody = new DynamicBodyComponent(world);
-        dynamicBody.position(transform.position)
-                .dimension(0.7f, 1.5f).activate(true);
-        enemy1.add(dynamicBody);
-        EnemyComponent enemyComponent1 = new EnemyComponent();
-        enemy1.add(enemyComponent1);
-        InteractionComponent interaction1 = new InteractionComponent();
-        enemy1.add(interaction1);
-
-        enemy2 = new Entity();
-        enemy2.flags = 4;
-        TransformComponent transform2 = new TransformComponent();
-        transform2.position = new Vector2(20, 8);
-        enemy2.add(transform2);
-        AnimatedSpriteComponent animatedEnemy2 = new AnimatedSpriteComponent("packed/knight_enemy.atlas");
-        animatedEnemy2.frameDuration(0.07f);
-        animatedEnemy2.height = 1.8f;
-        animatedEnemy2.width = 1.8f;
-        animatedEnemy2.currentAnimation = "attack";
-        enemy2.add(animatedEnemy2);
-        DynamicBodyComponent dynamicBody2 = new DynamicBodyComponent(world);
-        dynamicBody2.position(transform2.position)
-                .dimension(0.7f, 1.5f).activate(true);
-        enemy2.add(dynamicBody2);
-        EnemyComponent enemyComponent2 = new EnemyComponent();
-        enemy2.add(enemyComponent2);
-        InteractionComponent interaction2 = new InteractionComponent();
-        enemy2.add(interaction2);
-
 
         // ECS Systems
         // Camera follow
@@ -263,8 +220,6 @@ public class GamePresenter extends Game
             //on first play through set the following entities to ECS
             if (firstPlayThrough) {
                 ecs.addEntity(player);
-                ecs.addEntity(enemy1);
-                ecs.addEntity(enemy2);
                 ecs.addSystem(cameraFollowSystem);
                 ecs.addSystem(renderingSystem);
                 ecs.addSystem(controlSystem);
@@ -333,9 +288,9 @@ public class GamePresenter extends Game
 
         // Create screen and scene for future view state assembly
         GameScene levelOneScene = new GameScene(new TmxMapLoader().load("levels/level1.tmx"),
-                world, mainCamera);
+                world, mainCamera, ecs);
         GameScene menuScene = new GameScene(new TmxMapLoader().load("levels/level1.tmx"),
-                world, mainCamera);
+                world, mainCamera, ecs);
 
         //define states. states are made up of one screen and one scene
         viewStateInGame = new ViewState(levelOneScene, inGameScreen);
