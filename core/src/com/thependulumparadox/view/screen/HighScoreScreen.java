@@ -13,13 +13,14 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
+import com.thependulumparadox.multiplayer.ISynchronization;
 import com.thependulumparadox.presenter.GamePresenter;
 
 import com.thependulumparadox.observer.Event;
 import com.thependulumparadox.observer.EventArgs;
 import com.thependulumparadox.presenter.GamePresenter;
 
-
+import java.util.ArrayList;
 
 
 public class HighScoreScreen extends BaseScreen
@@ -70,10 +71,14 @@ public class HighScoreScreen extends BaseScreen
 
     private Event<EventArgs> menuEvent = new Event<>();
 
+    private ISynchronization proxy;
 
-    public HighScoreScreen()
+
+    public HighScoreScreen(ISynchronization proxy)
     {
         //super(camera);
+        this.proxy = proxy;
+
 
         this.names = new String[10];
         this.score = new Integer[10];
@@ -223,10 +228,28 @@ public class HighScoreScreen extends BaseScreen
     }
 
 
-    private void populateHighscoreList(){
-        for(int i = 0; i<10; i++){
-            score[i] = 0;
-            names[i] = "------";
+    public void populateHighscoreList(){
+        String highscores = proxy.getHighscore();
+        if (highscores == ""){
+            for(int i = 0; i < 10; i++){
+                score[i] = 0;
+                names[i] = "----";
+            }
+        }else {
+            String[] scores = highscores.split(",");
+            for (String s:scores){
+                System.out.println(s);
+
+            }
+
+            for (int i = 0; i < scores.length; i++) {
+                String[] temp = scores[i].split(":");
+                System.out.println(temp[0]);
+                score[i] = Integer.parseInt(temp[1].replace(".",""));
+                names[i] = temp[0];
+            }
+
+
         }
     }
 
@@ -240,6 +263,27 @@ public class HighScoreScreen extends BaseScreen
     public void render(float delta) {
         stage.act(delta);
         stage.draw();
+        firstName.setText(names[0]);
+        secondName.setText(names[1]);
+        thirdName.setText(names[2]);
+        fourthName.setText(names[3]);
+        fifthName.setText(names[4]);
+        sixthName.setText(names[5]);
+        seventhName.setText(names[6]);
+        eighthName.setText(names[7]);
+        ninthName.setText(names[8]);
+        tenthName.setText(names[9]);
+
+        firstScore.setText(score[0]);
+        secondScore.setText(score[1]);
+        thirdScore.setText(score[2]);
+        fourthScore.setText(score[3]);
+        fifthScore.setText(score[4]);
+        sixthScore.setText(score[5]);
+        seventhScore.setText(score[6]);
+        eighthScore.setText(score[7]);
+        ninthScore.setText(score[8]);
+        tenthScore.setText(score[9]);
     }
 
     @Override

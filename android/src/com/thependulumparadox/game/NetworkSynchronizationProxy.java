@@ -15,14 +15,21 @@ import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.api.ApiException;
+import com.google.android.gms.games.AnnotatedData;
 import com.google.android.gms.games.Games;
 import com.google.android.gms.games.GamesActivityResultCodes;
 import com.google.android.gms.games.GamesCallbackStatusCodes;
 import com.google.android.gms.games.GamesClient;
 import com.google.android.gms.games.GamesClientStatusCodes;
+import com.google.android.gms.games.LeaderboardsClient;
 import com.google.android.gms.games.Player;
 import com.google.android.gms.games.PlayersClient;
 import com.google.android.gms.games.RealTimeMultiplayerClient;
+import com.google.android.gms.games.leaderboard.LeaderboardBuffer;
+import com.google.android.gms.games.leaderboard.LeaderboardScore;
+import com.google.android.gms.games.leaderboard.LeaderboardScoreBuffer;
+import com.google.android.gms.games.leaderboard.LeaderboardVariant;
+import com.google.android.gms.games.leaderboard.ScoreSubmissionData;
 import com.google.android.gms.games.multiplayer.Participant;
 import com.google.android.gms.games.multiplayer.realtime.OnRealTimeMessageReceivedListener;
 import com.google.android.gms.games.multiplayer.realtime.RealTimeMessage;
@@ -62,6 +69,10 @@ public class NetworkSynchronizationProxy extends AndroidApplication implements I
     // Client used to interact with the real time multiplayer system.
     private RealTimeMultiplayerClient mRealTimeMultiplayerClient = null;
 
+
+    //Client used for highscores
+    private LeaderboardsClient mLeaderboardClient = null;
+
     private MoveCommands InputHandler;
 
     // Room ID where the currently active game is taking place; null if we're
@@ -72,7 +83,7 @@ public class NetworkSynchronizationProxy extends AndroidApplication implements I
     // Holds the configuration of the current room.
     RoomConfig mRoomConfig;
 
-
+    String Leaderboard = "";
     // The participants in the currently active game
     ArrayList<Participant> mParticipants = new ArrayList<>();
 
@@ -105,7 +116,6 @@ public class NetworkSynchronizationProxy extends AndroidApplication implements I
 
         mGoogleSignInClient = GoogleSignIn.getClient(this, GoogleSignInOptions.DEFAULT_GAMES_SIGN_IN);
 
-        //startQuickGame();
     }
 
     public void setInputHandler(MoveCommands inputHandler){
@@ -113,16 +123,49 @@ public class NetworkSynchronizationProxy extends AndroidApplication implements I
     }
 
 
-    // Check the sample to ensure all placeholder ids are are updated with real-world values.
-    // This is strictly for the purpose of the samples; you don't need this in a production
-    // application.
+
+    public void submitScore(int score){
+        mLeaderboardClient = Games.getLeaderboardsClient(this,GoogleSignIn.getLastSignedInAccount(this));
+        mLeaderboardClient.submitScoreImmediate( "CgkI--f1q4ANEAIQBA",score).addOnSuccessListener(new OnSuccessListener<ScoreSubmissionData>() {
+            @Override
+            public void onSuccess(ScoreSubmissionData scoreSubmissionData) {
+            }
+        });
+    }
+
+    public void UpdateHighscore(){
+        mLeaderboardClient = Games.getLeaderboardsClient(this,mSignedInAccount);
+        mLeaderboardClient.loadTopScores("CgkI--f1q4ANEAIQBA", LeaderboardVariant.TIME_SPAN_ALL_TIME, LeaderboardVariant.COLLECTION_PUBLIC,10,true).addOnSuccessListener(new OnSuccessListener<AnnotatedData<LeaderboardsClient.LeaderboardScores>>() {
+            @Override
+            public void onSuccess(AnnotatedData<LeaderboardsClient.LeaderboardScores> leaderboardScores) {
+                LeaderboardScoreBuffer scores = leaderboardScores.get().getScores();
+                String str = "";
+                for(int i = 0; i < scores.getCount(); i++){
+                    LeaderboardScore score = scores.get(i);
+                    String name = score.getScoreHolderDisplayName();
+                    String points = score.getDisplayScore();
+                    str += name + ":" + points + ",";
+                }
+                if (str != "") {
+                    Leaderboard = str;
+                }
+            }
+        });
+    }
+
+
+
+    public String getHighscore(){
+        UpdateHighscore();
+        return this.Leaderboard;
+
+
+    }
 
     @Override
     protected void onResume() {
         super.onResume();
 
-        // Since the state of the signed in user can change when the activity is not active
-        // it is recommended to try and sign in silently from when the app resumes.
         signInSilently();
     }
 
@@ -212,19 +255,10 @@ public class NetworkSynchronizationProxy extends AndroidApplication implements I
 
     }
 
-    /**
-     * Start a sign in activity.  To properly handle the result, call tryHandleSignInResult from
-     * your Activity's onActivityResult function
-     */
     public void startSignInIntent() {
         startActivityForResult(mGoogleSignInClient.getSignInIntent(), RC_SIGN_IN);
     }
 
-    /**
-     * Try to sign in without displaying dialogs to the user.
-     * <p>
-     * If the user has already signed in previously, it will not show dialog.
-     */
     public void signInSilently() {
         mGoogleSignInClient.silentSignIn().addOnCompleteListener(this,
                 new OnCompleteListener<GoogleSignInAccount>() {
@@ -261,13 +295,6 @@ public class NetworkSynchronizationProxy extends AndroidApplication implements I
                 });
     }
 
-    /**
-     * Since a lot of the operations use tasks, we can use a common handler for whenever one fails.
-     *
-     * @param exception The exception to evaluate.  Will try to display a more descriptive reason for the exception.
-     * @param details   Will display alongside the exception if you wish to provide more details for why the exception
-     *                  happened
-     */
     private void handleException(Exception exception, String details) {
         int status = 0;
 

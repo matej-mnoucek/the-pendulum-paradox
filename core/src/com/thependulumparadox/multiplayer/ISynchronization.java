@@ -17,4 +17,8 @@ public interface ISynchronization
     public void handleActions();
 
     public void setInputHandler(MoveCommands inputHandler);
+
+    public String getHighscore();
+
+    public void submitScore(int score);
 }

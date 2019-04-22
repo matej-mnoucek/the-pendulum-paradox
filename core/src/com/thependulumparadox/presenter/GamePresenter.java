@@ -176,37 +176,6 @@ public class GamePresenter extends Game
 
 
         ////create shadow player
-        // PLAYER ENTITY
-        Entity player1 = new Entity();
-        player1.flags = 2;
-        TransformComponent transformComponent1 = new TransformComponent();
-        transformComponent1.position = new Vector2(3, 8);
-        player1.add(transformComponent1);
-        AnimatedSpriteComponent animated1 = new AnimatedSpriteComponent("packed/hero_player.atlas");
-        animated1.frameDuration(0.1f);
-        animated1.height = 1.8f;
-        animated1.width = 1.8f;
-        //animated.currentAnimation = "idleRight";
-        player1.add(animated1);
-        DynamicBodyComponent dynamicBodyComponent1 = new DynamicBodyComponent(world);
-        dynamicBodyComponent1.position(transformComponent1.position)
-                .dimension(0.7f, 1.5f)
-                .properties(0, 50f, 10f, 0f);
-        player1.add(dynamicBodyComponent1);
-        PlayerComponent playerComponent1 = new PlayerComponent();
-        player1.add(playerComponent1);
-        StateComponent playerState1 = new StateComponent();
-        playerState1.add(new TaggedState("idleLeft")).add(new TaggedState("idleRight"))
-                .add(new TaggedState("runLeft")).add(new TaggedState("runRight"))
-                .add(new TaggedState("jumpRight")).add(new TaggedState("jumpLeft"))
-                .add(new TaggedState("shootRight")).add(new TaggedState("shootLeft"))
-                .initial("idleRight");
-        player1.add(playerState1);
-        InteractionComponent interaction1 = new InteractionComponent();
-        player1.add(interaction1);
-        ControlModule module1 = new NetworkControlModule();
-        ControlComponent control1 = new ControlComponent(module1);
-        player1.add(control1);
 
 
         // ECS Systems
@@ -261,7 +230,7 @@ public class GamePresenter extends Game
         inGameScreen = new InGameScreen();
         gameOverScreen = new GameOverScreen();
         menuScreen = new MenuScreen(proxy);
-        highScoreScreen = new HighScoreScreen();
+        highScoreScreen = new HighScoreScreen(proxy);
         settingsScreen = new SettingsScreen();
         tutorialScreen = new TutorialScreen();
 
@@ -307,7 +276,40 @@ public class GamePresenter extends Game
 
             proxy.startQuickGame();
 
-            //proxy.setInputHandler(input);
+
+            // PLAYER ENTITY
+            Entity player1 = new Entity();
+            player1.flags = 2;
+            TransformComponent transformComponent1 = new TransformComponent();
+            transformComponent1.position = new Vector2(3, 8);
+            player1.add(transformComponent1);
+            AnimatedSpriteComponent animated1 = new AnimatedSpriteComponent("packed/hero_player.atlas");
+            animated1.frameDuration(0.1f);
+            animated1.height = 1.8f;
+            animated1.width = 1.8f;
+            //animated.currentAnimation = "idleRight";
+            player1.add(animated1);
+            DynamicBodyComponent dynamicBodyComponent1 = new DynamicBodyComponent(world);
+            dynamicBodyComponent1.position(transformComponent1.position)
+                    .dimension(0.7f, 1.5f)
+                    .properties(0, 50f, 10f, 0f);
+            player1.add(dynamicBodyComponent1);
+            PlayerComponent playerComponent1 = new PlayerComponent();
+            player1.add(playerComponent1);
+            StateComponent playerState1 = new StateComponent();
+            playerState1.add(new TaggedState("idleLeft")).add(new TaggedState("idleRight"))
+                    .add(new TaggedState("runLeft")).add(new TaggedState("runRight"))
+                    .add(new TaggedState("jumpRight")).add(new TaggedState("jumpLeft"))
+                    .add(new TaggedState("shootRight")).add(new TaggedState("shootLeft"))
+                    .initial("idleRight");
+            player1.add(playerState1);
+            InteractionComponent interaction1 = new InteractionComponent();
+            player1.add(interaction1);
+            ControlModule module1 = new NetworkControlModule();
+            ControlComponent control1 = new ControlComponent(module1);
+            player1.add(control1);
+
+
 
             //on first play through set the following entities to ECS
 
@@ -424,6 +426,7 @@ public class GamePresenter extends Game
         ((MenuScreen) menuScreen).getHighScoreEvent().addHandler((args) -> {
             // set input processor to new State's BaseScreen stage
             Gdx.input.setInputProcessor(highScoreScreen.getStage());
+            ((HighScoreScreen)highScoreScreen).populateHighscoreList();
             // call on state machine to change state
             viewMachine.nextState(viewStateHighScore);
         });
@@ -517,6 +520,16 @@ public class GamePresenter extends Game
 */
         });
 
+
+        ((InGameScreen) inGameScreen).getMenuEvent().addHandler((args) -> {
+            //remove Player entity to stop it rendering whilst not in-game
+            ecs.removeEntity(player);
+
+            // call on state machine to change state
+            Gdx.input.setInputProcessor(gameOverScreen.getStage());
+             viewMachine.nextState(viewStateGameOver);
+
+        });
         //new game pressed from gameOver state
         /*
         TODO: implement this method correctly. this is currently an invalid state transition
