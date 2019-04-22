@@ -1,7 +1,7 @@
 package com.thependulumparadox.multiplayer;
 
 
-import com.thependulumparadox.model.MoveCommands;
+import com.thependulumparadox.control.MoveCommands;
 
 public interface ISynchronization
 {
@@ -17,4 +17,8 @@ public interface ISynchronization
     public void handleActions();
 
     public void setInputHandler(MoveCommands inputHandler);
+
+    public String getHighscore();
+
+    public void submitScore(int score);
 }

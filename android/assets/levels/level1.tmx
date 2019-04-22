@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.2" tiledversion="1.2.2" orientation="orthogonal" renderorder="right-down" width="175" height="20" tilewidth="128" tileheight="128" infinite="0" nextlayerid="22" nextobjectid="132">
+<map version="1.2" tiledversion="1.2.2" orientation="orthogonal" renderorder="right-down" width="175" height="20" tilewidth="128" tileheight="128" infinite="0" nextlayerid="23" nextobjectid="140">
  <tileset firstgid="1" name="ForestTileset" tilewidth="129" tileheight="129" tilecount="20" columns="0">
   <grid orientation="orthogonal" width="1" height="1"/>
   <terraintypes>
@@ -111,7 +111,7 @@
  <tileset firstgid="34" name="BG" tilewidth="1000" tileheight="750" tilecount="1" columns="1">
   <image source="tilesets/background_tiles/background1.png" width="1000" height="750"/>
  </tileset>
- <objectgroup id="3" name="PointLayer">
+ <objectgroup id="3" name="points">
   <object id="1" name="start" x="197.333" y="1764">
    <point/>
   </object>
@@ -119,44 +119,49 @@
    <point/>
   </object>
  </objectgroup>
- <objectgroup id="21" name="EnemySpawnLayer">
-  <object id="118" name="enemy_walking" x="828" y="1732">
+ <objectgroup id="22" name="pickups">
+  <object id="132" name="coin" x="9105.07" y="2088.53">
    <point/>
   </object>
-  <object id="119" name="enemy_walking" x="3328" y="1920">
+  <object id="133" name="ammo" x="6801.07" y="1576.53">
    <point/>
   </object>
-  <object id="120" name="enemy_static" x="2560" y="1152">
+  <object id="134" name="coin" x="1809.07" y="1588.53">
    <point/>
   </object>
-  <object id="121" name="enemy_walking" x="6144" y="1664">
+  <object id="135" name="ammo" x="9373.07" y="1096.53">
    <point/>
   </object>
-  <object id="123" name="enemy_attacking" x="7488" y="1452">
+  <object id="136" name="ammo" x="14685.1" y="1416.53">
    <point/>
   </object>
-  <object id="124" name="Pickup_Coin" x="9088" y="2048">
+  <object id="137" name="coin" x="15377.1" y="2088.53">
    <point/>
   </object>
-  <object id="125" name="pickup_ammo" x="6784" y="1536">
+ </objectgroup>
+ <objectgroup id="21" name="enemies">
+  <object id="118" name="walking" x="828" y="1732">
    <point/>
   </object>
-  <object id="126" name="pickup_Coin" x="1792" y="1548">
+  <object id="119" name="walking" x="3328" y="1920">
    <point/>
   </object>
-  <object id="127" name="pickup_ammo" x="9356" y="1056">
+  <object id="120" name="static" x="2560" y="1152">
    <point/>
   </object>
-  <object id="128" name="pickup_ammo" x="14668" y="1376">
+  <object id="121" name="walking" x="6144" y="1664">
    <point/>
   </object>
-  <object id="129" name="enemy_attacking" x="15744" y="2048">
+  <object id="123" name="attacking" x="7488" y="1452">
    <point/>
   </object>
-  <object id="130" name="enemy_attacking" x="16128" y="2048">
+  <object id="129" name="attacking" x="15744" y="2048">
    <point/>
   </object>
-  <object id="131" name="pickup_coin" x="15360" y="2048">
+  <object id="130" name="attacking" x="16128" y="2048">
+   <point/>
+  </object>
+  <object id="138" name="attacking" x="1152" y="1890.13">
    <point/>
   </object>
  </objectgroup>

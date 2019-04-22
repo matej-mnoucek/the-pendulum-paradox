@@ -1,19 +1,34 @@
 package com.thependulumparadox.control;
 
-import com.thependulumparadox.command.CommandQueue;
-import com.thependulumparadox.command.DelayCommand;
-import com.thependulumparadox.command.InvokeCommand;
-
-public class NetworkControlModule extends ControlModule
+public class NetworkControlModule extends EventControlModule implements MoveCommands
 {
-    public NetworkControlModule()
-    {
-
-    }
 
     @Override
     public void update(float delta)
     {
 
+        super.update(delta);
     }
+
+    @Override
+    public MoveCommands getInputSystem() {
+        return this;
+    }
+
+    @Override
+    public void moveLeft() {leftStart();}
+    @Override
+    public void stopMoveLeft() {leftEnd();}
+    @Override
+    public void moveRight() {rightStart();}
+    @Override
+    public void stopMoveRight() {rightEnd();}
+    @Override
+    public void jump() {jumpStart();}
+    @Override
+    public void stopJump() {jumpEnd();}
+    @Override
+    public void startShooting() {attackStart();}
+    @Override
+    public void stopShooting() {attackEnd();}
 }

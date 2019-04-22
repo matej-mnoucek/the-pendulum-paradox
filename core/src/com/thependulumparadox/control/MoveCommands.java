@@ -1,4 +1,4 @@
-package com.thependulumparadox.model;
+package com.thependulumparadox.control;
 
 public interface MoveCommands {
 
@@ -13,6 +13,8 @@ public interface MoveCommands {
     public void stopMoveRight();
 
     public void jump();
+
+    public void stopJump();
 
     public void startShooting();
 

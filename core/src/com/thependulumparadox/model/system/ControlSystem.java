@@ -7,15 +7,16 @@ import com.badlogic.ashley.core.EntitySystem;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.core.PooledEngine;
 import com.badlogic.ashley.utils.ImmutableArray;
+import com.badlogic.gdx.assets.AssetManager;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Timer;
-import com.thependulumparadox.model.MoveCommands;
 import com.thependulumparadox.model.component.BulletComponent;
 import com.thependulumparadox.model.component.BulletVisualsComponent;
 import com.thependulumparadox.model.component.ControlComponent;
 import com.thependulumparadox.model.component.DynamicBodyComponent;
-import com.thependulumparadox.model.component.PlayerComponent;
+import com.thependulumparadox.model.component.SoundComponent;
 import com.thependulumparadox.model.component.SpriteComponent;
 import com.thependulumparadox.model.component.StateComponent;
 import com.thependulumparadox.model.component.TransformComponent;
@@ -26,7 +27,7 @@ import com.thependulumparadox.model.entity.EntityFactory;
 /**
  * All the logic for handling input from the user (locally)
  */
-public class ControlSystem extends EntitySystem implements MoveCommands
+public class ControlSystem extends EntitySystem
 {
     private ImmutableArray<Entity> controlledEntities;
     private ComponentMapper<DynamicBodyComponent> dynamicBodyComponentMapper
@@ -47,6 +48,8 @@ public class ControlSystem extends EntitySystem implements MoveCommands
     // Timer for state transitions delays
     Timer timer = new Timer();
 
+    //sounds
+    AssetManager assetManager = new AssetManager();
     // Entity factory
     AbstractEntityFactory factory;
 
@@ -56,9 +59,6 @@ public class ControlSystem extends EntitySystem implements MoveCommands
     private boolean jump = false;
     private boolean shooting = false;
 
-    public ControlSystem getInputSystem(){
-        return this;
-    }
 
 
     public ControlSystem(AbstractEntityFactory factory)
@@ -68,6 +68,11 @@ public class ControlSystem extends EntitySystem implements MoveCommands
 
     public void addedToEngine(Engine engine)
     {
+        assetManager.load("sounds/jump.mp3", Sound.class);
+        assetManager.load("sounds/single_gunshot.mp3", Sound.class);
+        assetManager.finishLoading();
+
+
         controlledEntities = engine.getEntitiesFor(Family.all(DynamicBodyComponent.class,
                 ControlComponent.class, StateComponent.class, TransformComponent.class).get());
 
@@ -79,6 +84,7 @@ public class ControlSystem extends EntitySystem implements MoveCommands
             TransformComponent transformComponent = transformComponentMapper.get(entity);
             StateComponent stateComponent = stateComponentMapper.get(entity);
             BulletVisualsComponent bulletVisualsComponent = bulletVisualsComponentMapper.get(entity);
+
 
             controlComponent.controlModule.right.addHandler((args)->
             {
@@ -141,6 +147,10 @@ public class ControlSystem extends EntitySystem implements MoveCommands
                 {
                     stateComponent.transition("jumpLeft");
                 }
+
+                Entity jumpSound = new Entity();
+                jumpSound.add(new SoundComponent(assetManager.get("sounds/jump.mp3", Sound.class),true));
+                getEngine().addEntity(jumpSound);
             });
 
             controlComponent.controlModule.attackStart.addHandler((args)->{
@@ -166,7 +176,12 @@ public class ControlSystem extends EntitySystem implements MoveCommands
                             0, 0, 0, true);
                     stateComponent.transition("shootLeft");
                 }
+                Entity shootSound = new Entity();
+                shootSound.add(new SoundComponent(assetManager.get("sounds/single_gunshot.mp3",Sound.class),true));
+                getEngine().addEntity(shootSound);
+
             });
+
         }
     }
 
@@ -211,25 +226,4 @@ public class ControlSystem extends EntitySystem implements MoveCommands
         }
     }
 
-    public void moveLeft(){
-        moveLeft = true;
-    }
-
-    public void moveRight(){
-        moveRight = true;
-    }
-
-    public void stopMoveLeft(){
-        moveLeft = false;
-    }
-
-    public void stopMoveRight(){
-        moveRight = false;
-    }
-
-    public void jump(){jump = true;}
-
-    public void startShooting() {shooting = true;}
-
-    public void stopShooting() {shooting = false;}
 }
