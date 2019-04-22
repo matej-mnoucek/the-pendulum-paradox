@@ -6,6 +6,8 @@ import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.EntitySystem;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.utils.ImmutableArray;
+import com.badlogic.gdx.assets.AssetManager;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.Contact;
 import com.badlogic.gdx.physics.box2d.ContactImpulse;
@@ -20,6 +22,7 @@ import com.thependulumparadox.model.component.EnemyComponent;
 import com.thependulumparadox.model.component.EnhancementComponent;
 import com.thependulumparadox.model.component.InteractionComponent;
 import com.thependulumparadox.model.component.PlayerComponent;
+import com.thependulumparadox.model.component.SoundComponent;
 import com.thependulumparadox.model.component.enhancement.Enhancement;
 
 import java.util.ArrayList;
@@ -52,9 +55,15 @@ public class InteractionSystem extends EntitySystem
     // Physics world
     private World world;
 
+    //sounds
+    private AssetManager assetManager = new AssetManager();
+
     public InteractionSystem(World world)
     {
         this.world = world;
+
+        assetManager.load("sounds/die.mp3", Sound.class);
+        assetManager.finishLoading();
 
         // Define collision handling
         world.setContactListener(new ContactListener()
@@ -219,6 +228,10 @@ public class InteractionSystem extends EntitySystem
                         DynamicBodyComponent body = dynamicBodyComponentMapper.get(interactionEntity);
                         world.destroyBody(body.body);
                         getEngine().removeEntity(interactionEntity);
+                        Entity enemyDieSound = new Entity();
+                        enemyDieSound.add(new SoundComponent(assetManager.get("sounds/die.mp3", Sound.class),true));
+                        getEngine().addEntity(enemyDieSound);
+
                     }
                 }
 
@@ -283,6 +296,9 @@ public class InteractionSystem extends EntitySystem
                         DynamicBodyComponent body = dynamicBodyComponentMapper.get(interactionEntity);
                         world.destroyBody(body.body);
                         getEngine().removeEntity(interactionEntity);
+                        Entity playerDieSound = new Entity();
+                        playerDieSound.add(new SoundComponent(assetManager.get("sounds/die.mp3", Sound.class),true));
+                        getEngine().addEntity(playerDieSound);
                     }
                 }
             }

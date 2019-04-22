@@ -80,7 +80,7 @@ public class NetworkSynchronizationProxy extends AndroidApplication implements I
     String mMyId = null;
 
     // Message buffer for sending messages
-    byte[] mMsgBuf = new byte[100];
+    byte[] mMsgBuf = new byte[4];
 
     Queue actionQueue = new Queue();
 

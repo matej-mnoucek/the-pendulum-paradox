@@ -7,11 +7,14 @@ import com.badlogic.ashley.core.EntitySystem;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.core.PooledEngine;
 import com.badlogic.ashley.utils.ImmutableArray;
+import com.badlogic.gdx.assets.AssetManager;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Timer;
 import com.thependulumparadox.model.component.BulletComponent;
 import com.thependulumparadox.model.component.ControlComponent;
 import com.thependulumparadox.model.component.DynamicBodyComponent;
+import com.thependulumparadox.model.component.SoundComponent;
 import com.thependulumparadox.model.component.SpriteComponent;
 import com.thependulumparadox.model.component.StateComponent;
 import com.thependulumparadox.model.component.TransformComponent;
@@ -37,8 +40,17 @@ public class ControlSystem extends EntitySystem
     // Timer for state transitions delays
     Timer timer = new Timer();
 
+    //sounds
+    AssetManager assetManager = new AssetManager();
+
+
     public void addedToEngine(Engine engine)
     {
+        assetManager.load("sounds/jump.mp3", Sound.class);
+        assetManager.load("sounds/single_gunshot.mp3", Sound.class);
+        assetManager.finishLoading();
+
+
         controlledEntities = engine.getEntitiesFor(Family.all(DynamicBodyComponent.class,
                 ControlComponent.class, StateComponent.class, TransformComponent.class).get());
 
@@ -106,6 +118,10 @@ public class ControlSystem extends EntitySystem
                 {
                     stateComponent.transition("jumpLeft");
                 }
+
+                Entity jumpSound = new Entity();
+                jumpSound.add(new SoundComponent(assetManager.get("sounds/jump.mp3", Sound.class),true));
+                getEngine().addEntity(jumpSound);
             });
 
             controlComponent.controlModule.attackStart.addHandler((args)->{
@@ -145,7 +161,12 @@ public class ControlSystem extends EntitySystem
                     dynamic.body.applyLinearImpulse(-5, 0, 0, 0, true);
                     stateComponent.transition("shootLeft");
                 }
+                Entity shootSound = new Entity();
+                shootSound.add(new SoundComponent(assetManager.get("sounds/single_gunshot.mp3",Sound.class),true));
+                getEngine().addEntity(shootSound);
+
             });
+
         }
     }
 

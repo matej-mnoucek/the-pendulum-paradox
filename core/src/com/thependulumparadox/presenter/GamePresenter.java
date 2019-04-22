@@ -111,7 +111,6 @@ public class GamePresenter extends Game
     private Boolean firstPlayThrough = true;
 
 
-    private boolean soundOn;
     private boolean shooting;
     private float shootingTimer = 0;
 
@@ -121,23 +120,15 @@ public class GamePresenter extends Game
     TransformComponent transformComponent;
     StateComponent playerState;
 
-    ShapeRenderer networkedshapeRenderer;
-    Entity networkedplayer;
-    TransformComponent networkedtransformComponent;
-    StateComponent networkedplayerState;
 
-    private boolean isMultiplayer = false;
     private ISynchronization proxy;
 
 
-    // Single player
-    public GamePresenter() { isMultiplayer = false; };
 
     // Multi player
     public GamePresenter(ISynchronization proxy)
     {
         this.proxy = proxy;
-        this.isMultiplayer = true;
     }
 
     @Override
@@ -239,9 +230,7 @@ public class GamePresenter extends Game
         SoundSystem sound = new SoundSystem();
         ecs.addSystem(sound);
         //populate assetmanager with assets
-        assetManager.load("sounds/single_gunshot.mp3", Sound.class);
         assetManager.load("sounds/coin_collect.mp3", Sound.class);
-        assetManager.load("sounds/jump.mp3", Sound.class);
         assetManager.load("sounds/die.mp3", Sound.class);
         assetManager.load("sounds/GameOver.mp3", Sound.class);
         assetManager.load("sounds/reload.mp3", Sound.class);
@@ -250,10 +239,7 @@ public class GamePresenter extends Game
         assetManager.finishLoading();
 
         //soundEntities
-        Entity shootSound = new Entity();
-        shootSound.add(new SoundComponent(assetManager.get("sounds/single_gunshot.mp3",Sound.class),true));
-
-        Entity menuMusic = new Entity();
+            Entity menuMusic = new Entity();
         menuMusic.add(new MusicComponent(Gdx.audio.newMusic(Gdx.files.internal("sounds/menuMusic.mp3"))));
         ecs.addEntity(menuMusic);
         Entity inGameMusic = new Entity();
@@ -263,7 +249,7 @@ public class GamePresenter extends Game
         Set music for gameplay, but do not start it.
         Music not in assetManager because larger sound files needs to be streamed as Gdx.audio-type
         and not Gdx.Sound type*/
-        soundOn = true;
+        sound.soundOn = true;
         //menuMusic = Gdx.audio.newMusic(Gdx.files.internal("sounds/menuMusic.mp3"));
         //inGameMusic = Gdx.audio.newMusic(Gdx.files.internal("sounds/inGameMusic.mp3"));
         //inGameMusic.setVolume(0.5f);
@@ -306,11 +292,10 @@ public class GamePresenter extends Game
             //set inGameScreen's stage as the input processor
             Gdx.input.setInputProcessor(inGameScreen.getStage());
             //stop menu music. will call stop() method on menu music even if sound is currently turned off
+            ((MusicComponent)menuMusic.getComponents().get(0)).stop();
             ecs.removeEntity(menuMusic);
-            //if sound is turned on: start playing in-game music
-            if(soundOn) {
-                ecs.addEntity(inGameMusic);
-            }
+            ecs.addEntity(inGameMusic);
+
             // call on state machine to change state
             viewMachine.nextState(viewStateInGame);
         });
@@ -354,11 +339,10 @@ public class GamePresenter extends Game
             //set inGameScreen's stage as the input processor
             Gdx.input.setInputProcessor(inGameScreen.getStage());
             //stop menu music. will call stop() method on menu music even if sound is currently turned off
+            ((MusicComponent)menuMusic.getComponents().get(0)).stop();
             ecs.removeEntity(menuMusic);
-            //if sound is turned on: start playing in-game music
-            if(soundOn) {
-                ecs.addEntity(inGameMusic);
-            }
+            ecs.addEntity(inGameMusic);
+
             // call on state machine to change state
             viewMachine.nextState(viewStateInGame);
 
@@ -464,15 +448,10 @@ public class GamePresenter extends Game
         ((InGameScreen) inGameScreen).getSoundEvent().addHandler((args) -> {
             //if sound is turned on: pause game music. Set the sound-button in settingsscreen to
             //not be toggled, and vice versa
-            if(soundOn){
-                ecs.removeEntity(inGameMusic);
-                ((SettingsScreen) settingsScreen).setSoundOn(false);
-                soundOn = false;
-            } else {
-                ecs.addEntity(inGameMusic);
-                ((SettingsScreen) settingsScreen).setSoundOn(true);
-                soundOn = true;
-            }
+
+                ((SettingsScreen) settingsScreen).setSoundOn(!sound.soundOn);
+                sound.soundOn = !sound.soundOn;
+
         });
 
         ((InGameScreen) inGameScreen).getLeftEvent().addHandler((args) -> {
@@ -501,7 +480,6 @@ public class GamePresenter extends Game
         ((InGameScreen) inGameScreen).getShootEvent().addHandler((args) -> {
             proxy.sendAction("S");
             ((EventControlModule) module).attackStart();
-            ecs.addEntity(shootSound);
 
         });
 
@@ -515,7 +493,6 @@ public class GamePresenter extends Game
         ((InGameScreen) inGameScreen).getJumpEvent().addHandler((args) -> {
             proxy.sendAction("J");
             ((EventControlModule) module).jumpStart();
-
 
             /*// set input processor to new State's BaseScreen stage
             Gdx.input.setInputProcessor(gameOverScreen.getStage());
@@ -579,17 +556,10 @@ public class GamePresenter extends Game
         ((SettingsScreen) settingsScreen).getSoundEvent().addHandler((args) -> {
             //if sound is currently playing: pause menu-music. Set in-game sound to be off.
             //set boolean variable "soundOn" to false
-            if(soundOn) {
-                ecs.removeEntity(menuMusic);
-                ((InGameScreen) inGameScreen).setSoundOn(false);
-                soundOn = false;
-            //if sound is currently not playing: start playing menu-music. set in-game music to be on
-            //set boolean "soundOn" to true
-            } else {
-                ecs.addEntity(menuMusic);
-                ((InGameScreen) inGameScreen).setSoundOn(true);
-                soundOn = true;
-            }
+
+                ((InGameScreen) inGameScreen).setSoundOn(!sound.soundOn);
+                sound.soundOn = !sound.soundOn;
+
         });
 
         //if back button pressed from settings screen:
