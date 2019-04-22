@@ -6,7 +6,6 @@ public class StandardAttributes implements Cloneable
     public float health = 100;
     public float defense = 100;
     public float damage = 50;
-    public float speed = 10;
 
     @Override
     public Object clone() throws CloneNotSupportedException {

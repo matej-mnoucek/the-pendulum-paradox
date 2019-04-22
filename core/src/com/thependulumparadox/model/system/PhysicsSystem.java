@@ -39,8 +39,9 @@ public class PhysicsSystem extends EntitySystem
     // 000000000000100 = 4 = enemy group
     // 000000000001000 = 8 = bullet group
     // 000000000010000 = 16 = enhancement group
-    // 000000000100000 = 32 = player trigger group
-    // 000000001000000 = 64 = enemy trigger group
+    // 000000000100000 = 32 = coin group
+    // 000000001000000 = 64 = player trigger group
+    // 000000010000000 = 128 = enemy trigger group
     public enum CollisionCategory
     {
         DEFAULT(1),
@@ -48,8 +49,9 @@ public class PhysicsSystem extends EntitySystem
         ENEMY(4),
         BULLET(8),
         ENHANCEMENT(16),
-        PLAYER_TRIGGER(32),
-        ENEMY_TRIGGER(64);
+        COIN(32);
+        //PLAYER_TRIGGER(64),
+        //ENEMY_TRIGGER(128);
 
         public final short bits;
         private CollisionCategory(int bits)
@@ -63,7 +65,8 @@ public class PhysicsSystem extends EntitySystem
     // Player group = collides with default, enemy and enhancement group = 000000000010101
     // Enemy group = collides with default, bullets and player group = 000000000001011
     // Bullet group = collides with default and enemy group = 000000000000101
-    // Power-up group = collides with default and player group = 000000000000011
+    // Enhancement group = collides with default and player group = 000000000000011
+    // Coin group = collides with default and player group = 000000000000011
     // Player trigger group = collides with enemy and enhancement group = 000000000010100
     // Enemy trigger group = collides with bullets and player group = 000000000001010
     public enum CollisionMask
@@ -73,6 +76,7 @@ public class PhysicsSystem extends EntitySystem
         ENEMY(11),
         BULLET(5),
         ENHANCEMENT(3),
+        COIN(3),
         PLAYER_TRIGGER(20),
         ENEMY_TRIGGER(10);
 
@@ -94,8 +98,6 @@ public class PhysicsSystem extends EntitySystem
     private ComponentMapper<TransformComponent> transformComponentMapper
             = ComponentMapper.getFor(TransformComponent.class);
 
-    // Bodies ready to be destroyed
-    private HashSet<Body> bodiesToDestroy = new HashSet<>();
 
     // Physics world
     private World world;
@@ -207,14 +209,14 @@ public class PhysicsSystem extends EntitySystem
             case 2:
                 filter1.categoryBits = CollisionCategory.PLAYER.bits;
                 filter1.maskBits = CollisionMask.PLAYER.bits;
-                filter2.categoryBits = CollisionCategory.PLAYER_TRIGGER.bits;
+                //filter2.categoryBits = CollisionCategory.PLAYER_TRIGGER.bits;
                 filter2.maskBits = CollisionMask.PLAYER_TRIGGER.bits;
                 break;
             // Enemy
             case 4:
                 filter1.categoryBits = CollisionCategory.ENEMY.bits;
                 filter1.maskBits = CollisionMask.ENEMY.bits;
-                filter2.categoryBits = CollisionCategory.ENEMY_TRIGGER.bits;
+                //filter2.categoryBits = CollisionCategory.ENEMY_TRIGGER.bits;
                 filter2.maskBits = CollisionMask.ENEMY_TRIGGER.bits;
                 break;
             // Bullet
@@ -222,21 +224,28 @@ public class PhysicsSystem extends EntitySystem
                 filter1.categoryBits = CollisionCategory.BULLET.bits;
                 filter1.maskBits = CollisionMask.BULLET.bits;
                 break;
-            // Power up
+            // Enhancement
             case 16:
                 filter1.categoryBits = CollisionCategory.ENHANCEMENT.bits;
                 filter1.maskBits = CollisionMask.ENHANCEMENT.bits;
                 break;
+            // Coin
+            case 32:
+                filter1.categoryBits = CollisionCategory.COIN.bits;
+                filter1.maskBits = CollisionMask.COIN.bits;
+                break;
         }
-        body.getFixtureList().first().setFilterData(filter1);
 
-        // If entity has trigger as well set collision rules
+        // Set fixture 1 filter
+        body.getFixtureList().first().setFilterData(filter1);
+        // Add fixture 1 collision argument = entity
+        body.getFixtureList().first().setUserData(entity);
+
+        // If entity has trigger as well set collision rules and argument
         if (body.getFixtureList().size > 1)
         {
             body.getFixtureList().get(1).setFilterData(filter2);
+            body.getFixtureList().get(1).setUserData(entity);
         }
-
-        // Add collision argument = entity
-        body.getFixtureList().first().setUserData(entity);
     }
 }

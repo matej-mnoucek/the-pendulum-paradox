@@ -62,11 +62,21 @@ public class RenderingSystem extends EntitySystem
             SpriteComponent spriteComponent
                     = spriteComponentMapper.get(entity);
 
-            spriteBatch.draw(spriteComponent.sprite,
-                    transformComponent.position.x - spriteComponent.width/2.0f,
-                    transformComponent.position.y - spriteComponent.height/2.0f,
-                    spriteComponent.width,
-                    spriteComponent.height);
+            // Handle rotation
+            spriteComponent.rotationAngle += spriteComponent.rotationSpeed;
+
+            // Draw
+            if(spriteComponent.sprite != null)
+            {
+                spriteBatch.draw(spriteComponent.sprite,
+                        transformComponent.position.x - spriteComponent.width / 2.0f,
+                        transformComponent.position.y - spriteComponent.height / 2.0f,
+                        spriteComponent.width / 2.0f,
+                        spriteComponent.height / 2.0f,
+                        spriteComponent.width,
+                        spriteComponent.height,
+                        1.0f, 1.0f, spriteComponent.rotationAngle);
+            }
         }
 
         // Render animations

@@ -12,23 +12,29 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 
+import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
 import com.thependulumparadox.control.AIControlModule;
+import com.thependulumparadox.misc.Range;
+import com.thependulumparadox.model.component.BulletVisualsComponent;
 import com.thependulumparadox.model.component.ControlComponent;
 import com.thependulumparadox.control.ControlModule;
 import com.thependulumparadox.model.component.EnemyComponent;
+import com.thependulumparadox.model.component.EnhancementVisualsComponent;
 import com.thependulumparadox.model.component.InteractionComponent;
 import com.thependulumparadox.control.KeyboardControlModule;
 import com.thependulumparadox.model.component.PlayerComponent;
+import com.thependulumparadox.model.component.SpriteComponent;
 import com.thependulumparadox.model.component.StateComponent;
 import com.thependulumparadox.model.system.AnimationControlSystem;
 import com.thependulumparadox.model.system.InteractionSystem;
 import com.thependulumparadox.model.system.FPSDebugSystem;
 import com.thependulumparadox.model.system.PhysicsDebugSystem;
 import com.thependulumparadox.model.system.StateSystem;
+import com.thependulumparadox.model.system.VisualSystem;
 import com.thependulumparadox.multiplayer.ISynchronization;
 import com.thependulumparadox.misc.Constants;
 import com.thependulumparadox.model.entity.AbstractEntityFactory;
@@ -67,15 +73,16 @@ public class GamePresenter extends Game
     // Component based system root
     Engine ecs = new Engine();
 
+    // Physics world
+    World world = new World(new Vector2(0, -10), true);
+
     // Component factory
-    AbstractEntityFactory componentFactory = new EntityFactory();
+    AbstractEntityFactory entityFactory = new EntityFactory(world);
 
     // Entity builder
     IEntityBuilder entityBuilder = new EntityBuilder();
 
 
-    // Physics world
-    World world = new World(new Vector2(0, -10), true);
 
     // MVP view state machine
     IStateMachine viewMachine = new StateMachine();
@@ -130,44 +137,12 @@ public class GamePresenter extends Game
     @Override
     public void create()
     {
-        // DEBUG
-        //debugRenderer = new Box2DDebugRenderer();
-        shapeRenderer = new ShapeRenderer();
-        shapeRenderer.setColor(Color.RED);
+        // Adjust view
         mainCamera.zoom = 1.5f;
-        shapeRenderer.setProjectionMatrix(mainCamera.combined);
 
         // PLAYER ENTITY
-        player = new Entity();
-        player.flags = 2;
-        transformComponent = new TransformComponent();
-        transformComponent.position = new Vector2(3, 8);
-        player.add(transformComponent);
-        AnimatedSpriteComponent animated = new AnimatedSpriteComponent("packed/hero_player.atlas");
-        animated.frameDuration(0.1f);
-        animated.height = 1.8f;
-        animated.width = 1.8f;
-        //animated.currentAnimation = "idleRight";
-        player.add(animated);
-        DynamicBodyComponent dynamicBodyComponent = new DynamicBodyComponent(world);
-        dynamicBodyComponent.position(transformComponent.position)
-                .dimension(0.7f, 1.5f).trigger(2f)
-                .properties(0, 50f, 10f, 0f);
-        player.add(dynamicBodyComponent);
-        PlayerComponent playerComponent = new PlayerComponent();
-        player.add(playerComponent);
-        playerState = new StateComponent();
-        playerState.add(new TaggedState("idleLeft")).add(new TaggedState("idleRight"))
-                .add(new TaggedState("runLeft")).add(new TaggedState("runRight"))
-                .add(new TaggedState("jumpRight")).add(new TaggedState("jumpLeft"))
-                .add(new TaggedState("shootRight")).add(new TaggedState("shootLeft"))
-                .initial("idleRight");
-        player.add(playerState);
-        InteractionComponent interaction = new InteractionComponent();
-        player.add(interaction);
-        ControlModule module = new KeyboardControlModule();
-        ControlComponent control = new ControlComponent(module);
-        player.add(control);
+        player = entityFactory.create("first_player");
+        player.getComponent(DynamicBodyComponent.class).position(new Vector2(5,8));
 
 
         // ECS Systems
@@ -181,7 +156,7 @@ public class GamePresenter extends Game
         PhysicsSystem physics = new PhysicsSystem(world);
 
         // Control
-        ControlSystem controlSystem = new ControlSystem();
+        ControlSystem controlSystem = new ControlSystem(entityFactory);
 
         // States
         StateSystem state = new StateSystem();
@@ -232,6 +207,7 @@ public class GamePresenter extends Game
                 ecs.addSystem(new FPSDebugSystem());
                 ecs.addSystem(new AnimationControlSystem());
                 ecs.addSystem(new InteractionSystem(world));
+                ecs.addSystem(new VisualSystem());
 
                 firstPlayThrough = false;
             }
@@ -256,18 +232,32 @@ public class GamePresenter extends Game
         {
 
 
-            proxy.startQuickGame();
+            //proxy.startQuickGame();
 
             //proxy.setInputHandler(input);
 
             //on first play through set the following entities to ECS
 
             if (firstPlayThrough) {
+
+                /*
                 ecs.addEntity(player);
                 ecs.addSystem(cameraFollowSystem);
                 ecs.addSystem(renderingSystem);
                 ecs.addSystem(physics);
                 //ecs.addSystem(input);
+                */
+
+                ecs.addEntity(player);
+                ecs.addSystem(state);
+                ecs.addSystem(cameraFollowSystem);
+                ecs.addSystem(renderingSystem);
+                ecs.addSystem(controlSystem);
+                ecs.addSystem(physics);
+                ecs.addSystem(new PhysicsDebugSystem(world, mainCamera));
+                ecs.addSystem(new FPSDebugSystem());
+                ecs.addSystem(new AnimationControlSystem());
+                ecs.addSystem(new InteractionSystem(world));
 
                 firstPlayThrough = false;
             }

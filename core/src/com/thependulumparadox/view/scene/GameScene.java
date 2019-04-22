@@ -106,11 +106,13 @@ public class GameScene extends Scene
                         animatedEnemy.frameDuration(0.07f);
                         animatedEnemy.height = 1.8f;
                         animatedEnemy.width = 1.8f;
-                        animatedEnemy.currentAnimation = "attack";
+                        animatedEnemy.currentAnimation = "attackLeft";
                         entity.add(animatedEnemy);
                         DynamicBodyComponent dynamicBody = new DynamicBodyComponent(world);
                         dynamicBody.position(transform.position)
-                                .dimension(0.7f, 1.5f).activate(true);
+                                .dimension(0.7f, 1.5f)
+                                //.trigger(2.0f)
+                                .activate(true);
                         entity.add(dynamicBody);
                         EnemyComponent enemyComponent = new EnemyComponent();
                         entity.add(enemyComponent);
@@ -137,6 +139,7 @@ public class GameScene extends Scene
                         dynamicBody.position(transform.position)
                                 .dimension(0.7f, 1.5f)
                                 .properties(0, 50f, 10f, 0f)
+                                //.trigger(2.0f)
                                 .activate(true);
                         entity.add(dynamicBody);
                         EnemyComponent enemyComponent = new EnemyComponent();
