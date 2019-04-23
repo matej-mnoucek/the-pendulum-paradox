@@ -8,7 +8,7 @@ public class PlayerComponent implements Component
     public StandardAttributes base;
     public StandardAttributes current;
 
-    public float score;
+    public int score;
 
     public PlayerComponent()
     {

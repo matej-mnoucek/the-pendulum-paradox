@@ -182,6 +182,18 @@ public class ControlSystem extends EntitySystem
 
             });
 
+            controlComponent.controlModule.meleeStart.addHandler((args)->{
+
+                // Attack to the right direction
+                if (controlComponent.facingRight)
+                {
+                    stateComponent.transition("attackRight");
+                }
+                else
+                {
+                    stateComponent.transition("attackLeft");
+                }
+            });
         }
     }
 
@@ -196,8 +208,8 @@ public class ControlSystem extends EntitySystem
 
             // Handle idle transition
             DynamicBodyComponent bodyComponent = dynamicBodyComponentMapper.get(entity);
-            if (Math.abs(bodyComponent.body.getLinearVelocity().x) < 0.1f
-                && Math.abs(bodyComponent.body.getLinearVelocity().y) < 0.1f)
+            if (Math.abs(bodyComponent.body.getLinearVelocity().x) < controlComponent.backToIdleSpeedThreshold
+                && Math.abs(bodyComponent.body.getLinearVelocity().y) < controlComponent.backToIdleSpeedThreshold)
             {
                 StateComponent stateComponent = stateComponentMapper.get(entity);
                 if (stateComponent.currentState.tag != "idleRight"
@@ -219,7 +231,7 @@ public class ControlSystem extends EntitySystem
                             timer.clear();
                         }
                     };
-                    timer.schedule(task, 0.1f);
+                    timer.schedule(task, controlComponent.backToIdleTime);
                 }
             }
 

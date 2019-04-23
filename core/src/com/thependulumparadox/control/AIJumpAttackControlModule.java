@@ -6,7 +6,7 @@ import com.thependulumparadox.command.ICommand;
 import com.thependulumparadox.command.ValueCommand;
 import com.thependulumparadox.command.InvokeCommand;
 
-public class AIControlModule extends ControlModule
+public class AIJumpAttackControlModule extends ControlModule
 {
     private final CommandQueue queue;
 
@@ -16,9 +16,18 @@ public class AIControlModule extends ControlModule
     //queue.add(new DelayCommand(2.0f));
     //queue.add(new InvokeCommand(right, 0.2f));
 
-    public AIControlModule()
+    public AIJumpAttackControlModule()
     {
         queue = new CommandQueue(CommandQueue.LoopMode.LOOP);
+
+        queue.add(new DelayCommand(1.0f));
+        queue.add(new InvokeCommand(left, 1.0f));
+        queue.add(new InvokeCommand(jumpStart));
+        queue.add(new InvokeCommand(right, 1.0f));
+        queue.add(new DelayCommand(1.0f));
+        queue.add(new InvokeCommand(right, 1.0f));
+        queue.add(new InvokeCommand(jumpStart));
+        queue.add(new InvokeCommand(left, 1.0f));
     }
 
     public void addCommand(ICommand command)

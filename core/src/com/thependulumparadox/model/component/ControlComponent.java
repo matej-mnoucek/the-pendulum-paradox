@@ -18,6 +18,9 @@ public class ControlComponent implements Component
 
     public float shootImpulse = 5f;
 
+    public float backToIdleSpeedThreshold = 0.1f;
+    public float backToIdleTime = 0.1f;
+
     public ControlComponent(ControlModule controlModule)
     {
         this.controlModule = controlModule;

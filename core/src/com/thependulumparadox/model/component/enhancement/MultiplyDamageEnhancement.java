@@ -9,7 +9,7 @@ public class MultiplyDamageEnhancement extends Enhancement
 {
     private float multiplyFactor = 0;
 
-    public MultiplyDamageEnhancement(Entity entity, float multiplyFactor, float duration)
+    public MultiplyDamageEnhancement(float multiplyFactor, float duration)
     {
         super(duration);
         this.multiplyFactor = multiplyFactor;

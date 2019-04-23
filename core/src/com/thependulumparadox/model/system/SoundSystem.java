@@ -36,7 +36,6 @@ public class SoundSystem extends EntitySystem {
     public void removedFromEngine(Engine engine) {
         super.removedFromEngine(engine);
     }
-
     @Override
     public void update(float deltaTime) {
         sounds = engine.getEntitiesFor(Family.all(SoundComponent.class).get());

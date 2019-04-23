@@ -8,13 +8,10 @@ import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.assets.AssetManager;
-import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 
-import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.math.Vector2;
@@ -24,22 +21,27 @@ import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
 import com.thependulumparadox.control.EventControlModule;
 import com.thependulumparadox.control.NetworkControlModule;
-import com.thependulumparadox.model.component.BulletComponent;
+import com.thependulumparadox.control.AIJumpAttackControlModule;
+import com.thependulumparadox.control.AIRunAroundControlModule;
+import com.thependulumparadox.control.EventControlModule;
+import com.thependulumparadox.control.NetworkControlModule;
+import com.thependulumparadox.model.component.CleanupComponent;
+import com.thependulumparadox.model.component.CoinComponent;
+import com.thependulumparadox.model.component.EnhancementComponent;
 import com.thependulumparadox.model.component.MusicComponent;
-import com.thependulumparadox.control.AIControlModule;
-import com.thependulumparadox.misc.Range;
-import com.thependulumparadox.model.component.BulletVisualsComponent;
 import com.thependulumparadox.model.component.ControlComponent;
 import com.thependulumparadox.control.ControlModule;
 import com.thependulumparadox.model.component.EnemyComponent;
-import com.thependulumparadox.model.component.EnhancementVisualsComponent;
 import com.thependulumparadox.model.component.InteractionComponent;
-import com.thependulumparadox.control.KeyboardControlModule;
 import com.thependulumparadox.model.component.PlayerComponent;
-import com.thependulumparadox.model.component.SoundComponent;
 import com.thependulumparadox.model.component.SpriteComponent;
 import com.thependulumparadox.model.component.StateComponent;
+import com.thependulumparadox.model.component.enhancement.AddDefenseEnhancement;
+import com.thependulumparadox.model.component.enhancement.AddLifeEnhancement;
+import com.thependulumparadox.model.component.enhancement.Enhancement;
+import com.thependulumparadox.model.component.enhancement.MultiplyDamageEnhancement;
 import com.thependulumparadox.model.system.AnimationControlSystem;
+import com.thependulumparadox.model.system.CleanupSystem;
 import com.thependulumparadox.model.system.InteractionSystem;
 import com.thependulumparadox.model.system.FPSDebugSystem;
 import com.thependulumparadox.model.system.PhysicsDebugSystem;
@@ -155,10 +157,37 @@ public class GamePresenter extends Game
         player.getComponent(DynamicBodyComponent.class).position(new Vector2(5,4));
 
 
+        // ENEMY EXAMPLE
+/*        Entity enemy = entityFactory.create("knight_enemy");
+        enemy.getComponent(DynamicBodyComponent.class).position(new Vector2(10,8));
+        ecs.addEntity(enemy);*/
 
         ////create shadow player
 
 
+
+        //define screens
+        inGameScreen = new InGameScreen();
+        gameOverScreen = new GameOverScreen();
+        menuScreen = new MenuScreen(proxy);
+        highScoreScreen = new HighScoreScreen(proxy);
+        settingsScreen = new SettingsScreen();
+        tutorialScreen = new TutorialScreen();
+
+
+
+        GameScene menuScene = new GameScene(new TmxMapLoader().load("levels/level1.tmx"),
+                world, mainCamera, ecs);
+        GameScene levelOneScene = new GameScene(new TmxMapLoader().load("levels/level1.tmx"),
+                world, mainCamera, ecs);
+
+        //define states. states are made up of one screen and one scene
+        viewStateInGame = new ViewState(levelOneScene, inGameScreen);
+        viewStateGameOver = new ViewState(levelOneScene, gameOverScreen);
+        viewStateMenu = new ViewState(menuScene, menuScreen);
+        viewStateHighScore = new ViewState(menuScene, highScoreScreen);
+        viewStateSettings = new ViewState(menuScene, settingsScreen);
+        viewStateTutorial = new ViewState(menuScene, tutorialScreen);
         // ECS Systems
 
         // Camera follow
@@ -178,6 +207,10 @@ public class GamePresenter extends Game
 
         //Sound
         SoundSystem sound = new SoundSystem();
+
+        //cleanup
+        CleanupSystem cleanup = new CleanupSystem(world,proxy,viewMachine,viewStateGameOver,gameOverScreen);
+
         ecs.addSystem(sound);
 
         //populate assetmanager with assets
@@ -207,17 +240,7 @@ public class GamePresenter extends Game
         //inGameMusic.setLooping(true);
         //menuMusic.play();
 
-        //define screens
-        inGameScreen = new InGameScreen();
-        gameOverScreen = new GameOverScreen();
-        menuScreen = new MenuScreen(proxy);
-        highScoreScreen = new HighScoreScreen(proxy);
-        settingsScreen = new SettingsScreen();
-        tutorialScreen = new TutorialScreen();
 
-
-        GameScene levelOneScene = new GameScene(new TmxMapLoader().load("levels/level1.tmx"),
-                world, mainCamera, ecs);
         // Link game start
         ((MenuScreen) menuScreen).getNewGameEvent().addHandler((args) ->
         {
@@ -237,6 +260,7 @@ public class GamePresenter extends Game
                 ecs.addSystem(new AnimationControlSystem());
                 ecs.addSystem(new InteractionSystem(world));
                 ecs.addSystem(new VisualSystem());
+                ecs.addSystem(cleanup);
 
                 firstPlayThrough = false;
             }
@@ -298,7 +322,23 @@ public class GamePresenter extends Game
 
             //always set player entity when switching to in-game mode
             else {
+
+                levelOneScene.repopulate(new TmxMapLoader().load("levels/level1.tmx"),
+                        world, ecs);
+                player.getComponent(PlayerComponent.class).reset();
+                player.getComponent(DynamicBodyComponent.class).position(player.getComponent(TransformComponent.class).position)
+                        .dimension(0.7f, 1.5f)
+                        .properties(0, 50f, 10f, 0f);
+                player.getComponent(DynamicBodyComponent.class).position(new Vector2(5,4));
+
                 ecs.addEntity(player);
+                player1.getComponent(PlayerComponent.class).reset();
+                player1.getComponent(DynamicBodyComponent.class).position(player.getComponent(TransformComponent.class).position)
+                        .dimension(0.7f, 1.5f)
+                        .properties(0, 50f, 10f, 0f);
+                player1.getComponent(DynamicBodyComponent.class).position(new Vector2(5,4));
+
+                ecs.addEntity(player1);
 
             }
             proxy.setInputHandler((NetworkControlModule)player1.getComponent(ControlComponent.class).controlModule);
@@ -319,16 +359,6 @@ public class GamePresenter extends Game
 
         // Create screen and scene for future view state assembly
 
-        GameScene menuScene = new GameScene(new TmxMapLoader().load("levels/level1.tmx"),
-                world, mainCamera, ecs);
-
-        //define states. states are made up of one screen and one scene
-        viewStateInGame = new ViewState(levelOneScene, inGameScreen);
-        viewStateGameOver = new ViewState(levelOneScene, gameOverScreen);
-        viewStateMenu = new ViewState(menuScene, menuScreen);
-        viewStateHighScore = new ViewState(menuScene, highScoreScreen);
-        viewStateSettings = new ViewState(menuScene, settingsScreen);
-        viewStateTutorial = new ViewState(menuScene, tutorialScreen);
 
 
         // Add states to the state machine
@@ -493,23 +523,7 @@ public class GamePresenter extends Game
 
         ((InGameScreen) inGameScreen).getMenuEvent().addHandler((args) -> {
             //remove Player entity to stop it rendering whilst not in-game
-            ((MusicComponent)inGameMusic.getComponents().get(0)).stop();
-
-            ImmutableArray EntitiesToDestroy;
-            EntitiesToDestroy = ecs.getEntitiesFor(Family.all(DynamicBodyComponent.class).get());
-
-            for (Object entity : EntitiesToDestroy){
-                if (((Entity)entity) != player) {
-                    world.destroyBody(((Entity) entity).getComponent(DynamicBodyComponent.class).body);
-                }
-            }
-
-            ecs.removeAllEntities();
-            ecs.addEntity(menuMusic);
-
-            // call on state machine to change state
-            Gdx.input.setInputProcessor(gameOverScreen.getStage());
-             viewMachine.nextState(viewStateGameOver);
+                ecs.addEntity(new Entity().add(new CleanupComponent(player)));
 
         });
         //new game pressed from gameOver state
@@ -528,6 +542,7 @@ public class GamePresenter extends Game
         ((GameOverScreen) gameOverScreen).getHighScoreEvent().addHandler((args) -> {
             // set input processor to new State's BaseScreen stage
             Gdx.input.setInputProcessor(highScoreScreen.getStage());
+            ((HighScoreScreen)highScoreScreen).populateHighscoreList();
             // call on state machine to change state
             viewMachine.nextState(viewStateHighScore);
         });

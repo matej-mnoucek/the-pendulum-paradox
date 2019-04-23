@@ -17,6 +17,7 @@ import com.badlogic.gdx.physics.box2d.Manifold;
 import com.badlogic.gdx.physics.box2d.World;
 import com.thependulumparadox.misc.StandardAttributes;
 import com.thependulumparadox.model.component.BulletComponent;
+import com.thependulumparadox.model.component.CleanupComponent;
 import com.thependulumparadox.model.component.CoinComponent;
 import com.thependulumparadox.model.component.DynamicBodyComponent;
 import com.thependulumparadox.model.component.EnemyComponent;
@@ -248,6 +249,10 @@ public class InteractionSystem extends EntitySystem
             InteractionComponent interactionComponent = interactionComponentMapper.get(player);
             PlayerComponent playerComponent = playerComponentMapper.get(player);
 
+            if (player.getComponent(DynamicBodyComponent.class).body.getPosition().y < -10){
+                getEngine().addEntity(new Entity().add(new CleanupComponent(player)));
+            }
+
             // Apply enhancements
             applyEnhancementChain(playerComponent);
 
@@ -367,13 +372,16 @@ public class InteractionSystem extends EntitySystem
                     applyEnhancementChain(playerComponent);
                     if (playerComponent.current.lives <= 0)
                     {
-                        DynamicBodyComponent body = dynamicBodyComponentMapper.get(interactionEntity);
-                        world.destroyBody(body.body);
+                        //DynamicBodyComponent body = dynamicBodyComponentMapper.get(interactionEntity);
+                        //world.destroyBody(body.body);
                         getEngine().removeEntity(interactionEntity);
                         Entity playerDieSound = new Entity();
                         playerDieSound.add(new SoundComponent(assetManager.get("sounds/die.mp3", Sound.class),true));
                         getEngine().addEntity(playerDieSound);
+                        Entity player = getEngine().getEntitiesFor(Family.all(PlayerComponent.class).get()).first();
+                        getEngine().addEntity(new Entity().add(new CleanupComponent(player)));
                     }
+
                 }
             }
             // All processed, clear the list
