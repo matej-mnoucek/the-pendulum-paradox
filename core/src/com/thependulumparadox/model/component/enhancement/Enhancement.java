@@ -27,7 +27,7 @@ public abstract class Enhancement
 
     public void chain(Enhancement enhancement)
     {
-        if (!next.equals(null))
+        if (next != null)
         {
             next.chain(enhancement);
         }
@@ -39,7 +39,7 @@ public abstract class Enhancement
 
     public void apply(StandardAttributes attributes)
     {
-        if (!next.equals(null))
+        if (next != null)
         {
             next.apply(attributes);
         }
@@ -50,7 +50,7 @@ public abstract class Enhancement
         // Subtract delta
         duration -= delta;
 
-        if (!next.equals(null))
+        if (next != null)
         {
             next.step(delta);
         }

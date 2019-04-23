@@ -2,7 +2,6 @@ package com.thependulumparadox.view.scene;
 
 import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.Entity;
-import com.badlogic.ashley.core.PooledEngine;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.maps.MapLayer;
 import com.badlogic.gdx.maps.MapObject;
@@ -17,7 +16,8 @@ import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
-import com.thependulumparadox.control.AIControlModule;
+import com.thependulumparadox.control.AIJumpAttackControlModule;
+import com.thependulumparadox.control.AIWanderAttackControlModule;
 import com.thependulumparadox.control.ControlModule;
 import com.thependulumparadox.misc.Constants;
 import com.thependulumparadox.model.component.AnimatedSpriteComponent;
@@ -29,14 +29,10 @@ import com.thependulumparadox.model.component.StateComponent;
 import com.thependulumparadox.model.component.TransformComponent;
 import com.thependulumparadox.state.TaggedState;
 
-import org.lwjgl.Sys;
-
-import java.util.ArrayList;
-
 public class GameScene extends Scene
 {
     private MapRenderer renderer;
-    //private PooledEngine entityPool = new PooledEngine();
+
     public GameScene(TiledMap level, World world, OrthographicCamera camera, Engine engine)
     {
         super(camera);
@@ -114,67 +110,11 @@ public class GameScene extends Scene
                 switch (object.getName())
                 {
                     case "attacking": {
-                        Entity entity;
-                        entity = new Entity();
-                        entity.flags = 4;
-                        TransformComponent transform = new TransformComponent();
-                        Rectangle rect =  ((RectangleMapObject)object).getRectangle();
-                        transform.position = new Vector2(rect.x/ Constants.PPM,rect.y/ Constants.PPM);
-                        entity.add(transform);
-                        AnimatedSpriteComponent animatedEnemy = new AnimatedSpriteComponent("packed/knight_enemy.atlas");
-                        animatedEnemy.frameDuration(0.07f);
-                        animatedEnemy.height = 1.8f;
-                        animatedEnemy.width = 1.8f;
-                        animatedEnemy.currentAnimation = "attackLeft";
-                        entity.add(animatedEnemy);
-                        DynamicBodyComponent dynamicBody = new DynamicBodyComponent(world);
-                        dynamicBody.position(transform.position)
-                                .dimension(0.7f, 1.5f)
-                                //.trigger(2.0f)
-                                .activate(true);
-                        entity.add(dynamicBody);
-                        EnemyComponent enemyComponent = new EnemyComponent();
-                        entity.add(enemyComponent);
-                        InteractionComponent interaction = new InteractionComponent();
-                        entity.add(interaction);
-                        engine.addEntity(entity);
+
                     }
                         break;
                     case "walking": {
-                        Entity entity;
-                        entity = new Entity();
-                        entity.flags = 4;
-                        TransformComponent transform = new TransformComponent();
-                        Rectangle rect =  ((RectangleMapObject)object).getRectangle();
-                        transform.position = new Vector2(rect.x/ Constants.PPM,rect.y/ Constants.PPM);
-                        entity.add(transform);
-                        AnimatedSpriteComponent animatedEnemy = new AnimatedSpriteComponent("packed/hero_player.atlas");
-                        animatedEnemy.frameDuration(0.07f);
-                        animatedEnemy.height = 1.8f;
-                        animatedEnemy.width = 1.8f;
-                        entity.add(animatedEnemy);
-                        DynamicBodyComponent dynamicBody = new DynamicBodyComponent(world);
-                        dynamicBody.position(transform.position)
-                                .dimension(0.7f, 1.5f)
-                                .properties(0, 50f, 10f, 0f)
-                                //.trigger(2.0f)
-                                .activate(true);
-                        entity.add(dynamicBody);
-                        EnemyComponent enemyComponent = new EnemyComponent();
-                        entity.add(enemyComponent);
-                        InteractionComponent interaction = new InteractionComponent();
-                        entity.add(interaction);
-                        ControlModule module = new AIControlModule();
-                        StateComponent state = new StateComponent();
-                        state.add(new TaggedState("idleLeft")).add(new TaggedState("idleRight"))
-                                .add(new TaggedState("runLeft")).add(new TaggedState("runRight"))
-                                .add(new TaggedState("jumpRight")).add(new TaggedState("jumpLeft"))
-                                .add(new TaggedState("shootRight")).add(new TaggedState("shootLeft"))
-                                .initial("idleRight");
-                        entity.add(state);
-                        ControlComponent control = new ControlComponent(module);
-                        entity.add(control);
-                        engine.addEntity(entity);
+
                     }
                         break;
                     default:

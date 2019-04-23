@@ -6,34 +6,33 @@ import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.assets.AssetManager;
-import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 
-import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
 
+import com.thependulumparadox.control.AIJumpAttackControlModule;
+import com.thependulumparadox.control.AIRunAroundControlModule;
 import com.thependulumparadox.control.EventControlModule;
 import com.thependulumparadox.control.NetworkControlModule;
+import com.thependulumparadox.model.component.CoinComponent;
+import com.thependulumparadox.model.component.EnhancementComponent;
 import com.thependulumparadox.model.component.MusicComponent;
-import com.thependulumparadox.control.AIControlModule;
-import com.thependulumparadox.misc.Range;
-import com.thependulumparadox.model.component.BulletVisualsComponent;
 import com.thependulumparadox.model.component.ControlComponent;
 import com.thependulumparadox.control.ControlModule;
 import com.thependulumparadox.model.component.EnemyComponent;
-import com.thependulumparadox.model.component.EnhancementVisualsComponent;
 import com.thependulumparadox.model.component.InteractionComponent;
-import com.thependulumparadox.control.KeyboardControlModule;
 import com.thependulumparadox.model.component.PlayerComponent;
-import com.thependulumparadox.model.component.SoundComponent;
 import com.thependulumparadox.model.component.SpriteComponent;
 import com.thependulumparadox.model.component.StateComponent;
+import com.thependulumparadox.model.component.enhancement.AddDefenseEnhancement;
+import com.thependulumparadox.model.component.enhancement.AddLifeEnhancement;
+import com.thependulumparadox.model.component.enhancement.Enhancement;
+import com.thependulumparadox.model.component.enhancement.MultiplyDamageEnhancement;
 import com.thependulumparadox.model.system.AnimationControlSystem;
 import com.thependulumparadox.model.system.InteractionSystem;
 import com.thependulumparadox.model.system.FPSDebugSystem;
@@ -148,6 +147,10 @@ public class GamePresenter extends Game
         player.getComponent(DynamicBodyComponent.class).position(new Vector2(5,8));
 
 
+        // ENEMY EXAMPLE
+        Entity enemy = entityFactory.create("knight_enemy");
+        enemy.getComponent(DynamicBodyComponent.class).position(new Vector2(10,8));
+        ecs.addEntity(enemy);
 
         ////create shadow player
 

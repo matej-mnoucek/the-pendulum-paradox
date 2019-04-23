@@ -8,7 +8,7 @@ public class AddDefenseEnhancement extends Enhancement
 {
     private float bonusDefense = 0;
 
-    public AddDefenseEnhancement(Entity entity, float bonusDefense, float duration)
+    public AddDefenseEnhancement(float bonusDefense, float duration)
     {
         super(duration);
         this.bonusDefense = bonusDefense;
