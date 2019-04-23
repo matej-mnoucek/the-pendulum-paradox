@@ -275,7 +275,7 @@ public class GamePresenter extends Game
                 player.getComponent(DynamicBodyComponent.class).position(new Vector2(5,4));
 
                 ecs.addEntity(player);
-
+                ecs.addSystem(controlSystem);
             }
 
             //set inGameScreen's stage as the input processor

@@ -69,6 +69,7 @@ public class CleanupSystem extends EntitySystem {
 
             getEngine().removeAllEntities();
             getEngine().addEntity(menuMusic);
+            getEngine().removeSystem(getEngine().getSystem(ControlSystem.class));
 
             // call on state machine to change state
             Gdx.input.setInputProcessor(gameOverScreen.getStage());
