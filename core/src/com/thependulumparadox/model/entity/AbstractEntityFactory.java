@@ -8,5 +8,5 @@ import com.badlogic.ashley.core.Entity;
  */
 public abstract class AbstractEntityFactory
 {
-    abstract Entity create(String entity);
+    public abstract Entity create(String entity);
 }

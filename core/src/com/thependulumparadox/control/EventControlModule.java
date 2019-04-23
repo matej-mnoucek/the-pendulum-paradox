@@ -11,7 +11,7 @@ public class EventControlModule extends ControlModule
     private boolean leftButtonPressed = false;
     private boolean attackButtonPressed = false;
     private boolean jumpButtonPressed = false;
-
+    private boolean meleeButtonPressed = false;
 
     // Button pressed
     public void leftStart()
@@ -38,6 +38,13 @@ public class EventControlModule extends ControlModule
         attackStart.invoke(null);
     }
 
+    public void meleeStart()
+    {
+        meleeButtonPressed = true;
+        meleeStart.invoke(null);
+    }
+
+
     // Button released
     public void leftEnd()
     {
@@ -63,6 +70,13 @@ public class EventControlModule extends ControlModule
         attackEnd.invoke(null);
     }
 
+    public void meleeEnd()
+    {
+        meleeButtonPressed = true;
+        meleeStart.invoke(null);
+    }
+
+
     @Override
     public void update(float delta)
     {
@@ -84,6 +98,11 @@ public class EventControlModule extends ControlModule
         if (jumpButtonPressed)
         {
             jump.invoke(null);
+        }
+
+        if (meleeButtonPressed)
+        {
+            melee.invoke(null);
         }
     }
 }

@@ -6,12 +6,22 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 
 public class SpriteComponent implements Component
 {
-    public final Texture sprite;
+    public Sprite sprite;
     public float width = 1.0f;
     public float height = 1.0f;
 
+    public float rotationSpeed = 0.0f;
+    public float rotationAngle = 1.0f;
+
     public SpriteComponent(String spritePath)
     {
-        sprite = new Texture(spritePath);
+        // Possibility to create empty sprite component
+        if (spritePath == null)
+        {
+            sprite = null;
+            return;
+        }
+
+        sprite = new Sprite(new Texture(spritePath));
     }
 }

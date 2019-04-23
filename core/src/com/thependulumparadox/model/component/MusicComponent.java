@@ -12,11 +12,19 @@ public class MusicComponent implements Component {
 
     public void play(){
         music.setLooping(true);
+        music.setVolume(0.5f);
         music.play();
     }
 
     public void stop(){
         music.stop();
-        music.dispose();
+    }
+
+    public boolean isPlaying(){
+       return music.isPlaying();
+    }
+
+    public void pause(){
+        music.pause();
     }
 }

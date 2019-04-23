@@ -18,6 +18,18 @@ public class CommandQueue implements ICommandQueue
         this.mode = mode;
     }
 
+    public void loop(boolean loop)
+    {
+        if(loop)
+        {
+            mode = LoopMode.LOOP;
+        }
+        else
+        {
+            mode= LoopMode.ONCE;
+        }
+    }
+
     public boolean add(ICommand command)
     {
         return mainQueue.add(command);

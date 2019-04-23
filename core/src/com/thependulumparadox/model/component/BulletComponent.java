@@ -5,7 +5,7 @@ import com.badlogic.ashley.core.Entity;
 
 public class BulletComponent implements Component
 {
-    public final Entity shotBy;
+    public Entity shotBy;
 
     public BulletComponent(Entity shotBy)
     {

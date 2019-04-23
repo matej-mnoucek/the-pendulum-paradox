@@ -7,14 +7,21 @@ import com.badlogic.ashley.core.EntitySystem;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.core.PooledEngine;
 import com.badlogic.ashley.utils.ImmutableArray;
+import com.badlogic.gdx.assets.AssetManager;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Timer;
 import com.thependulumparadox.model.component.BulletComponent;
+import com.thependulumparadox.model.component.BulletVisualsComponent;
 import com.thependulumparadox.model.component.ControlComponent;
 import com.thependulumparadox.model.component.DynamicBodyComponent;
+import com.thependulumparadox.model.component.SoundComponent;
 import com.thependulumparadox.model.component.SpriteComponent;
 import com.thependulumparadox.model.component.StateComponent;
 import com.thependulumparadox.model.component.TransformComponent;
+import com.thependulumparadox.model.entity.AbstractEntityFactory;
+import com.thependulumparadox.model.entity.EntityFactory;
 
 
 /**
@@ -22,8 +29,6 @@ import com.thependulumparadox.model.component.TransformComponent;
  */
 public class ControlSystem extends EntitySystem
 {
-    private PooledEngine entityPool = new PooledEngine();
-
     private ImmutableArray<Entity> controlledEntities;
     private ComponentMapper<DynamicBodyComponent> dynamicBodyComponentMapper
             = ComponentMapper.getFor(DynamicBodyComponent.class);
@@ -33,12 +38,41 @@ public class ControlSystem extends EntitySystem
             = ComponentMapper.getFor(TransformComponent.class);
     private ComponentMapper<StateComponent> stateComponentMapper
             = ComponentMapper.getFor(StateComponent.class);
+    private ComponentMapper<BulletComponent> bulletComponentMapper
+            = ComponentMapper.getFor(BulletComponent.class);
+    private ComponentMapper<BulletVisualsComponent> bulletVisualsComponentMapper
+            = ComponentMapper.getFor(BulletVisualsComponent.class);
+    private ComponentMapper<SpriteComponent> spriteComponentMapper
+            = ComponentMapper.getFor(SpriteComponent.class);
 
     // Timer for state transitions delays
     Timer timer = new Timer();
 
+    //sounds
+    AssetManager assetManager = new AssetManager();
+    // Entity factory
+    AbstractEntityFactory factory;
+
+
+    private boolean moveLeft = false;
+    private boolean moveRight = false;
+    private boolean jump = false;
+    private boolean shooting = false;
+
+
+
+    public ControlSystem(AbstractEntityFactory factory)
+    {
+        this.factory = factory;
+    }
+
     public void addedToEngine(Engine engine)
     {
+        assetManager.load("sounds/jump.mp3", Sound.class);
+        assetManager.load("sounds/single_gunshot.mp3", Sound.class);
+        assetManager.finishLoading();
+
+
         controlledEntities = engine.getEntitiesFor(Family.all(DynamicBodyComponent.class,
                 ControlComponent.class, StateComponent.class, TransformComponent.class).get());
 
@@ -49,18 +83,22 @@ public class ControlSystem extends EntitySystem
             DynamicBodyComponent dynamicBodyComponent = dynamicBodyComponentMapper.get(entity);
             TransformComponent transformComponent = transformComponentMapper.get(entity);
             StateComponent stateComponent = stateComponentMapper.get(entity);
+            BulletVisualsComponent bulletVisualsComponent = bulletVisualsComponentMapper.get(entity);
 
 
             controlComponent.controlModule.right.addHandler((args)->
             {
                 // Limit max speed right
-                if(dynamicBodyComponent.body.getLinearVelocity().x > 6.0f)
+                if(dynamicBodyComponent.body.getLinearVelocity().x
+                        > controlComponent.maxMoveRightSpeed)
                 {
                     return;
                 }
 
                 // Apply impulse
-                dynamicBodyComponent.body.applyLinearImpulse(1f, 0,0,0,true);
+                dynamicBodyComponent.body.applyLinearImpulse(controlComponent.moveRightImpulse,
+                        0,0,0,true);
+
                 // Change state
                 stateComponent.transition("runRight");
 
@@ -71,13 +109,15 @@ public class ControlSystem extends EntitySystem
             controlComponent.controlModule.left.addHandler((args)->
             {
                 // Limit max speed left
-                if(dynamicBodyComponent.body.getLinearVelocity().x < -6.0f)
+                if(dynamicBodyComponent.body.getLinearVelocity().x
+                        < -controlComponent.maxMoveLeftSpeed)
                 {
                     return;
                 }
 
                 // Apply impulse
-                dynamicBodyComponent.body.applyLinearImpulse(-1f, 0,0,0,true);
+                dynamicBodyComponent.body.applyLinearImpulse(-controlComponent.moveLeftImpulse,
+                        0,0,0,true);
                 // Change state
                 stateComponent.transition("runLeft");
 
@@ -88,13 +128,14 @@ public class ControlSystem extends EntitySystem
             controlComponent.controlModule.jumpStart.addHandler((args)->
             {
                 // Limit jump in the air
-                //TODO: Allows for double jumping when attempting to jump at peak
-                if (Math.abs(dynamicBodyComponent.body.getLinearVelocity().y) > 0.1f)
+                if (Math.abs(dynamicBodyComponent.body.getLinearVelocity().y)
+                        > controlComponent.jumpLimitSpeedThreshold)
                 {
                     return;
                 }
 
-                dynamicBodyComponent.body.applyLinearImpulse(0, 10f,0,0,true);
+                dynamicBodyComponent.body.applyLinearImpulse(0,
+                        controlComponent.jumpImpulse,0,0,true);
 
 
                 // Jump to the right direction
@@ -106,44 +147,51 @@ public class ControlSystem extends EntitySystem
                 {
                     stateComponent.transition("jumpLeft");
                 }
+
+                Entity jumpSound = new Entity();
+                jumpSound.add(new SoundComponent(assetManager.get("sounds/jump.mp3", Sound.class),true));
+                getEngine().addEntity(jumpSound);
             });
 
             controlComponent.controlModule.attackStart.addHandler((args)->{
 
-                // Create new bullet
-                Entity bullet = entityPool.createEntity();
-                bullet.flags = 8;
-                TransformComponent transform = new TransformComponent();
-                transform.position = new Vector2(transformComponent.position);
-                //transform.position.x += 0.35f;
-                SpriteComponent sprite = new SpriteComponent("sprites/bullets/circle_bullet_blue.png");
-                sprite.height = 0.3f;
-                sprite.width = 0.3f;
-                BulletComponent bulletComponent = new BulletComponent(entity);
-                DynamicBodyComponent dynamic = new DynamicBodyComponent(dynamicBodyComponent.body.getWorld());
-                dynamic.position(transformComponent.position).dimension(sprite.width, sprite.height)
-                        .gravityScale(0.0f).activate(true);
-
-                // Add all components
-                bullet.add(transform);
-                bullet.add(sprite);
-                bullet.add(bulletComponent);
-                bullet.add(dynamic);
-
-                // Add to engine
+                Entity bullet = factory.create("bullet");
+                dynamicBodyComponentMapper.get(bullet).position(transformComponent.position);
+                spriteComponentMapper.get(bullet).sprite = bulletVisualsComponent.currentSprite;
+                bulletComponentMapper.get(bullet).shotBy = entity;
                 engine.addEntity(bullet);
 
 
                 // Shoot to the right direction
+                DynamicBodyComponent dynamic = dynamicBodyComponentMapper.get(bullet);
                 if (controlComponent.facingRight)
                 {
-                    dynamic.body.applyLinearImpulse(5, 0, 0, 0, true);
+                    dynamic.body.applyLinearImpulse(controlComponent.shootImpulse,
+                            0, 0, 0, true);
                     stateComponent.transition("shootRight");
                 }
                 else
                 {
-                    dynamic.body.applyLinearImpulse(-5, 0, 0, 0, true);
+                    dynamic.body.applyLinearImpulse(-controlComponent.shootImpulse,
+                            0, 0, 0, true);
                     stateComponent.transition("shootLeft");
+                }
+                Entity shootSound = new Entity();
+                shootSound.add(new SoundComponent(assetManager.get("sounds/single_gunshot.mp3",Sound.class),true));
+                getEngine().addEntity(shootSound);
+
+            });
+
+            controlComponent.controlModule.meleeStart.addHandler((args)->{
+
+                // Attack to the right direction
+                if (controlComponent.facingRight)
+                {
+                    stateComponent.transition("attackRight");
+                }
+                else
+                {
+                    stateComponent.transition("attackLeft");
                 }
             });
         }
@@ -160,8 +208,8 @@ public class ControlSystem extends EntitySystem
 
             // Handle idle transition
             DynamicBodyComponent bodyComponent = dynamicBodyComponentMapper.get(entity);
-            if (Math.abs(bodyComponent.body.getLinearVelocity().x) < 0.1f
-                && Math.abs(bodyComponent.body.getLinearVelocity().y) < 0.1f)
+            if (Math.abs(bodyComponent.body.getLinearVelocity().x) < controlComponent.backToIdleSpeedThreshold
+                && Math.abs(bodyComponent.body.getLinearVelocity().y) < controlComponent.backToIdleSpeedThreshold)
             {
                 StateComponent stateComponent = stateComponentMapper.get(entity);
                 if (stateComponent.currentState.tag != "idleRight"
@@ -183,7 +231,7 @@ public class ControlSystem extends EntitySystem
                             timer.clear();
                         }
                     };
-                    timer.schedule(task, 0.1f);
+                    timer.schedule(task, controlComponent.backToIdleTime);
                 }
             }
 

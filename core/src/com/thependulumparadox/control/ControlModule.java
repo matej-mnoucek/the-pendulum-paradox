@@ -10,16 +10,19 @@ public abstract class ControlModule
     public final IEvent<EventArgs> rightStart;
     public final IEvent<EventArgs> jumpStart;
     public final IEvent<EventArgs> attackStart;
+    public final IEvent<EventArgs> meleeStart;
 
     public final IEvent<EventArgs> left;
     public final IEvent<EventArgs> right;
     public final IEvent<EventArgs> jump;
     public final IEvent<EventArgs> attack;
+    public final IEvent<EventArgs> melee;
 
     public final IEvent<EventArgs> leftEnd;
     public final IEvent<EventArgs> rightEnd;
     public final IEvent<EventArgs> jumpEnd;
     public final IEvent<EventArgs> attackEnd;
+    public final IEvent<EventArgs> meleeEnd;
 
     public ControlModule()
     {
@@ -27,16 +30,19 @@ public abstract class ControlModule
         rightStart = new Event<EventArgs>();
         jumpStart = new Event<EventArgs>();
         attackStart = new Event<EventArgs>();
+        meleeStart = new Event<EventArgs>();
 
         left = new Event<EventArgs>();
         right = new Event<EventArgs>();
         jump = new Event<EventArgs>();
         attack = new Event<EventArgs>();
+        melee = new Event<EventArgs>();
 
         leftEnd = new Event<EventArgs>();
         rightEnd = new Event<EventArgs>();
         jumpEnd = new Event<EventArgs>();
         attackEnd = new Event<EventArgs>();
+        meleeEnd = new Event<EventArgs>();
     }
 
     public abstract void update(float delta);

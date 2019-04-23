@@ -2,34 +2,46 @@ package com.thependulumparadox.presenter;
 
 import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.Entity;
+import com.badlogic.ashley.core.Family;
+import com.badlogic.ashley.utils.ImmutableArray;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.assets.AssetManager;
-import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.World;
 
+import com.badlogic.gdx.utils.Array;
 import com.thependulumparadox.control.EventControlModule;
 import com.thependulumparadox.control.NetworkControlModule;
+import com.thependulumparadox.control.AIJumpAttackControlModule;
+import com.thependulumparadox.control.AIRunAroundControlModule;
+import com.thependulumparadox.control.EventControlModule;
+import com.thependulumparadox.control.NetworkControlModule;
+import com.thependulumparadox.model.component.CleanupComponent;
+import com.thependulumparadox.model.component.CoinComponent;
+import com.thependulumparadox.model.component.EnhancementComponent;
 import com.thependulumparadox.model.component.MusicComponent;
-import com.thependulumparadox.control.AIControlModule;
 import com.thependulumparadox.model.component.ControlComponent;
 import com.thependulumparadox.control.ControlModule;
 import com.thependulumparadox.model.component.EnemyComponent;
 import com.thependulumparadox.model.component.InteractionComponent;
-import com.thependulumparadox.control.KeyboardControlModule;
 import com.thependulumparadox.model.component.PlayerComponent;
-import com.thependulumparadox.model.component.SoundComponent;
+import com.thependulumparadox.model.component.SpriteComponent;
 import com.thependulumparadox.model.component.StateComponent;
+import com.thependulumparadox.model.component.enhancement.AddDefenseEnhancement;
+import com.thependulumparadox.model.component.enhancement.AddLifeEnhancement;
+import com.thependulumparadox.model.component.enhancement.Enhancement;
+import com.thependulumparadox.model.component.enhancement.MultiplyDamageEnhancement;
 import com.thependulumparadox.model.system.AnimationControlSystem;
+import com.thependulumparadox.model.system.CleanupSystem;
 import com.thependulumparadox.model.system.InteractionSystem;
 import com.thependulumparadox.model.system.FPSDebugSystem;
 import com.thependulumparadox.model.system.PhysicsDebugSystem;
@@ -37,6 +49,7 @@ import com.thependulumparadox.model.system.PhysicsDebugSystem;
 import com.thependulumparadox.model.system.SoundSystem;
 
 import com.thependulumparadox.model.system.StateSystem;
+import com.thependulumparadox.model.system.VisualSystem;
 import com.thependulumparadox.multiplayer.ISynchronization;
 import com.thependulumparadox.misc.Constants;
 import com.thependulumparadox.model.entity.AbstractEntityFactory;
@@ -64,6 +77,8 @@ import com.thependulumparadox.view.screen.MenuScreen;
 import com.thependulumparadox.view.screen.SettingsScreen;
 import com.thependulumparadox.view.screen.TutorialScreen;
 
+import java.util.ArrayList;
+
 //TODO: implement "new game" pressed from GameOverScreen.
 
 /**
@@ -75,15 +90,15 @@ public class GamePresenter extends Game
     // Component based system root
     Engine ecs = new Engine();
 
+    // Physics world
+    World world = new World(new Vector2(0, -10), true);
+
     // Component factory
-    AbstractEntityFactory componentFactory = new EntityFactory();
+    AbstractEntityFactory entityFactory = new EntityFactory(world);
 
     // Entity builder
     IEntityBuilder entityBuilder = new EntityBuilder();
 
-
-    // Physics world
-    World world = new World(new Vector2(0, -10), true);
 
     // MVP view state machine
     IStateMachine viewMachine = new StateMachine();
@@ -111,7 +126,6 @@ public class GamePresenter extends Game
     private Boolean firstPlayThrough = true;
 
 
-    private boolean soundOn;
     private boolean shooting;
     private float shootingTimer = 0;
 
@@ -121,103 +135,59 @@ public class GamePresenter extends Game
     TransformComponent transformComponent;
     StateComponent playerState;
 
-    ShapeRenderer networkedshapeRenderer;
-    Entity networkedplayer;
-    TransformComponent networkedtransformComponent;
-    StateComponent networkedplayerState;
 
-    private boolean isMultiplayer = false;
     private ISynchronization proxy;
 
 
-    // Single player
-    public GamePresenter() { isMultiplayer = false; };
 
     // Multi player
     public GamePresenter(ISynchronization proxy)
     {
         this.proxy = proxy;
-        this.isMultiplayer = true;
     }
 
     @Override
     public void create()
     {
-        // DEBUG
-        //debugRenderer = new Box2DDebugRenderer();
-        shapeRenderer = new ShapeRenderer();
-        shapeRenderer.setColor(Color.RED);
+        // Adjust view
         mainCamera.zoom = 1.5f;
-        shapeRenderer.setProjectionMatrix(mainCamera.combined);
 
         // PLAYER ENTITY
-        player = new Entity();
-        player.flags = 2;
-        transformComponent = new TransformComponent();
-        transformComponent.position = new Vector2(3, 8);
-        player.add(transformComponent);
-        AnimatedSpriteComponent animated = new AnimatedSpriteComponent("packed/hero_player.atlas");
-        animated.frameDuration(0.1f);
-        animated.height = 1.8f;
-        animated.width = 1.8f;
-        //animated.currentAnimation = "idleRight";
-        player.add(animated);
-        DynamicBodyComponent dynamicBodyComponent = new DynamicBodyComponent(world);
-        dynamicBodyComponent.position(transformComponent.position)
-                .dimension(0.7f, 1.5f).trigger(2f)
-                .properties(0, 50f, 10f, 0f);
-        player.add(dynamicBodyComponent);
-        PlayerComponent playerComponent = new PlayerComponent();
-        player.add(playerComponent);
-        playerState = new StateComponent();
-        playerState.add(new TaggedState("idleLeft")).add(new TaggedState("idleRight"))
-                .add(new TaggedState("runLeft")).add(new TaggedState("runRight"))
-                .add(new TaggedState("jumpRight")).add(new TaggedState("jumpLeft"))
-                .add(new TaggedState("shootRight")).add(new TaggedState("shootLeft"))
-                .initial("idleRight");
-        player.add(playerState);
-        InteractionComponent interaction = new InteractionComponent();
-        player.add(interaction);
-        ControlModule module = new EventControlModule();
-        ControlComponent control = new ControlComponent(module);
-        player.add(control);
+        player = entityFactory.create("first_player");
+        player.getComponent(DynamicBodyComponent.class).position(new Vector2(5,4));
 
 
+        // ENEMY EXAMPLE
+/*        Entity enemy = entityFactory.create("knight_enemy");
+        enemy.getComponent(DynamicBodyComponent.class).position(new Vector2(10,8));
+        ecs.addEntity(enemy);*/
 
         ////create shadow player
-        // PLAYER ENTITY
-        Entity player1 = new Entity();
-        player1.flags = 2;
-        TransformComponent transformComponent1 = new TransformComponent();
-        transformComponent1.position = new Vector2(3, 8);
-        player1.add(transformComponent1);
-        AnimatedSpriteComponent animated1 = new AnimatedSpriteComponent("packed/hero_player.atlas");
-        animated1.frameDuration(0.1f);
-        animated1.height = 1.8f;
-        animated1.width = 1.8f;
-        //animated.currentAnimation = "idleRight";
-        player1.add(animated1);
-        DynamicBodyComponent dynamicBodyComponent1 = new DynamicBodyComponent(world);
-        dynamicBodyComponent1.position(transformComponent1.position)
-                .dimension(0.7f, 1.5f)
-                .properties(0, 50f, 10f, 0f);
-        player1.add(dynamicBodyComponent1);
-        PlayerComponent playerComponent1 = new PlayerComponent();
-        player1.add(playerComponent1);
-        StateComponent playerState1 = new StateComponent();
-        playerState1.add(new TaggedState("idleLeft")).add(new TaggedState("idleRight"))
-                .add(new TaggedState("runLeft")).add(new TaggedState("runRight"))
-                .add(new TaggedState("jumpRight")).add(new TaggedState("jumpLeft"))
-                .add(new TaggedState("shootRight")).add(new TaggedState("shootLeft"))
-                .initial("idleRight");
-        player1.add(playerState1);
-        InteractionComponent interaction1 = new InteractionComponent();
-        player1.add(interaction1);
-        ControlModule module1 = new NetworkControlModule();
-        ControlComponent control1 = new ControlComponent(module1);
-        player1.add(control1);
 
 
+
+        //define screens
+        inGameScreen = new InGameScreen();
+        gameOverScreen = new GameOverScreen();
+        menuScreen = new MenuScreen(proxy);
+        highScoreScreen = new HighScoreScreen(proxy);
+        settingsScreen = new SettingsScreen();
+        tutorialScreen = new TutorialScreen();
+
+
+
+        GameScene menuScene = new GameScene(new TmxMapLoader().load("levels/level1.tmx"),
+                world, mainCamera, ecs);
+        GameScene levelOneScene = new GameScene(new TmxMapLoader().load("levels/level1.tmx"),
+                world, mainCamera, ecs);
+
+        //define states. states are made up of one screen and one scene
+        viewStateInGame = new ViewState(levelOneScene, inGameScreen);
+        viewStateGameOver = new ViewState(levelOneScene, gameOverScreen);
+        viewStateMenu = new ViewState(menuScene, menuScreen);
+        viewStateHighScore = new ViewState(menuScene, highScoreScreen);
+        viewStateSettings = new ViewState(menuScene, settingsScreen);
+        viewStateTutorial = new ViewState(menuScene, tutorialScreen);
         // ECS Systems
 
         // Camera follow
@@ -230,18 +200,20 @@ public class GamePresenter extends Game
         PhysicsSystem physics = new PhysicsSystem(world);
 
         // Control
-        ControlSystem controlSystem = new ControlSystem();
+        ControlSystem controlSystem = new ControlSystem(entityFactory);
 
         // States
         StateSystem state = new StateSystem();
 
         //Sound
         SoundSystem sound = new SoundSystem();
+
+        //cleanup
+        CleanupSystem cleanup = new CleanupSystem(world,proxy,viewMachine,viewStateGameOver,gameOverScreen);
+
         ecs.addSystem(sound);
+
         //populate assetmanager with assets
-        assetManager.load("sounds/single_gunshot.mp3", Sound.class);
-        assetManager.load("sounds/coin_collect.mp3", Sound.class);
-        assetManager.load("sounds/jump.mp3", Sound.class);
         assetManager.load("sounds/die.mp3", Sound.class);
         assetManager.load("sounds/GameOver.mp3", Sound.class);
         assetManager.load("sounds/reload.mp3", Sound.class);
@@ -250,10 +222,7 @@ public class GamePresenter extends Game
         assetManager.finishLoading();
 
         //soundEntities
-        Entity shootSound = new Entity();
-        shootSound.add(new SoundComponent(assetManager.get("sounds/single_gunshot.mp3",Sound.class),true));
-
-        Entity menuMusic = new Entity();
+            Entity menuMusic = new Entity();
         menuMusic.add(new MusicComponent(Gdx.audio.newMusic(Gdx.files.internal("sounds/menuMusic.mp3"))));
         ecs.addEntity(menuMusic);
         Entity inGameMusic = new Entity();
@@ -263,7 +232,7 @@ public class GamePresenter extends Game
         Set music for gameplay, but do not start it.
         Music not in assetManager because larger sound files needs to be streamed as Gdx.audio-type
         and not Gdx.Sound type*/
-        soundOn = true;
+        sound.soundOn = true;
         //menuMusic = Gdx.audio.newMusic(Gdx.files.internal("sounds/menuMusic.mp3"));
         //inGameMusic = Gdx.audio.newMusic(Gdx.files.internal("sounds/inGameMusic.mp3"));
         //inGameMusic.setVolume(0.5f);
@@ -271,17 +240,12 @@ public class GamePresenter extends Game
         //inGameMusic.setLooping(true);
         //menuMusic.play();
 
-        //define screens
-        inGameScreen = new InGameScreen();
-        gameOverScreen = new GameOverScreen();
-        menuScreen = new MenuScreen(proxy);
-        highScoreScreen = new HighScoreScreen();
-        settingsScreen = new SettingsScreen();
-        tutorialScreen = new TutorialScreen();
 
         // Link game start
         ((MenuScreen) menuScreen).getNewGameEvent().addHandler((args) ->
         {
+
+
             //on first play through set the following entities to ECS
             if (firstPlayThrough) {
                 ecs.addEntity(player);
@@ -295,22 +259,32 @@ public class GamePresenter extends Game
                 ecs.addSystem(new FPSDebugSystem());
                 ecs.addSystem(new AnimationControlSystem());
                 ecs.addSystem(new InteractionSystem(world));
+                ecs.addSystem(new VisualSystem());
+                ecs.addSystem(cleanup);
 
                 firstPlayThrough = false;
             }
             //always set player entity when switching to in-game mode
             else {
+                levelOneScene.repopulate(new TmxMapLoader().load("levels/level1.tmx"),
+                        world, ecs);
+                player.getComponent(PlayerComponent.class).reset();
+                player.getComponent(DynamicBodyComponent.class).position(player.getComponent(TransformComponent.class).position)
+                        .dimension(0.7f, 1.5f)
+                        .properties(0, 50f, 10f, 0f);
+                player.getComponent(DynamicBodyComponent.class).position(new Vector2(5,4));
+
                 ecs.addEntity(player);
+
             }
 
             //set inGameScreen's stage as the input processor
             Gdx.input.setInputProcessor(inGameScreen.getStage());
             //stop menu music. will call stop() method on menu music even if sound is currently turned off
+            ((MusicComponent)menuMusic.getComponents().get(0)).stop();
             ecs.removeEntity(menuMusic);
-            //if sound is turned on: start playing in-game music
-            if(soundOn) {
-                ecs.addEntity(inGameMusic);
-            }
+            ecs.addEntity(inGameMusic);
+
             // call on state machine to change state
             viewMachine.nextState(viewStateInGame);
         });
@@ -322,7 +296,11 @@ public class GamePresenter extends Game
 
             proxy.startQuickGame();
 
-            //proxy.setInputHandler(input);
+
+            // PLAYER ENTITY
+            Entity player1 = entityFactory.create("second_player");
+
+
 
             //on first play through set the following entities to ECS
 
@@ -344,39 +322,43 @@ public class GamePresenter extends Game
 
             //always set player entity when switching to in-game mode
             else {
+
+                levelOneScene.repopulate(new TmxMapLoader().load("levels/level1.tmx"),
+                        world, ecs);
+                player.getComponent(PlayerComponent.class).reset();
+                player.getComponent(DynamicBodyComponent.class).position(player.getComponent(TransformComponent.class).position)
+                        .dimension(0.7f, 1.5f)
+                        .properties(0, 50f, 10f, 0f);
+                player.getComponent(DynamicBodyComponent.class).position(new Vector2(5,4));
+
                 ecs.addEntity(player);
+                player1.getComponent(PlayerComponent.class).reset();
+                player1.getComponent(DynamicBodyComponent.class).position(player.getComponent(TransformComponent.class).position)
+                        .dimension(0.7f, 1.5f)
+                        .properties(0, 50f, 10f, 0f);
+                player1.getComponent(DynamicBodyComponent.class).position(new Vector2(5,4));
+
+                ecs.addEntity(player1);
 
             }
-            proxy.setInputHandler((NetworkControlModule)module1);
+            proxy.setInputHandler((NetworkControlModule)player1.getComponent(ControlComponent.class).controlModule);
 
 
 
             //set inGameScreen's stage as the input processor
             Gdx.input.setInputProcessor(inGameScreen.getStage());
             //stop menu music. will call stop() method on menu music even if sound is currently turned off
+            ((MusicComponent)menuMusic.getComponents().get(0)).stop();
             ecs.removeEntity(menuMusic);
-            //if sound is turned on: start playing in-game music
-            if(soundOn) {
-                ecs.addEntity(inGameMusic);
-            }
+            ecs.addEntity(inGameMusic);
+
             // call on state machine to change state
             viewMachine.nextState(viewStateInGame);
 
         });
 
         // Create screen and scene for future view state assembly
-        GameScene levelOneScene = new GameScene(new TmxMapLoader().load("levels/level1.tmx"),
-                world, mainCamera, ecs);
-        GameScene menuScene = new GameScene(new TmxMapLoader().load("levels/level1.tmx"),
-                world, mainCamera, ecs);
 
-        //define states. states are made up of one screen and one scene
-        viewStateInGame = new ViewState(levelOneScene, inGameScreen);
-        viewStateGameOver = new ViewState(levelOneScene, gameOverScreen);
-        viewStateMenu = new ViewState(menuScene, menuScreen);
-        viewStateHighScore = new ViewState(menuScene, highScoreScreen);
-        viewStateSettings = new ViewState(menuScene, settingsScreen);
-        viewStateTutorial = new ViewState(menuScene, tutorialScreen);
 
 
         // Add states to the state machine
@@ -395,6 +377,7 @@ public class GamePresenter extends Game
         Transition tutorialToMenu = new Transition(viewStateTutorial, viewStateMenu);
         Transition settingsToMenu = new Transition(viewStateSettings, viewStateMenu);
         Transition inGameToGameOver = new Transition(viewStateInGame, viewStateGameOver);
+        Transition gameOverToIngame = new Transition(viewStateGameOver, viewStateInGame);
         Transition gameOverToHighScore = new Transition(viewStateGameOver, viewStateHighScore);
         Transition gameOverToMenu = new Transition(viewStateGameOver, viewStateMenu);
         Transition highScoreToMenu = new Transition(viewStateHighScore, viewStateMenu);
@@ -406,6 +389,7 @@ public class GamePresenter extends Game
         viewMachine.addTransition(menuToSettings);
         viewMachine.addTransition(settingsToMenu);
         viewMachine.addTransition(inGameToGameOver);
+        viewMachine.addTransition(gameOverToIngame);
         viewMachine.addTransition(gameOverToHighScore);
         viewMachine.addTransition(gameOverToMenu);
         viewMachine.addTransition(highScoreToMenu);
@@ -440,6 +424,7 @@ public class GamePresenter extends Game
         ((MenuScreen) menuScreen).getHighScoreEvent().addHandler((args) -> {
             // set input processor to new State's BaseScreen stage
             Gdx.input.setInputProcessor(highScoreScreen.getStage());
+            ((HighScoreScreen)highScoreScreen).populateHighscoreList();
             // call on state machine to change state
             viewMachine.nextState(viewStateHighScore);
         });
@@ -464,35 +449,32 @@ public class GamePresenter extends Game
         ((InGameScreen) inGameScreen).getSoundEvent().addHandler((args) -> {
             //if sound is turned on: pause game music. Set the sound-button in settingsscreen to
             //not be toggled, and vice versa
-            if(soundOn){
-                ecs.removeEntity(inGameMusic);
-                ((SettingsScreen) settingsScreen).setSoundOn(false);
-                soundOn = false;
-            } else {
-                ecs.addEntity(inGameMusic);
-                ((SettingsScreen) settingsScreen).setSoundOn(true);
-                soundOn = true;
-            }
+
+                ((SettingsScreen) settingsScreen).setSoundOn(!sound.soundOn);
+                sound.soundOn = !sound.soundOn;
+
         });
+
+
 
         ((InGameScreen) inGameScreen).getLeftEvent().addHandler((args) -> {
             proxy.sendAction("L");
-            ((EventControlModule) module).leftStart();
+            ((EventControlModule) player.getComponent(ControlComponent.class).controlModule).leftStart();
         });
 
         ((InGameScreen) inGameScreen).getStopLeftEvent().addHandler((args) -> {
             proxy.sendAction("SL");
-            ((EventControlModule) module).leftEnd();
+            ((EventControlModule) player.getComponent(ControlComponent.class).controlModule).leftEnd();
         });
 
         ((InGameScreen) inGameScreen).getRightEvent().addHandler((args) -> {
             proxy.sendAction("R");
-            ((EventControlModule) module).rightStart();
+            ((EventControlModule) player.getComponent(ControlComponent.class).controlModule).rightStart();
         });
 
         ((InGameScreen) inGameScreen).getStopRightEvent().addHandler((args) -> {
             proxy.sendAction("SR");
-            ((EventControlModule) module).rightEnd();
+            ((EventControlModule) player.getComponent(ControlComponent.class).controlModule).rightEnd();
         });
 
 
@@ -500,22 +482,20 @@ public class GamePresenter extends Game
         //GamePresenter's update method to perform shooting action
         ((InGameScreen) inGameScreen).getShootEvent().addHandler((args) -> {
             proxy.sendAction("S");
-            ((EventControlModule) module).attackStart();
-            ecs.addEntity(shootSound);
+            ((EventControlModule) player.getComponent(ControlComponent.class).controlModule).attackStart();
 
         });
 
         ((InGameScreen) inGameScreen).getStopshootEvent().addHandler((args) -> {
             proxy.sendAction("SS");
-            ((EventControlModule) module).attackEnd();
+            ((EventControlModule) player.getComponent(ControlComponent.class).controlModule).attackEnd();
         });
 
         //jump button pressed in-game. Currently this causes the the game to go from play-state to
         //gameOver-state
         ((InGameScreen) inGameScreen).getJumpEvent().addHandler((args) -> {
             proxy.sendAction("J");
-            ((EventControlModule) module).jumpStart();
-
+            ((EventControlModule) player.getComponent(ControlComponent.class).controlModule).jumpStart();
 
             /*// set input processor to new State's BaseScreen stage
             Gdx.input.setInputProcessor(gameOverScreen.getStage());
@@ -540,6 +520,12 @@ public class GamePresenter extends Game
 */
         });
 
+
+        ((InGameScreen) inGameScreen).getMenuEvent().addHandler((args) -> {
+            //remove Player entity to stop it rendering whilst not in-game
+                ecs.addEntity(new Entity().add(new CleanupComponent(player)));
+
+        });
         //new game pressed from gameOver state
         /*
         TODO: implement this method correctly. this is currently an invalid state transition
@@ -549,12 +535,14 @@ public class GamePresenter extends Game
             Gdx.input.setInputProcessor(inGameScreen.getStage());
             // call on state machine to change state
             viewMachine.nextState(viewStateInGame);
+            ((MenuScreen) menuScreen).getNewGameEvent().invoke(null);
         });
 
         //press highscore button from game over screen
         ((GameOverScreen) gameOverScreen).getHighScoreEvent().addHandler((args) -> {
             // set input processor to new State's BaseScreen stage
             Gdx.input.setInputProcessor(highScoreScreen.getStage());
+            ((HighScoreScreen)highScoreScreen).populateHighscoreList();
             // call on state machine to change state
             viewMachine.nextState(viewStateHighScore);
         });
@@ -579,17 +567,10 @@ public class GamePresenter extends Game
         ((SettingsScreen) settingsScreen).getSoundEvent().addHandler((args) -> {
             //if sound is currently playing: pause menu-music. Set in-game sound to be off.
             //set boolean variable "soundOn" to false
-            if(soundOn) {
-                ecs.removeEntity(menuMusic);
-                ((InGameScreen) inGameScreen).setSoundOn(false);
-                soundOn = false;
-            //if sound is currently not playing: start playing menu-music. set in-game music to be on
-            //set boolean "soundOn" to true
-            } else {
-                ecs.addEntity(menuMusic);
-                ((InGameScreen) inGameScreen).setSoundOn(true);
-                soundOn = true;
-            }
+
+                ((InGameScreen) inGameScreen).setSoundOn(!sound.soundOn);
+                sound.soundOn = !sound.soundOn;
+
         });
 
         //if back button pressed from settings screen:
@@ -627,6 +608,7 @@ public class GamePresenter extends Game
             }
         }*/
 
+        // TODO: Implement no proxy version
         proxy.handleActions();
 
         // Update ECS

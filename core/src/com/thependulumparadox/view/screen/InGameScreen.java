@@ -34,6 +34,7 @@ public class InGameScreen extends BaseScreen
     private Texture weaponTexture;
     private Image weapon;
     private Button btnSound;
+    private Button btnMenu;
     private Button btnLeft;
     private Button btnRight;
     private Touchpad btnJump;
@@ -61,6 +62,8 @@ public class InGameScreen extends BaseScreen
     Event<EventArgs> rightEvent = new Event<>();
     Event<EventArgs> stopRightEvent = new Event<>();
     Event<EventArgs> soundEvent = new Event<>();
+    Event<EventArgs> MenuEvent = new Event<>();
+
 
     private boolean soundOn;
 
@@ -116,6 +119,9 @@ public class InGameScreen extends BaseScreen
         btnSound = new Button(skin, "sound");
         btnSound.setChecked(true);
 
+        btnMenu = new Button(skin, "default");
+
+
         btnLeft = new Button(skin, "left");
         btnRight = new Button(skin, "right");
         btnJump = new Touchpad(3, skin, "default");
@@ -137,6 +143,21 @@ public class InGameScreen extends BaseScreen
                 super.touchUp(event, x, y, pointer, button);
             }
         });
+
+
+        btnMenu.addListener(new ClickListener(){
+            @Override
+            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                MenuEvent.invoke(null);
+                return super.touchDown(event, x, y, pointer, button);
+            }
+
+            @Override
+            public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+                super.touchUp(event, x, y, pointer, button);
+            }
+        });
+
 
         btnLeft.addListener(new ClickListener(){
             @Override
@@ -197,15 +218,17 @@ public class InGameScreen extends BaseScreen
         hudTable.add(lifeCount).align(Align.right).padRight(20);
         hudTable.row();
         hudTable.add(weapon).width(100).height(50).align(Align.left);
-        hudTable.add(btnSound).align(Align.right).padRight(20);
+        hudTable.add(btnSound).align(Align.right).padRight(20).width(60).height(60);
+        hudTable.row();
+        hudTable.add(btnMenu).align(Align.left).padRight(20).width(60).height(60).padTop(20);
 
         //add move buttons to movebtnTable
-        moveBtnTable.add(btnLeft).width(60).height(60).padLeft(40).padBottom(15);
-        moveBtnTable.add(btnRight).width(60).height(60).padBottom(40).padLeft(20);
+        moveBtnTable.add(btnLeft).width(120).height(120).padLeft(40).padBottom(15);
+        moveBtnTable.add(btnRight).width(120).height(120).padBottom(40).padLeft(20);
 
         //add action buttons to actionBtnTable
-        actionBtnTable.add(btnShoot).width(60).height(60).padBottom(40).padRight(20);
-        actionBtnTable.add(btnJump).width(60).height(60).padRight(30).padBottom(15);
+        actionBtnTable.add(btnShoot).width(120).height(120).padBottom(40).padRight(20);
+        actionBtnTable.add(btnJump).width(120).height(120).padRight(30).padBottom(15);
 
         //add tables to Stage
         stage.addActor(hudTable);
@@ -275,6 +298,9 @@ public class InGameScreen extends BaseScreen
 
 
     public Event<EventArgs> getSoundEvent(){ return soundEvent; }
+
+    public Event<EventArgs> getMenuEvent(){ return MenuEvent; }
+
 
     @Override
     public void render(float delta) {

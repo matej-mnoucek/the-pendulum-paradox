@@ -6,6 +6,8 @@ import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.EntitySystem;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.utils.ImmutableArray;
+import com.badlogic.gdx.assets.AssetManager;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.Contact;
 import com.badlogic.gdx.physics.box2d.ContactImpulse;
@@ -15,11 +17,14 @@ import com.badlogic.gdx.physics.box2d.Manifold;
 import com.badlogic.gdx.physics.box2d.World;
 import com.thependulumparadox.misc.StandardAttributes;
 import com.thependulumparadox.model.component.BulletComponent;
+import com.thependulumparadox.model.component.CleanupComponent;
+import com.thependulumparadox.model.component.CoinComponent;
 import com.thependulumparadox.model.component.DynamicBodyComponent;
 import com.thependulumparadox.model.component.EnemyComponent;
 import com.thependulumparadox.model.component.EnhancementComponent;
 import com.thependulumparadox.model.component.InteractionComponent;
 import com.thependulumparadox.model.component.PlayerComponent;
+import com.thependulumparadox.model.component.SoundComponent;
 import com.thependulumparadox.model.component.enhancement.Enhancement;
 
 import java.util.ArrayList;
@@ -39,6 +44,8 @@ public class InteractionSystem extends EntitySystem
             = ComponentMapper.getFor(InteractionComponent.class);
     private ComponentMapper<BulletComponent> bulletComponentMapper
             = ComponentMapper.getFor(BulletComponent.class);
+    private ComponentMapper<CoinComponent> coinComponentMapper
+            = ComponentMapper.getFor(CoinComponent.class);
     private ComponentMapper<EnhancementComponent> enhancementComponentMapper
             = ComponentMapper.getFor(EnhancementComponent.class);
     private ComponentMapper<EnemyComponent> enemyComponentMapper
@@ -52,9 +59,16 @@ public class InteractionSystem extends EntitySystem
     // Physics world
     private World world;
 
+    //sounds
+    private AssetManager assetManager = new AssetManager();
+
     public InteractionSystem(World world)
     {
         this.world = world;
+
+        assetManager.load("sounds/die.mp3", Sound.class);
+        assetManager.load("sounds/coin_collect.mp3", Sound.class);
+        assetManager.finishLoading();
 
         // Define collision handling
         world.setContactListener(new ContactListener()
@@ -71,6 +85,25 @@ public class InteractionSystem extends EntitySystem
                     Entity entityA = (Entity) a.getUserData();
                     Entity entityB = (Entity) b.getUserData();
 
+                    // Player and coin
+                    if(entityA.flags == 2 && entityB.flags == 32)
+                    {
+                        InteractionComponent interaction = interactionComponentMapper.get(entityA);
+                        if (interaction != null)
+                        {
+                            interaction.interactions.add(entityB);
+
+                        }
+                    }
+
+                    if(entityB.flags == 2 && entityA.flags == 32)
+                    {
+                        InteractionComponent interaction = interactionComponentMapper.get(entityB);
+                        if (interaction != null)
+                        {
+                            interaction.interactions.add(entityA);
+                        }
+                    }
 
                     // Player and enhancement
                     if(entityA.flags == 2 && entityB.flags == 16)
@@ -112,6 +145,27 @@ public class InteractionSystem extends EntitySystem
                         }
                     }
 
+                    // Enemy bullet and player
+                    if(entityA.flags == 8 && entityB.flags == 2)
+                    {
+                        BulletComponent bullet = bulletComponentMapper.get(entityA);
+                        InteractionComponent interaction = interactionComponentMapper.get(bullet.shotBy);
+                        if (interaction != null)
+                        {
+                            interaction.interactions.add(entityB);
+                        }
+                    }
+
+                    if(entityB.flags == 8 && entityA.flags == 2)
+                    {
+                        BulletComponent bullet = bulletComponentMapper.get(entityB);
+                        InteractionComponent interaction = interactionComponentMapper.get(bullet.shotBy);
+                        if (interaction != null)
+                        {
+                            interaction.interactions.add(entityA);
+                        }
+                    }
+
 
                     // Enemy and player in its trigger
                     if(entityA.flags == 2 && entityB.flags == 4)
@@ -119,6 +173,7 @@ public class InteractionSystem extends EntitySystem
                         InteractionComponent interaction = interactionComponentMapper.get(entityB);
                         if (interaction != null)
                         {
+                            //System.out.println("ENEMY_TRIGGER_B");
                             interaction.interactions.add(entityA);
                         }
                     }
@@ -128,6 +183,7 @@ public class InteractionSystem extends EntitySystem
                         InteractionComponent interaction = interactionComponentMapper.get(entityA);
                         if (interaction != null)
                         {
+                            //System.out.println("ENEMY_TRIGGER_A");
                             interaction.interactions.add(entityB);
                         }
                     }
@@ -193,6 +249,10 @@ public class InteractionSystem extends EntitySystem
             InteractionComponent interactionComponent = interactionComponentMapper.get(player);
             PlayerComponent playerComponent = playerComponentMapper.get(player);
 
+            if (player.getComponent(DynamicBodyComponent.class).body.getPosition().y < -10){
+                getEngine().addEntity(new Entity().add(new CleanupComponent(player)));
+            }
+
             // Apply enhancements
             applyEnhancementChain(playerComponent);
 
@@ -219,7 +279,30 @@ public class InteractionSystem extends EntitySystem
                         DynamicBodyComponent body = dynamicBodyComponentMapper.get(interactionEntity);
                         world.destroyBody(body.body);
                         getEngine().removeEntity(interactionEntity);
+                        Entity enemyDieSound = new Entity();
+                        enemyDieSound.add(new SoundComponent(assetManager.get("sounds/die.mp3", Sound.class),true));
+                        getEngine().addEntity(enemyDieSound);
+
                     }
+                }
+
+                // Interaction with coin
+                if (interactionEntity.flags == 32)
+                {
+                    CoinComponent coin = coinComponentMapper
+                            .get(interactionEntity);
+                    DynamicBodyComponent body = dynamicBodyComponentMapper.get(interactionEntity);
+
+                    // Add collected value
+                    playerComponent.score += coin.value;
+
+                    // Destroy coin after collection
+                    world.destroyBody(body.body);
+                    getEngine().removeEntity(interactionEntity);
+
+                    Entity coinSound = new Entity();
+                    coinSound.add(new SoundComponent(assetManager.get("sounds/coin_collect.mp3", Sound.class),true));
+                    getEngine().addEntity(coinSound);
                 }
 
                 // Interaction with enhancement
@@ -227,12 +310,14 @@ public class InteractionSystem extends EntitySystem
                 {
                     EnhancementComponent enhancement = enhancementComponentMapper
                             .get(interactionEntity);
+                    DynamicBodyComponent body = dynamicBodyComponentMapper.get(interactionEntity);
 
-                    // Permanent attribute
+                    // Permanent enhancement
                     if(enhancement.enhancement.isPermanent())
                     {
                         enhancement.enhancement.apply(playerComponent.base);
                     }
+                    // Time-limited enhancement
                     else
                     {
                         if (enhancementChain == null)
@@ -244,6 +329,13 @@ public class InteractionSystem extends EntitySystem
                             enhancementChain.chain(enhancement.enhancement);
                         }
                     }
+
+                    // Destroy enhancement after collection
+                    world.destroyBody(body.body);
+                    getEngine().removeEntity(interactionEntity);
+                    Entity EnhancementSound = new Entity();
+                    EnhancementSound.add(new SoundComponent(assetManager.get("sounds/coin_collect.mp3", Sound.class),true));
+                    getEngine().addEntity(EnhancementSound);
                 }
             }
             // All processed, clear the list
@@ -280,10 +372,16 @@ public class InteractionSystem extends EntitySystem
                     applyEnhancementChain(playerComponent);
                     if (playerComponent.current.lives <= 0)
                     {
-                        DynamicBodyComponent body = dynamicBodyComponentMapper.get(interactionEntity);
-                        world.destroyBody(body.body);
+                        //DynamicBodyComponent body = dynamicBodyComponentMapper.get(interactionEntity);
+                        //world.destroyBody(body.body);
                         getEngine().removeEntity(interactionEntity);
+                        Entity playerDieSound = new Entity();
+                        playerDieSound.add(new SoundComponent(assetManager.get("sounds/die.mp3", Sound.class),true));
+                        getEngine().addEntity(playerDieSound);
+                        Entity player = getEngine().getEntitiesFor(Family.all(PlayerComponent.class).get()).first();
+                        getEngine().addEntity(new Entity().add(new CleanupComponent(player)));
                     }
+
                 }
             }
             // All processed, clear the list

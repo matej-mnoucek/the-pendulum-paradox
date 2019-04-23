@@ -41,6 +41,7 @@ public class StateComponent implements Component
             if (state.tag.equals(stateTag))
             {
                 initialState = state;
+                currentState = state;
                 return true;
             }
         }
