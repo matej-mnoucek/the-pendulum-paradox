@@ -41,7 +41,7 @@ public class SoundSystem extends EntitySystem {
     public void update(float deltaTime) {
         sounds = engine.getEntitiesFor(Family.all(SoundComponent.class).get());
         ImmutableArray<Entity> temp = engine.getEntitiesFor(Family.all(MusicComponent.class).get());
-        System.out.println(temp.size());
+
         if (temp.size() != 0) {
             MusicComponent tempmusic = musicComponentMapper.get(temp.first());
             if (tempmusic != music) {

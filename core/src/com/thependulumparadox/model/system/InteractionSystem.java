@@ -66,6 +66,7 @@ public class InteractionSystem extends EntitySystem
         this.world = world;
 
         assetManager.load("sounds/die.mp3", Sound.class);
+        assetManager.load("sounds/coin_collect.mp3", Sound.class);
         assetManager.finishLoading();
 
         // Define collision handling
@@ -90,6 +91,7 @@ public class InteractionSystem extends EntitySystem
                         if (interaction != null)
                         {
                             interaction.interactions.add(entityB);
+
                         }
                     }
 
@@ -292,6 +294,10 @@ public class InteractionSystem extends EntitySystem
                     // Destroy coin after collection
                     world.destroyBody(body.body);
                     getEngine().removeEntity(interactionEntity);
+
+                    Entity coinSound = new Entity();
+                    coinSound.add(new SoundComponent(assetManager.get("sounds/coin_collect.mp3", Sound.class),true));
+                    getEngine().addEntity(coinSound);
                 }
 
                 // Interaction with enhancement
@@ -322,6 +328,9 @@ public class InteractionSystem extends EntitySystem
                     // Destroy enhancement after collection
                     world.destroyBody(body.body);
                     getEngine().removeEntity(interactionEntity);
+                    Entity EnhancementSound = new Entity();
+                    EnhancementSound.add(new SoundComponent(assetManager.get("sounds/coin_collect.mp3", Sound.class),true));
+                    getEngine().addEntity(EnhancementSound);
                 }
             }
             // All processed, clear the list

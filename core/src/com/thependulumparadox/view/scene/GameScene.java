@@ -17,6 +17,7 @@ import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.utils.Array;
 import com.thependulumparadox.control.AIControlModule;
 import com.thependulumparadox.control.ControlModule;
 import com.thependulumparadox.misc.Constants;
@@ -80,7 +81,7 @@ public class GameScene extends Scene
             // Create a fixture from the box and add it to the body
             body.createFixture(fixtureDef);
         }
-
+        System.out.print("");
         layer = level.getLayers().get("points");
         for (MapObject object : layer.getObjects()) {
             if (object.getName() != null) {
@@ -177,6 +178,98 @@ public class GameScene extends Scene
                         engine.addEntity(entity);
                     }
                         break;
+                    default:
+                        break;
+                }
+            }
+        }
+    }
+
+    public void repopulate(TiledMap level, World world, Engine engine){
+
+
+        MapLayer layer = level.getLayers().get("pickups");
+        for (MapObject object : layer.getObjects()) {
+            if (object.getName() != null) {
+                switch (object.getName()) {
+                    case "coin":
+                        break;
+                    case "ammo":
+                        break;
+                }
+            }
+        }
+
+        layer = level.getLayers().get("enemies");
+        for (MapObject object : layer.getObjects()) {
+            if (object.getName() != null)
+            {
+                switch (object.getName())
+                {
+                    case "attacking": {
+                        Entity entity;
+                        entity = new Entity();
+                        entity.flags = 4;
+                        TransformComponent transform = new TransformComponent();
+                        Rectangle rect =  ((RectangleMapObject)object).getRectangle();
+                        transform.position = new Vector2(rect.x/ Constants.PPM,rect.y/ Constants.PPM);
+                        entity.add(transform);
+                        AnimatedSpriteComponent animatedEnemy = new AnimatedSpriteComponent("packed/knight_enemy.atlas");
+                        animatedEnemy.frameDuration(0.07f);
+                        animatedEnemy.height = 1.8f;
+                        animatedEnemy.width = 1.8f;
+                        animatedEnemy.currentAnimation = "attackLeft";
+                        entity.add(animatedEnemy);
+                        DynamicBodyComponent dynamicBody = new DynamicBodyComponent(world);
+                        dynamicBody.position(transform.position)
+                                .dimension(0.7f, 1.5f)
+                                //.trigger(2.0f)
+                                .activate(true);
+                        entity.add(dynamicBody);
+                        EnemyComponent enemyComponent = new EnemyComponent();
+                        entity.add(enemyComponent);
+                        InteractionComponent interaction = new InteractionComponent();
+                        entity.add(interaction);
+                        engine.addEntity(entity);
+                    }
+                    break;
+                    case "walking": {
+                        Entity entity;
+                        entity = new Entity();
+                        entity.flags = 4;
+                        TransformComponent transform = new TransformComponent();
+                        Rectangle rect =  ((RectangleMapObject)object).getRectangle();
+                        transform.position = new Vector2(rect.x/ Constants.PPM,rect.y/ Constants.PPM);
+                        entity.add(transform);
+                        AnimatedSpriteComponent animatedEnemy = new AnimatedSpriteComponent("packed/hero_player.atlas");
+                        animatedEnemy.frameDuration(0.07f);
+                        animatedEnemy.height = 1.8f;
+                        animatedEnemy.width = 1.8f;
+                        entity.add(animatedEnemy);
+                        DynamicBodyComponent dynamicBody = new DynamicBodyComponent(world);
+                        dynamicBody.position(transform.position)
+                                .dimension(0.7f, 1.5f)
+                                .properties(0, 50f, 10f, 0f)
+                                //.trigger(2.0f)
+                                .activate(true);
+                        entity.add(dynamicBody);
+                        EnemyComponent enemyComponent = new EnemyComponent();
+                        entity.add(enemyComponent);
+                        InteractionComponent interaction = new InteractionComponent();
+                        entity.add(interaction);
+                        ControlModule module = new AIControlModule();
+                        StateComponent state = new StateComponent();
+                        state.add(new TaggedState("idleLeft")).add(new TaggedState("idleRight"))
+                                .add(new TaggedState("runLeft")).add(new TaggedState("runRight"))
+                                .add(new TaggedState("jumpRight")).add(new TaggedState("jumpLeft"))
+                                .add(new TaggedState("shootRight")).add(new TaggedState("shootLeft"))
+                                .initial("idleRight");
+                        entity.add(state);
+                        ControlComponent control = new ControlComponent(module);
+                        entity.add(control);
+                        engine.addEntity(entity);
+                    }
+                    break;
                     default:
                         break;
                 }

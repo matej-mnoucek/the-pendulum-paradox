@@ -6,7 +6,9 @@ import com.badlogic.ashley.core.PooledEngine;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
 import com.thependulumparadox.control.ControlModule;
+import com.thependulumparadox.control.EventControlModule;
 import com.thependulumparadox.control.KeyboardControlModule;
+import com.thependulumparadox.control.NetworkControlModule;
 import com.thependulumparadox.misc.Range;
 import com.thependulumparadox.model.component.AnimatedSpriteComponent;
 import com.thependulumparadox.model.component.BulletComponent;
@@ -93,7 +95,7 @@ public class EntityFactory extends AbstractEntityFactory
                 InteractionComponent interaction1 = new InteractionComponent();
                 player1.add(interaction1);
 
-                ControlModule module1 = new KeyboardControlModule();
+                ControlModule module1 = new EventControlModule();
                 ControlComponent control1 = new ControlComponent(module1);
                 player1.add(control1);
                 return player1;
@@ -149,7 +151,7 @@ public class EntityFactory extends AbstractEntityFactory
                 InteractionComponent interaction = new InteractionComponent();
                 player2.add(interaction);
 
-                ControlModule module = new KeyboardControlModule();
+                ControlModule module = new NetworkControlModule();
                 ControlComponent control = new ControlComponent(module);
                 player2.add(control);
                 return player2;

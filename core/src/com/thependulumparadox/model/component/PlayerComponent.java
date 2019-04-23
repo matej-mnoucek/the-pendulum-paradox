@@ -16,4 +16,10 @@ public class PlayerComponent implements Component
         current = new StandardAttributes();
         score = 0;
     }
+
+    public void reset(){
+        base = new StandardAttributes();
+        current = new StandardAttributes();
+        score = 0;
+    }
 }
