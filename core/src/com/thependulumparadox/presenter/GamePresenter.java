@@ -620,7 +620,7 @@ public class GamePresenter extends Game
     {
         // Render
         super.render();
-        Gdx.gl.glClearColor(0.0f, 0.4f, 0.5f, 1);
+        Gdx.gl.glClearColor(0.8667f, 0.9725f, 1, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
         // Get delta time value for current frame
