@@ -14,8 +14,4 @@ public abstract class Scene implements Screen
     {
         this.camera = camera;
     }
-
-    @Override
-    public void dispose() {
-    }
 }

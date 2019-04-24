@@ -1,24 +1,16 @@
 package com.thependulumparadox.multiplayer;
 
 
-import com.thependulumparadox.control.MoveCommands;
+import com.thependulumparadox.control.IMoveCommands;
 
 public interface ISynchronization
 {
-
-    public void startSignInIntent();
-
-    public void startQuickGame();
-
-    public boolean isRoomFull();
-
-    public void sendAction(String action);
-
-    public void handleActions();
-
-    public void setInputHandler(MoveCommands inputHandler);
-
-    public String getHighscore();
-
-    public void submitScore(int score);
+    void startSignInIntent();
+    void startQuickGame();
+    boolean isRoomFull();
+    void sendAction(String action);
+    void synchronize();
+    void setInputHandler(IMoveCommands inputHandler);
+    String getHighscore();
+    void submitScore(int score);
 }

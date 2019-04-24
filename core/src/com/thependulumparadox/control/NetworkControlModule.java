@@ -1,17 +1,16 @@
 package com.thependulumparadox.control;
 
-public class NetworkControlModule extends EventControlModule implements MoveCommands
+public class NetworkControlModule extends EventControlModule implements IMoveCommands
 {
 
     @Override
     public void update(float delta)
     {
-
         super.update(delta);
     }
 
     @Override
-    public MoveCommands getInputSystem() {
+    public IMoveCommands getInputSystem() {
         return this;
     }
 

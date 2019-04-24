@@ -231,8 +231,8 @@ public class PhysicsSystem extends EntitySystem
                 break;
             // Coin
             case 32:
-                filter1.categoryBits = CollisionCategory.COIN.bits;
-                filter1.maskBits = CollisionMask.COIN.bits;
+                //filter1.categoryBits = CollisionCategory.COIN.bits;
+                //filter1.maskBits = CollisionMask.COIN.bits;
                 break;
         }
 

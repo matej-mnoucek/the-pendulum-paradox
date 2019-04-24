@@ -44,35 +44,23 @@ public class ControlSystem extends EntitySystem
             = ComponentMapper.getFor(BulletVisualsComponent.class);
     private ComponentMapper<SpriteComponent> spriteComponentMapper
             = ComponentMapper.getFor(SpriteComponent.class);
+    private ComponentMapper<SoundComponent> soundComponentMapper
+            = ComponentMapper.getFor(SoundComponent.class);
 
     // Timer for state transitions delays
     Timer timer = new Timer();
 
-    //sounds
-    AssetManager assetManager = new AssetManager();
     // Entity factory
     AbstractEntityFactory factory;
 
 
-    private boolean moveLeft = false;
-    private boolean moveRight = false;
-    private boolean jump = false;
-    private boolean shooting = false;
-
-
-
-    public ControlSystem(AbstractEntityFactory factory)
+    public ControlSystem(World world)
     {
-        this.factory = factory;
+        this.factory = new EntityFactory(world);
     }
 
     public void addedToEngine(Engine engine)
     {
-        assetManager.load("sounds/jump.mp3", Sound.class);
-        assetManager.load("sounds/single_gunshot.mp3", Sound.class);
-        assetManager.finishLoading();
-
-
         controlledEntities = engine.getEntitiesFor(Family.all(DynamicBodyComponent.class,
                 ControlComponent.class, StateComponent.class, TransformComponent.class).get());
 
@@ -84,6 +72,7 @@ public class ControlSystem extends EntitySystem
             TransformComponent transformComponent = transformComponentMapper.get(entity);
             StateComponent stateComponent = stateComponentMapper.get(entity);
             BulletVisualsComponent bulletVisualsComponent = bulletVisualsComponentMapper.get(entity);
+            SoundComponent soundComponent = soundComponentMapper.get(entity);
 
 
             controlComponent.controlModule.right.addHandler((args)->
@@ -148,9 +137,9 @@ public class ControlSystem extends EntitySystem
                     stateComponent.transition("jumpLeft");
                 }
 
-                Entity jumpSound = new Entity();
-                jumpSound.add(new SoundComponent(assetManager.get("sounds/jump.mp3", Sound.class),true));
-                getEngine().addEntity(jumpSound);
+                // Play sound
+                if (soundComponent != null)
+                    soundComponent.enqueuePlay("jump");
             });
 
             controlComponent.controlModule.attackStart.addHandler((args)->{
@@ -176,10 +165,10 @@ public class ControlSystem extends EntitySystem
                             0, 0, 0, true);
                     stateComponent.transition("shootLeft");
                 }
-                Entity shootSound = new Entity();
-                shootSound.add(new SoundComponent(assetManager.get("sounds/single_gunshot.mp3",Sound.class),true));
-                getEngine().addEntity(shootSound);
 
+                // Play sound
+                if (soundComponent != null)
+                    soundComponent.enqueuePlay("shoot");
             });
 
             controlComponent.controlModule.meleeStart.addHandler((args)->{

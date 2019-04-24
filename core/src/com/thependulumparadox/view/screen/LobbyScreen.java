@@ -13,11 +13,6 @@ public class LobbyScreen extends BaseScreen
     }
 
     @Override
-    public void resize(int width, int height) {
-
-    }
-
-    @Override
     public void render(float delta) {
         stage.act(delta);
         stage.draw();

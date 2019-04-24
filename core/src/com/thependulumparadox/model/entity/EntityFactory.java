@@ -3,12 +3,16 @@ package com.thependulumparadox.model.entity;
 import com.badlogic.ashley.core.Component;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.PooledEngine;
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.assets.AssetManager;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
 import com.thependulumparadox.control.AIJumpAttackControlModule;
 import com.thependulumparadox.control.AIRunAroundControlModule;
 import com.thependulumparadox.control.AIWanderAttackControlModule;
 import com.thependulumparadox.control.ControlModule;
+import com.thependulumparadox.control.ControlModuleMultiplexer;
 import com.thependulumparadox.control.EventControlModule;
 import com.thependulumparadox.control.KeyboardControlModule;
 import com.thependulumparadox.control.NetworkControlModule;
@@ -24,6 +28,7 @@ import com.thependulumparadox.model.component.EnhancementComponent;
 import com.thependulumparadox.model.component.EnhancementVisualsComponent;
 import com.thependulumparadox.model.component.InteractionComponent;
 import com.thependulumparadox.model.component.PlayerComponent;
+import com.thependulumparadox.model.component.SoundComponent;
 import com.thependulumparadox.model.component.SpriteComponent;
 import com.thependulumparadox.model.component.StateComponent;
 import com.thependulumparadox.model.component.TransformComponent;
@@ -106,8 +111,16 @@ public class EntityFactory extends AbstractEntityFactory
                 InteractionComponent interaction1 = new InteractionComponent();
                 player1.add(interaction1);
 
-                ControlModule module1 = new EventControlModule();
-                ControlComponent control1 = new ControlComponent(module1);
+                SoundComponent sound1 = new SoundComponent();
+                sound1.addSound("shoot", Gdx.audio.newSound(Gdx.files.internal("sounds/single_gunshot.mp3")))
+                        .addSound("jump", Gdx.audio.newSound(Gdx.files.internal("sounds/jump.mp3")))
+                        .addSound("collect", Gdx.audio.newSound(Gdx.files.internal("sounds/coin_collect.mp3")))
+                        .addSound("die", Gdx.audio.newSound(Gdx.files.internal("sounds/die.mp3")));
+                player1.add(sound1);
+
+                ControlModule module1 = new KeyboardControlModule();
+                ControlModule multiplexer1 = new ControlModuleMultiplexer(module1, null);
+                ControlComponent control1 = new ControlComponent(multiplexer1);
                 player1.add(control1);
 
                 return player1;
@@ -162,6 +175,13 @@ public class EntityFactory extends AbstractEntityFactory
 
                 InteractionComponent interaction = new InteractionComponent();
                 player2.add(interaction);
+
+                SoundComponent sound2 = new SoundComponent();
+                sound2.addSound("shoot", Gdx.audio.newSound(Gdx.files.internal("sounds/single_gunshot.mp3")))
+                        .addSound("jump", Gdx.audio.newSound(Gdx.files.internal("sounds/jump.mp3")))
+                        .addSound("collect", Gdx.audio.newSound(Gdx.files.internal("sounds/coin_collect.mp3")))
+                        .addSound("die", Gdx.audio.newSound(Gdx.files.internal("sounds/die.mp3")));
+                player2.add(sound2);
 
                 ControlModule module = new NetworkControlModule();
                 ControlComponent control = new ControlComponent(module);
@@ -343,6 +363,7 @@ public class EntityFactory extends AbstractEntityFactory
 
                 CoinComponent componentCoin1 = new CoinComponent();
                 componentCoin1.value = 10;
+                coin1.add(componentCoin1);
 
                 return coin1;
 
@@ -369,6 +390,7 @@ public class EntityFactory extends AbstractEntityFactory
 
                 CoinComponent componentCoin2 = new CoinComponent();
                 componentCoin2.value = 20;
+                coin2.add(componentCoin2);
 
                 return coin2;
 

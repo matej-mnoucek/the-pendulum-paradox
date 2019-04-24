@@ -26,7 +26,6 @@ public class ViewState implements IState, Screen
     public BaseScreen getScreen() {
         return screen;
     }
-
     public Scene getScene() {
         return scene;
     }
@@ -34,12 +33,14 @@ public class ViewState implements IState, Screen
     @Override
     public void execute()
     {
-
+        // No actions related to this state
     }
 
     @Override
-    public void show() {
-
+    public void show()
+    {
+        scene.show();
+        screen.show();
     }
 
     @Override
@@ -50,28 +51,37 @@ public class ViewState implements IState, Screen
     }
 
     @Override
-    public void resize(int width, int height) {
-
+    public void resize(int width, int height)
+    {
+        scene.resize(width, height);
+        screen.resize(width, height);
     }
 
     @Override
-    public void pause() {
-
+    public void pause()
+    {
+        scene.pause();
+        screen.pause();
     }
 
     @Override
-    public void resume() {
-
+    public void resume()
+    {
+        scene.resume();
+        screen.resume();
     }
 
     @Override
-    public void hide() {
-
+    public void hide()
+    {
+        scene.hide();
+        screen.hide();
     }
 
     @Override
-    public void dispose() {
-        this.scene.dispose();
-        this.screen.dispose();
+    public void dispose()
+    {
+        scene.dispose();
+        screen.dispose();
     }
 }

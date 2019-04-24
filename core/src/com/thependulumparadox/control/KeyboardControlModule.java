@@ -3,7 +3,7 @@ package com.thependulumparadox.control;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 
-public class KeyboardControlModule extends ControlModule
+public class KeyboardControlModule extends EventControlModule
 {
     // Key mapping
     private final static int rightKey = Input.Keys.RIGHT;
@@ -19,75 +19,57 @@ public class KeyboardControlModule extends ControlModule
     @Override
     public void update(float delta)
     {
+        super.update(delta);
+
         // Right key
         if (Gdx.input.isKeyJustPressed(rightKey))
         {
-            rightStart.invoke(null);
+            rightStart();
             rightKeyPressed = true;
-        }
-
-        if (Gdx.input.isKeyPressed(rightKey))
-        {
-            right.invoke(null);
         }
 
         if (!Gdx.input.isKeyPressed(rightKey) && rightKeyPressed)
         {
-            rightEnd.invoke(null);
+            rightEnd();
             rightKeyPressed = false;
         }
 
         // Left key
         if (Gdx.input.isKeyJustPressed(leftKey))
         {
-            leftStart.invoke(null);
+            leftStart();
             leftKeyPressed = true;
-        }
-
-        if (Gdx.input.isKeyPressed(leftKey))
-        {
-            left.invoke(null);
         }
 
         if (!Gdx.input.isKeyPressed(leftKey) && leftKeyPressed)
         {
-            leftEnd.invoke(null);
+            leftEnd();
             leftKeyPressed = false;
         }
 
         // Attack key
         if (Gdx.input.isKeyJustPressed(attackKey))
         {
-            attackStart.invoke(null);
+            attackStart();
             attackKeyPressed = true;
-        }
-
-        if (Gdx.input.isKeyPressed(attackKey))
-        {
-            attack.invoke(null);
         }
 
         if (!Gdx.input.isKeyPressed(attackKey) && attackKeyPressed)
         {
-            attackEnd.invoke(null);
+            attackEnd();
             attackKeyPressed = false;
         }
 
         // Jump key
         if (Gdx.input.isKeyJustPressed(jumpKey))
         {
-            jumpStart.invoke(null);
+            jumpStart();
             jumpKeyPressed = true;
-        }
-
-        if (Gdx.input.isKeyPressed(jumpKey))
-        {
-            jump.invoke(null);
         }
 
         if (!Gdx.input.isKeyPressed(jumpKey) && jumpKeyPressed)
         {
-            jumpEnd.invoke(null);
+            jumpEnd();
             jumpKeyPressed = false;
         }
     }

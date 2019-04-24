@@ -36,15 +36,17 @@ public class GameScene extends Scene
     private MapRenderer renderer;
     private EntityFactory entityFactory;
 
-    public GameScene(TiledMap level, World world, OrthographicCamera camera, Engine engine)
+    public GameScene(TiledMap level, OrthographicCamera camera, World world, Engine engine)
     {
         super(camera);
-        //ArrayList<Entity> tiledObjects = new ArrayList<>();
 
         // Create renderer
         renderer = new OrthogonalTiledMapRenderer(level, 1 / Constants.PPM);
         renderer.setView(camera);
+
+        // Entity factory
         entityFactory = new EntityFactory(world);
+
 
         // Preprocess the level == add physics
         MapLayer layer = level.getLayers().get("CollisionLayer");
@@ -55,9 +57,9 @@ public class GameScene extends Scene
             // Creating physics body representation
             BodyDef bodyDef = new BodyDef();
             bodyDef.type = BodyDef.BodyType.StaticBody;
-            bodyDef.position.x = (rectangle.getRectangle().x + rectangle.getRectangle().width/2)
+            bodyDef.position.x = (rectangle.getRectangle().x + rectangle.getRectangle().width/2.0f)
                     / Constants.PPM;
-            bodyDef.position.y = (rectangle.getRectangle().y + rectangle.getRectangle().height/2)
+            bodyDef.position.y = (rectangle.getRectangle().y + rectangle.getRectangle().height/2.0f)
                     / Constants.PPM;
 
             // Add it to the world
@@ -67,8 +69,8 @@ public class GameScene extends Scene
             PolygonShape polygon = new PolygonShape();
 
             // Set the polygon shape as a box
-            polygon.setAsBox((rectangle.getRectangle().width/2) / Constants.PPM,
-                    (rectangle.getRectangle().height/2) / Constants.PPM);
+            polygon.setAsBox((rectangle.getRectangle().width/2.0f) / Constants.PPM,
+                    (rectangle.getRectangle().height/2.0f) / Constants.PPM);
 
             // Create a fixture definition to apply the shape to it
             FixtureDef fixtureDef = new FixtureDef();
@@ -80,28 +82,38 @@ public class GameScene extends Scene
             // Create a fixture from the box and add it to the body
             body.createFixture(fixtureDef);
         }
-        System.out.print("");
+
+        // Create control points
         layer = level.getLayers().get("points");
-        for (MapObject object : layer.getObjects()) {
-            if (object.getName() != null) {
-                switch (object.getName()) {
+        for (MapObject object : layer.getObjects())
+        {
+            if (object.getName() != null)
+            {
+                switch (object.getName())
+                {
+                    // Player spawn point
                     case "start":
-                        //Create player character(s)
                         break;
+
+                    // Level goal
                     case "goal":
-                        //Create Goal
                         break;
                 }
             }
         }
 
+        // Create collectables
         layer = level.getLayers().get("pickups");
-        for (MapObject object : layer.getObjects()) {
-            if (object.getName() != null) {
-                switch (object.getName()) {
+        for (MapObject object : layer.getObjects())
+        {
+            if (object.getName() != null)
+            {
+                switch (object.getName())
+                {
                     case "coin":
-                        Rectangle rect =  ((RectangleMapObject)object).getRectangle();
-                        Vector2 position = new Vector2(rect.x/ Constants.PPM,rect.y/ Constants.PPM);
+                        Rectangle rectangle =  ((RectangleMapObject)object).getRectangle();
+                        Vector2 position = new Vector2(rectangle.x/ Constants.PPM,
+                                rectangle.y/ Constants.PPM);
                         Entity ent = entityFactory.create("10_coin");
                         ent.getComponent(DynamicBodyComponent.class).position(position);
                         engine.addEntity(ent);
@@ -112,32 +124,39 @@ public class GameScene extends Scene
             }
         }
 
+        // Create enemies
+        /*
         layer = level.getLayers().get("enemies");
-        for (MapObject object : layer.getObjects()) {
+        for (MapObject object : layer.getObjects())
+        {
             if (object.getName() != null)
             {
                 switch (object.getName())
                 {
-                    case "attacking": {
-                        Rectangle rect =  ((RectangleMapObject)object).getRectangle();
-                        Vector2 position = new Vector2(rect.x/ Constants.PPM,rect.y/ Constants.PPM);
-                        Entity ent = entityFactory.create("knight_enemy");
-                        ent.getComponent(DynamicBodyComponent.class).position(position);
-                        engine.addEntity(ent);
-                    }
+                    case "attacking":
+                        Rectangle rectangle1 =  ((RectangleMapObject)object).getRectangle();
+                        Vector2 position1 = new Vector2(rectangle1.x/ Constants.PPM,
+                                rectangle1.y/ Constants.PPM);
+                        Entity entity1 = entityFactory.create("knight_enemy");
+                        entity1.getComponent(DynamicBodyComponent.class).position(position1);
+                        engine.addEntity(entity1);
                         break;
-                    case "walking": {
-                        Rectangle rect =  ((RectangleMapObject)object).getRectangle();
-                        Vector2 position = new Vector2(rect.x/ Constants.PPM,rect.y/ Constants.PPM);
-                        Entity ent = entityFactory.create("ninja_enemy");
-                        ent.getComponent(DynamicBodyComponent.class).position(position);
-                        engine.addEntity(ent);                    }
+
+                    case "walking":
+                        Rectangle rectangle2 =  ((RectangleMapObject)object).getRectangle();
+                        Vector2 position2 = new Vector2(rectangle2.x/ Constants.PPM,
+                                rectangle2.y/ Constants.PPM);
+                        Entity entity2 = entityFactory.create("ninja_enemy");
+                        entity2.getComponent(DynamicBodyComponent.class).position(position2);
+                        engine.addEntity(entity2);
                         break;
+
                     default:
                         break;
                 }
             }
         }
+        */
     }
 
     public void repopulate(TiledMap level, World world, Engine engine){
@@ -229,6 +248,6 @@ public class GameScene extends Scene
     @Override
     public void dispose()
     {
-        super.dispose();
+
     }
 }
