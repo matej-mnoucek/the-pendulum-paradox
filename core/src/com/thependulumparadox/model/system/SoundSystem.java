@@ -60,6 +60,7 @@ public class SoundSystem extends EntitySystem
         // Then with music
         for (int i = 0; i < musicEntities.size(); i++)
         {
+            System.out.println(musicEntities.size());
             Entity entity = musicEntities.get(i);
             MusicComponent musicComponent = musicComponentMapper.get(entity);
 

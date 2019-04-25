@@ -120,18 +120,6 @@ public class GamePresenter extends Game
         // Player entity
         mainPlayer = entityFactory.create("first_player");
 
-        // Menu entities
-        Entity menuMusic = new Entity();
-        menuMusic.add(new MusicComponent(
-                Gdx.audio.newMusic(Gdx.files.internal("sounds/menuMusic.mp3"))));
-        ecs.addEntity(menuMusic);
-
-        Entity inGameMusic = new Entity();
-        MusicComponent musicComponent = new MusicComponent(
-                Gdx.audio.newMusic(Gdx.files.internal("sounds/inGameMusic.mp3")));
-        musicComponent.play = false;
-        inGameMusic.add(musicComponent);
-        ecs.addEntity(inGameMusic);
 
 
         // Define screens
@@ -186,6 +174,21 @@ public class GamePresenter extends Game
         AnimationControlSystem animationControlSystem = new AnimationControlSystem();
         VisualSystem visualSystem = new VisualSystem();
 
+        // Menu entities
+        Entity menuMusic = new Entity();
+        menuMusic.add(new MusicComponent(
+                Gdx.audio.newMusic(Gdx.files.internal("sounds/menuMusic.mp3"))));
+        ecs.addEntity(menuMusic);
+
+        Entity inGameMusic = new Entity();
+        MusicComponent musicComponent = new MusicComponent(
+                Gdx.audio.newMusic(Gdx.files.internal("sounds/inGameMusic.mp3")));
+        musicComponent.play = false;
+        inGameMusic.add(musicComponent);
+        ecs.addEntity(inGameMusic);
+        ecs.addSystem(soundSystem);
+
+
         // Add some DEBUG systems
         ecs.addSystem(new PhysicsDebugSystem(world, mainCamera));
         ecs.addSystem(new FPSDebugSystem());
@@ -230,6 +233,10 @@ public class GamePresenter extends Game
             }
 
 
+            //Change music
+            ((MusicComponent)menuMusic.getComponents().get(0)).play = true;
+            ((MusicComponent)inGameMusic.getComponents().get(0)).play = false;
+
             // Delete all level entities
             ((GameScene)levels.currentLevelScene()).destroyEntities();
 
@@ -267,6 +274,10 @@ public class GamePresenter extends Game
             }
 
 
+            //Change music
+            ((MusicComponent)menuMusic.getComponents().get(0)).play = true;
+            ((MusicComponent)inGameMusic.getComponents().get(0)).play = false;
+
             // Delete all level entities
             ((GameScene)levels.currentLevelScene()).destroyEntities();
 
@@ -303,6 +314,9 @@ public class GamePresenter extends Game
                 body2.position(new Vector2(0,0));
             }
 
+            //Change music
+            ((MusicComponent)menuMusic.getComponents().get(0)).play = true;
+            ((MusicComponent)inGameMusic.getComponents().get(0)).play = false;
 
             // Delete all level entities
             ((GameScene)levels.currentLevelScene()).destroyEntities();
@@ -373,7 +387,6 @@ public class GamePresenter extends Game
             ecs.addSystem(renderingSystem);
             ecs.addSystem(controlSystem);
             ecs.addSystem(physicsSystem);
-            ecs.addSystem(soundSystem);
             ecs.addSystem(animationControlSystem);
             ecs.addSystem(interactionSystem);
             ecs.addSystem(visualSystem);
@@ -436,7 +449,6 @@ public class GamePresenter extends Game
             ecs.addSystem(renderingSystem);
             ecs.addSystem(controlSystem);
             ecs.addSystem(physicsSystem);
-            ecs.addSystem(soundSystem);
             ecs.addSystem(animationControlSystem);
             ecs.addSystem(interactionSystem);
             ecs.addSystem(visualSystem);
@@ -614,6 +626,7 @@ public class GamePresenter extends Game
 
             ((EventControlModule) mainPlayer.getComponent(ControlComponent.class).controlModule).jumpStart();
         });
+
     }
 
     public void update(float delta)
