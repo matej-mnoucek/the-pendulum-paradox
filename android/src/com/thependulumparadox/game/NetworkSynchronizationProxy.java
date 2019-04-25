@@ -152,7 +152,7 @@ public class NetworkSynchronizationProxy extends AndroidApplication implements I
                     LeaderboardScore score = scores.get(i);
                     String name = score.getScoreHolderDisplayName();
                     String points = score.getDisplayScore();
-                    str += name + ":" + points + ",";
+                    str += name + ":" + points + "!";
                 }
                 if (str != "") {
                     Leaderboard = str;
