@@ -237,6 +237,11 @@ public class GamePresenter extends Game
             ((MusicComponent)menuMusic.getComponents().get(0)).play = true;
             ((MusicComponent)inGameMusic.getComponents().get(0)).play = false;
 
+            //submit highscore if possible
+            if (multiplayerAvailable){
+                synchronization.submitScore(mainPlayer.getComponent(PlayerComponent.class).score);
+            }
+
             // Delete all level entities
             ((GameScene)levels.currentLevelScene()).destroyEntities();
 
@@ -273,6 +278,10 @@ public class GamePresenter extends Game
                 body2.position(new Vector2(0,0));
             }
 
+            //submit highscore if possible
+            if (multiplayerAvailable){
+                synchronization.submitScore(mainPlayer.getComponent(PlayerComponent.class).score);
+            }
 
             //Change music
             ((MusicComponent)menuMusic.getComponents().get(0)).play = true;
@@ -312,6 +321,11 @@ public class GamePresenter extends Game
                 body2.body.setLinearVelocity(0,0);
                 body2.body.setAngularVelocity(0);
                 body2.position(new Vector2(0,0));
+            }
+
+            //submit highscore if possible
+            if (multiplayerAvailable){
+                synchronization.submitScore(mainPlayer.getComponent(PlayerComponent.class).score);
             }
 
             //Change music
@@ -481,7 +495,11 @@ public class GamePresenter extends Game
         ((MenuScreen) menuScreen).getHighScoreEvent().addHandler((args) -> {
             // set input processor to new State's BaseScreen stage
             Gdx.input.setInputProcessor(highScoreScreen.getStage());
-            ((HighScoreScreen)highScoreScreen).populateHighScoreList("");
+            if (multiplayerAvailable){
+                ((HighScoreScreen)highScoreScreen).populateHighScoreList(synchronization.getHighscore());
+            }else{
+                ((HighScoreScreen)highScoreScreen).populateHighScoreList("");
+            }
             // call on state machine to change state
             viewMachine.nextState(viewStateHighScore);
         });
@@ -521,8 +539,11 @@ public class GamePresenter extends Game
         ((GameOverScreen) gameOverScreen).getHighScoreEvent().addHandler((args) -> {
             // set input processor to new State's BaseScreen stage
             Gdx.input.setInputProcessor(highScoreScreen.getStage());
-            ((HighScoreScreen)highScoreScreen).populateHighScoreList("");
-            // call on state machine to change state
+            if (multiplayerAvailable){
+                ((HighScoreScreen)highScoreScreen).populateHighScoreList(synchronization.getHighscore());
+            }else{
+                ((HighScoreScreen)highScoreScreen).populateHighScoreList("");
+            }            // call on state machine to change state
             viewMachine.nextState(viewStateHighScore);
         });
 

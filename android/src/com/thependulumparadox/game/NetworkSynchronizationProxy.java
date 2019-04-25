@@ -257,6 +257,8 @@ public class NetworkSynchronizationProxy extends AndroidApplication implements I
 
     public void startSignInIntent() {
         startActivityForResult(mGoogleSignInClient.getSignInIntent(), RC_SIGN_IN);
+        UpdateHighscore();
+
     }
 
     public void signInSilently() {
@@ -266,6 +268,7 @@ public class NetworkSynchronizationProxy extends AndroidApplication implements I
                     public void onComplete(@NonNull Task<GoogleSignInAccount> task) {
                         if (task.isSuccessful()) {
                             onConnected(task.getResult());
+                            UpdateHighscore();
                         } else {
                             onDisconnected();
                         }
