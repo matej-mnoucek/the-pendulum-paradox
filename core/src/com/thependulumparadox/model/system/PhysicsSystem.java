@@ -58,7 +58,7 @@ public class PhysicsSystem extends EntitySystem
 
     // Collision masks (bit masks) - 15 bits
     // Default group = collides with everything = 111111111111111
-    // Player group = collides with default, enemy and enhancement group = 000000000010101
+    // Player group = collides with default, enemy coin and enhancement group = 000000000110101
     // Enemy group = collides with default, bullets and player group = 000000000001011
     // Bullet group = collides with default and enemy group = 000000000000101
     // Enhancement group = collides with default and player group = 000000000000011
@@ -68,7 +68,7 @@ public class PhysicsSystem extends EntitySystem
     public enum CollisionMask
     {
         DEFAULT(32767),
-        PLAYER(21),
+        PLAYER(53),
         ENEMY(11),
         BULLET(5),
         ENHANCEMENT(3),
@@ -157,16 +157,6 @@ public class PhysicsSystem extends EntitySystem
         }
 
 
-        // Update physics
-        float frameTime = Math.min(deltaTime, MAX_TIME_STEP);
-        accumulator += frameTime;
-        while (accumulator >= TIME_STEP)
-        {
-            world.step(TIME_STEP, VELOCITY_ITERATIONS, POSITION_ITERATIONS);
-            accumulator -= TIME_STEP;
-        }
-
-
         // Update dynamic bodies
         for (int i = 0; i < dynamicBodyEntities.size(); i++)
         {
@@ -185,6 +175,15 @@ public class PhysicsSystem extends EntitySystem
                 world.destroyBody(dynamicBodyComponent.body);
                 getEngine().removeEntity(entity);
             }
+        }
+
+        // Update physics
+        float frameTime = Math.min(deltaTime, MAX_TIME_STEP);
+        accumulator += frameTime;
+        while (accumulator >= TIME_STEP)
+        {
+            world.step(TIME_STEP, VELOCITY_ITERATIONS, POSITION_ITERATIONS);
+            accumulator -= TIME_STEP;
         }
     }
 
@@ -205,14 +204,14 @@ public class PhysicsSystem extends EntitySystem
             case 2:
                 filter1.categoryBits = CollisionCategory.PLAYER.bits;
                 filter1.maskBits = CollisionMask.PLAYER.bits;
-                //filter2.categoryBits = CollisionCategory.PLAYER_TRIGGER.bits;
+                filter2.categoryBits = CollisionCategory.PLAYER.bits; //_TRIGGER.bits;
                 filter2.maskBits = CollisionMask.PLAYER_TRIGGER.bits;
                 break;
             // Enemy
             case 4:
                 filter1.categoryBits = CollisionCategory.ENEMY.bits;
                 filter1.maskBits = CollisionMask.ENEMY.bits;
-                //filter2.categoryBits = CollisionCategory.ENEMY_TRIGGER.bits;
+                filter2.categoryBits = CollisionCategory.ENEMY.bits; //_TRIGGER.bits;
                 filter2.maskBits = CollisionMask.ENEMY_TRIGGER.bits;
                 break;
             // Bullet
@@ -227,7 +226,7 @@ public class PhysicsSystem extends EntitySystem
                 break;
             // Coin
             case 32:
-                //filter1.categoryBits = CollisionCategory.COIN.bits;
+                filter1.categoryBits = CollisionCategory.COIN.bits;
                 filter1.maskBits = CollisionMask.COIN.bits;
                 break;
         }
