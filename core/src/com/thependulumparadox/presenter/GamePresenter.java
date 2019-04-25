@@ -39,6 +39,8 @@ import com.thependulumparadox.model.system.CameraFollowSystem;
 import com.thependulumparadox.model.system.ControlSystem;
 import com.thependulumparadox.model.system.RenderingSystem;
 import com.thependulumparadox.model.system.PhysicsSystem;
+import com.thependulumparadox.observer.Event;
+import com.thependulumparadox.observer.EventArgs;
 import com.thependulumparadox.observer.ValueEventArgs;
 import com.thependulumparadox.state.IStateMachine;
 import com.thependulumparadox.state.StateMachine;
@@ -423,61 +425,65 @@ public class GamePresenter extends Game
             if(multiplayerAvailable)
             {
                 synchronization.startQuickGame();
+                Event<EventArgs> startMultiplayer = synchronization.getStartMultiplayerEvent();
+
+                startMultiplayer.addHandler((arg) ->
+                {
+
+                    // Create second player entity
+                    secondPlayer = entityFactory.create("second_player");
+                    Vector2 player2Position = ((GameScene)levels.currentLevelScene()).getStartPoint();
+                    // Move player a bit to the side in order to prevent overlap
+                    player2Position.x += 1;
+                    secondPlayer.getComponent(DynamicBodyComponent.class)
+                            .position(player2Position)
+                            .wakeup();
+                    ecs.addEntity(secondPlayer);
+
+                    if(multiplayerAvailable)
+                    {
+                        synchronization.setInputHandler((NetworkControlModule)secondPlayer
+                                .getComponent(ControlComponent.class).controlModule);
+                    }
+
+
+                    // Add main player
+                    ecs.addEntity(mainPlayer);
+                    mainPlayer.getComponent(PlayerComponent.class).defaults();
+                    mainPlayer.getComponent(DynamicBodyComponent.class)
+                            .position(((GameScene)levels.currentLevelScene()).getStartPoint())
+                            .wakeup();
+
+                    // Create entities for the first level
+                    ((GameScene)levels.currentLevelScene()).populate();
+
+                    // Include system for checking player position in the level
+                    ecs.addSystem(levelBoundarySystem);
+                    levelBoundarySystem.levelEndPoint = ((GameScene)levels.currentLevelScene()).getEndPoint();
+                    levelBoundarySystem.checkBoundaries = true;
+
+                    // Add all basic systems
+                    ecs.addSystem(stateSystem);
+                    ecs.addSystem(cameraFollowSystem);
+                    ecs.addSystem(renderingSystem);
+                    ecs.addSystem(controlSystem);
+                    ecs.addSystem(physicsSystem);
+                    ecs.addSystem(animationControlSystem);
+                    ecs.addSystem(interactionSystem);
+                    ecs.addSystem(visualSystem);
+
+
+                    // Set inGameScreen's stage as the input processor
+                    Gdx.input.setInputProcessor(inGameScreen.getStage());
+
+                    //stop menu music. will call stop() method on menu music even if sound is currently turned off
+                    ((MusicComponent)menuMusic.getComponents().get(0)).play = false;
+                    ((MusicComponent)inGameMusic.getComponents().get(0)).play = true;
+
+                    // call on state machine to change state
+                    viewMachine.nextState(levels.currentInGameViewState());
+                });
             }
-
-            // Create second player entity
-            secondPlayer = entityFactory.create("second_player");
-            Vector2 player2Position = ((GameScene)levels.currentLevelScene()).getStartPoint();
-            // Move player a bit to the side in order to prevent overlap
-            player2Position.x += 1;
-            secondPlayer.getComponent(DynamicBodyComponent.class)
-                    .position(player2Position)
-                    .wakeup();
-            ecs.addEntity(secondPlayer);
-
-            if(multiplayerAvailable)
-            {
-                synchronization.setInputHandler((NetworkControlModule)secondPlayer
-                        .getComponent(ControlComponent.class).controlModule);
-            }
-
-
-            // Add main player
-            ecs.addEntity(mainPlayer);
-            mainPlayer.getComponent(PlayerComponent.class).defaults();
-            mainPlayer.getComponent(DynamicBodyComponent.class)
-                    .position(((GameScene)levels.currentLevelScene()).getStartPoint())
-                    .wakeup();
-
-            // Create entities for the first level
-            ((GameScene)levels.currentLevelScene()).populate();
-
-            // Include system for checking player position in the level
-            ecs.addSystem(levelBoundarySystem);
-            levelBoundarySystem.levelEndPoint = ((GameScene)levels.currentLevelScene()).getEndPoint();
-            levelBoundarySystem.checkBoundaries = true;
-
-            // Add all basic systems
-            ecs.addSystem(stateSystem);
-            ecs.addSystem(cameraFollowSystem);
-            ecs.addSystem(renderingSystem);
-            ecs.addSystem(controlSystem);
-            ecs.addSystem(physicsSystem);
-            ecs.addSystem(animationControlSystem);
-            ecs.addSystem(interactionSystem);
-            ecs.addSystem(visualSystem);
-
-
-            // Set inGameScreen's stage as the input processor
-            Gdx.input.setInputProcessor(inGameScreen.getStage());
-
-            //stop menu music. will call stop() method on menu music even if sound is currently turned off
-            ((MusicComponent)menuMusic.getComponents().get(0)).play = false;
-            ((MusicComponent)inGameMusic.getComponents().get(0)).play = true;
-
-            // call on state machine to change state
-            viewMachine.nextState(levels.currentInGameViewState());
-
         });
 
 

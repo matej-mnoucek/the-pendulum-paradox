@@ -43,6 +43,8 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.thependulumparadox.control.IMoveCommands;
 import com.thependulumparadox.multiplayer.ISynchronization;
+import com.thependulumparadox.observer.Event;
+import com.thependulumparadox.observer.EventArgs;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -74,6 +76,9 @@ public class NetworkSynchronizationProxy extends AndroidApplication implements I
     private LeaderboardsClient mLeaderboardClient = null;
 
     private IMoveCommands InputHandler;
+
+    public Event<EventArgs> StartMultiplayerEvent = new Event<>();
+
 
     // Room ID where the currently active game is taking place; null if we're
     // not playing.
@@ -122,6 +127,9 @@ public class NetworkSynchronizationProxy extends AndroidApplication implements I
         this.InputHandler = inputHandler;
     }
 
+    public Event getStartMultiplayerEvent(){
+        return StartMultiplayerEvent;
+    }
 
 
     public void submitScore(int score){
@@ -257,7 +265,6 @@ public class NetworkSynchronizationProxy extends AndroidApplication implements I
 
     public void startSignInIntent() {
         startActivityForResult(mGoogleSignInClient.getSignInIntent(), RC_SIGN_IN);
-        UpdateHighscore();
 
     }
 
@@ -349,6 +356,7 @@ public class NetworkSynchronizationProxy extends AndroidApplication implements I
             try {
                 GoogleSignInAccount account = task.getResult(ApiException.class);
                 onConnected(account);
+
             } catch (ApiException apiException) {
                 String message = apiException.getMessage();
                 if (message == null || message.isEmpty()) {
@@ -367,11 +375,6 @@ public class NetworkSynchronizationProxy extends AndroidApplication implements I
             // we got the result from the "waiting room" UI.
             if (resultCode == Activity.RESULT_OK) {
                 // ready to start playing
-
-
-
-
-
 
             } else if (resultCode == GamesActivityResultCodes.RESULT_LEFT_ROOM) {
                 // player indicated that they want to leave the room
@@ -395,9 +398,6 @@ public class NetworkSynchronizationProxy extends AndroidApplication implements I
 
         // if we're in a room, leave it.
         leaveRoom();
-
-        // stop trying to keep the screen on
-
 
         super.onStop();
     }
@@ -473,10 +473,11 @@ public class NetworkSynchronizationProxy extends AndroidApplication implements I
                         }
                     })
                     .addOnFailureListener(createFailureListener("There was a problem getting the player id!"));
+            UpdateHighscore();
         }
 
 
-        GamesClient gamesClient = Games.getGamesClient(NetworkSynchronizationProxy.this, googleSignInAccount);
+
 
     }
 
@@ -492,8 +493,6 @@ public class NetworkSynchronizationProxy extends AndroidApplication implements I
     public void onDisconnected() {
 
         mRealTimeMultiplayerClient = null;
-
-
     }
 
     private RoomStatusUpdateCallback mRoomStatusUpdateCallback = new RoomStatusUpdateCallback() {
@@ -602,6 +601,7 @@ public class NetworkSynchronizationProxy extends AndroidApplication implements I
                 showGameError();
                 return;
             }
+            StartMultiplayerEvent.invoke(null);
             updateRoom(room);
         }
 
@@ -616,6 +616,7 @@ public class NetworkSynchronizationProxy extends AndroidApplication implements I
         }
      @Override
         public void onLeftRoom(int statusCode, @NonNull String roomId) {
+            mParticipants = new ArrayList<>();
         }
     };
 

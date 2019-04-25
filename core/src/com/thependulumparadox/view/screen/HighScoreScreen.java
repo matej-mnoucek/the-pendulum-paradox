@@ -229,14 +229,8 @@ public class HighScoreScreen extends BaseScreen
             }
         }else {
             String[] scores = highscores.split(",");
-            for (String s:scores){
-                System.out.println(s);
-
-            }
-
             for (int i = 0; i < scores.length; i++) {
                 String[] temp = scores[i].split(":");
-                System.out.println(temp[0]);
                 score[i] = Integer.parseInt(temp[1].replace(".",""));
                 names[i] = temp[0];
             }
