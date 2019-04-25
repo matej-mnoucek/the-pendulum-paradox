@@ -94,10 +94,10 @@ public class EntityFactory extends AbstractEntityFactory
                 DynamicBodyComponent dynamicBodyComponent1 = new DynamicBodyComponent(world);
                 dynamicBodyComponent1.position(transform1.position)
                         .dimension(0.7f, 1.5f)
-                        .properties(0, 50f, 0f, 0f);
+                        .properties(0, 100f, 1f, 0f);
                 player1.add(dynamicBodyComponent1);
 
-                PlayerComponent playerComponent1 = new PlayerComponent();
+                PlayerComponent playerComponent1 = new PlayerComponent(1);
                 player1.add(playerComponent1);
 
                 StateComponent state1 = new StateComponent();
@@ -159,10 +159,10 @@ public class EntityFactory extends AbstractEntityFactory
                 DynamicBodyComponent dynamicBodyComponent = new DynamicBodyComponent(world);
                 dynamicBodyComponent.position(transform.position)
                         .dimension(0.7f, 1.5f)
-                        .properties(0, 50f, 0f, 0f);
+                        .properties(0, 100f, 1f, 0f);
                 player2.add(dynamicBodyComponent);
 
-                PlayerComponent playerComponent = new PlayerComponent();
+                PlayerComponent playerComponent = new PlayerComponent(2);
                 player2.add(playerComponent);
 
                 StateComponent state = new StateComponent();
@@ -337,6 +337,7 @@ public class EntityFactory extends AbstractEntityFactory
                 DynamicBodyComponent bulletDynamic = new DynamicBodyComponent(world);
                 bulletDynamic.position(new Vector2(0,0)).dimension(bulletSprite.width,
                         bulletSprite.height).gravityScale(0.0f).activate(true);
+                bulletDynamic.body.setBullet(true);
                 bullet.add(bulletDynamic);
                 return bullet;
 

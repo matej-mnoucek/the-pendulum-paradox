@@ -1,16 +1,10 @@
 package com.thependulumparadox.view.screen;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.assets.AssetManager;
-import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
-import com.badlogic.gdx.scenes.scene2d.InputEvent;
-import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
@@ -23,15 +17,13 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
 import com.thependulumparadox.observer.Event;
 import com.thependulumparadox.observer.EventArgs;
-import com.thependulumparadox.presenter.GamePresenter;
 
 public class InGameScreen extends BaseScreen
 {
     private Label lifeLabel;
     private Label lifeCount;
-    private Label ammoLabel;
-    private Label ammoCount;
-    private Texture weaponTexture;
+    private Label scoreLabel;
+    private Label scoreCount;
     private Image weapon;
     private Button btnSound;
     private Button btnMenu;
@@ -43,13 +35,12 @@ public class InGameScreen extends BaseScreen
     private Skin skin;
 
     private int lifeCounter;
-    private int ammoCounter;
+    private int scoreCounter;
 
     private Table hudTable;
     private Table moveBtnTable;
     private Table actionBtnTable;
 
-    private float shootTimer;
 
     // Button events
     // EventArgs == no parameters sent with the message
@@ -70,9 +61,6 @@ public class InGameScreen extends BaseScreen
 
     public InGameScreen()
     {
-
-        //super(camera);
-
         initFonts();
         Label.LabelStyle labelStyle = new Label.LabelStyle();
         labelStyle.font = font24;
@@ -100,26 +88,21 @@ public class InGameScreen extends BaseScreen
         actionBtnTable.setDebug(false);
 
 
-        lifeCounter = 3;
-        ammoCounter = 100;
+        lifeCounter = 0;
+        scoreCounter = 0;
 
         //create labels for lives and ammo
         lifeLabel = new Label("LIVES: ", labelStyle);
         lifeCount = new Label(String.format("%01d", lifeCounter),labelStyle);
-        ammoLabel = new Label("Ammo:", labelStyle);
-        ammoCount = new Label(String.format("%03d", ammoCounter), labelStyle);
+        scoreLabel = new Label("SCORE:", labelStyle);
+        scoreCount = new Label(String.format("%03d", scoreCounter), labelStyle);
 
 
-        //HUD Texture for weapon, move buttons and action buttons
-        weaponTexture = new Texture("sprites/weapons/ak47.png");
-
-
-        //image for weapon button, move button action button
-        weapon = new Image(weaponTexture);
         btnSound = new Button(skin, "sound");
         btnSound.setChecked(true);
 
-        btnMenu = new Button(skin, "default");
+
+        btnMenu = new TextButton("Main menu", skin);
 
 
         btnLeft = new Button(skin, "left");
@@ -211,24 +194,26 @@ public class InGameScreen extends BaseScreen
         });
 
         //add ammo, lives and weapon to HUD table
-        hudTable.add(ammoLabel).expandX().align(Align.left);
-        hudTable.add(lifeLabel).expandX().align(Align.right);
+        hudTable.add(scoreLabel).expandX().align(Align.left).padLeft(20).padTop(10);
+        hudTable.add(btnMenu).expandX().align(Align.center).padTop(20).height(50).width(150);
+        hudTable.add(lifeLabel).expandX().align(Align.right).padRight(20).padTop(10);
         hudTable.row();
-        hudTable.add(ammoCount).align(Align.left).padLeft(10);
-        hudTable.add(lifeCount).align(Align.right).padRight(20);
+        hudTable.add(scoreCount).align(Align.left).padLeft(30);
+        hudTable.add(new Label("", labelStyle));
+        hudTable.add(lifeCount).align(Align.right).padRight(40);
         hudTable.row();
         hudTable.add(weapon).width(100).height(50).align(Align.left);
-        hudTable.add(btnSound).align(Align.right).padRight(20).width(60).height(60);
-        hudTable.row();
-        hudTable.add(btnMenu).align(Align.left).padRight(20).width(60).height(60).padTop(20);
+        hudTable.add(new Label("", labelStyle));
+        hudTable.add(btnSound).align(Align.right).padRight(20).padTop(20).width(60).height(60);
+
 
         //add move buttons to movebtnTable
         moveBtnTable.add(btnLeft).width(120).height(120).padLeft(40).padBottom(15);
         moveBtnTable.add(btnRight).width(120).height(120).padBottom(40).padLeft(20);
 
         //add action buttons to actionBtnTable
-        actionBtnTable.add(btnShoot).width(120).height(120).padBottom(40).padRight(20);
-        actionBtnTable.add(btnJump).width(120).height(120).padRight(30).padBottom(15);
+        actionBtnTable.add(btnJump).width(120).height(120).padBottom(40).padRight(20);
+        actionBtnTable.add(btnShoot).width(120).height(120).padRight(30).padBottom(15);
 
         //add tables to Stage
         stage.addActor(hudTable);
@@ -247,14 +232,24 @@ public class InGameScreen extends BaseScreen
         this.font24 = generator.generateFont(params);
     }
 
-    public void setSoundOn(boolean isSoundOn){
-        if(isSoundOn){
+    public void setSound(boolean on){
+        if(on){
             btnSound.setChecked(true);
             this.soundOn = true;
         } else{
             btnSound.setChecked(false);
             this.soundOn = false;
         }
+    }
+
+    public void setLives(int lives)
+    {
+        lifeCounter = lives;
+    }
+
+    public void setScore(int score)
+    {
+        scoreCounter = score;
     }
 
     @Override
@@ -268,7 +263,7 @@ public class InGameScreen extends BaseScreen
 
     public Event<EventArgs> getShootEvent() { return shootEvent; }
 
-    public Event<EventArgs> getStopshootEvent() { return stopShootEvent; }
+    public Event<EventArgs> getStopShootEvent() { return stopShootEvent; }
 
     public Event<EventArgs> getJumpEvent() {
         return jumpEvent;
@@ -290,22 +285,21 @@ public class InGameScreen extends BaseScreen
         return stopRightEvent;
     }
 
-
     public Event<EventArgs> getSoundEvent(){ return soundEvent; }
 
     public Event<EventArgs> getMenuEvent(){ return MenuEvent; }
 
 
     @Override
-    public void render(float delta) {
+    public void render(float delta)
+    {
         super.render(delta);
         stage.act(delta);
         stage.draw();
-    }
 
-    public void decrementAmmo(){
-        this.ammoCounter -= 1;
-        this.ammoCount.setText(String.format("%03d", ammoCounter));
+        // Update lives and score
+        lifeCount.setText(lifeCounter);
+        scoreCount.setText(scoreCounter);
     }
 
     @Override
@@ -325,7 +319,6 @@ public class InGameScreen extends BaseScreen
 
     @Override
     public void dispose() {
-        weaponTexture.dispose();
         font24.dispose();
         skin.dispose();
     }

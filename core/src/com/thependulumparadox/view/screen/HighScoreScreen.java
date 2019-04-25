@@ -71,20 +71,11 @@ public class HighScoreScreen extends BaseScreen
 
     private Event<EventArgs> menuEvent = new Event<>();
 
-    private ISynchronization proxy;
 
-
-    public HighScoreScreen(ISynchronization proxy)
+    public HighScoreScreen()
     {
-        //super(camera);
-        this.proxy = proxy;
-
-
         this.names = new String[10];
         this.score = new Integer[10];
-
-        populateHighscoreList();
-
 
         initFonts();
         Label.LabelStyle labelStyle = new Label.LabelStyle();
@@ -96,7 +87,6 @@ public class HighScoreScreen extends BaseScreen
         Table headLineTable = new Table();
         headLineTable.top();
         headLineTable.setFillParent(true);
-
 
         Table table = new Table();
         table.center();
@@ -206,13 +196,16 @@ public class HighScoreScreen extends BaseScreen
         stage.addActor(headLineTable);
         stage.addActor(btnTable);
 
+        // Populate scores
+        populateHighScoreList("");
     }
 
     public Event<EventArgs> getMenuEvent() {
         return menuEvent;
     }
 
-    private void initFonts(){
+    private void initFonts()
+    {
         FreeTypeFontGenerator generator =
                 new FreeTypeFontGenerator(Gdx.files.internal("fonts/freeagentbold.ttf"));
         FreeTypeFontGenerator.FreeTypeFontParameter params =
@@ -227,9 +220,8 @@ public class HighScoreScreen extends BaseScreen
         return this.stage;
     }
 
-
-    public void populateHighscoreList(){
-        String highscores = ""; //proxy.getHighscore();
+    public void populateHighScoreList(String highscores)
+    {
         if (highscores == ""){
             for(int i = 0; i < 10; i++){
                 score[i] = 0;
@@ -248,8 +240,6 @@ public class HighScoreScreen extends BaseScreen
                 score[i] = Integer.parseInt(temp[1].replace(".",""));
                 names[i] = temp[0];
             }
-
-
         }
     }
 
@@ -260,9 +250,11 @@ public class HighScoreScreen extends BaseScreen
     }
 
     @Override
-    public void render(float delta) {
+    public void render(float delta)
+    {
         stage.act(delta);
         stage.draw();
+
         firstName.setText(names[0]);
         secondName.setText(names[1]);
         thirdName.setText(names[2]);

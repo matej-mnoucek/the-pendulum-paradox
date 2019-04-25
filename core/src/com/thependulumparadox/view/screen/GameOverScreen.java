@@ -36,8 +36,6 @@ public class GameOverScreen extends BaseScreen{
     private Event<EventArgs> menuEvent = new Event<>();
     public GameOverScreen()
     {
-        //super(camera);
-
         //set font and labelStyle
         initFonts();
         Label.LabelStyle labelStyle = new Label.LabelStyle();
@@ -140,7 +138,8 @@ public class GameOverScreen extends BaseScreen{
 
 
     //initialize TrueTypeFont
-    private void initFonts(){
+    private void initFonts()
+    {
         FreeTypeFontGenerator generator =
                 new FreeTypeFontGenerator(Gdx.files.internal("fonts/freeagentbold.ttf"));
         FreeTypeFontGenerator.FreeTypeFontParameter params =

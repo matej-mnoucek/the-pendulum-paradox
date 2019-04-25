@@ -16,7 +16,7 @@ public class ControlComponent implements Component
     public float jumpImpulse = 10.0f;
     public float jumpLimitSpeedThreshold = 0.1f;
 
-    public float shootImpulse = 5f;
+    public float shootImpulse = 6f;
 
     public float backToIdleSpeedThreshold = 0.1f;
     public float backToIdleTime = 0.1f;

@@ -27,6 +27,12 @@ public class StateSystem extends EntitySystem
     {
         // Get all entities
         stateEntities = engine.getEntitiesFor(Family.all(StateComponent.class).get());
+    }
+
+    private void initializeStateMachines()
+    {
+        // Get rid of old state machines
+        stateMachines.clear();
 
         // Create corresponding state machines
         for (int i = 0; i < stateEntities.size(); i++)
@@ -50,6 +56,12 @@ public class StateSystem extends EntitySystem
 
     public void update(float deltaTime)
     {
+        // If the amount of entities changed reinit machines
+        if (stateMachines.size() != stateEntities.size())
+        {
+            initializeStateMachines();
+        }
+
         // Process requested state transitions
         for (int i = 0; i < stateEntities.size(); i++)
         {

@@ -101,7 +101,8 @@ public class SettingsScreen extends BaseScreen {
         return menuEvent;
     }
 
-    private void initFonts(){
+    private void initFonts()
+    {
         FreeTypeFontGenerator generator =
                 new FreeTypeFontGenerator(Gdx.files.internal("fonts/freeagentbold.ttf"));
         FreeTypeFontGenerator.FreeTypeFontParameter params =
@@ -112,10 +113,12 @@ public class SettingsScreen extends BaseScreen {
         this.font24 = generator.generateFont(params);
     }
 
-    public void setSoundOn(boolean soundOn){
-        if(soundOn){
+    public void setSound(boolean on)
+    {
+        if(on) {
             btnSound.setChecked(true);
-        } else{
+        }
+        else {
             btnSound.setChecked(false);
         }
     }

@@ -1,7 +1,10 @@
 package com.thependulumparadox.view.scene;
 
+import com.badlogic.ashley.core.ComponentMapper;
 import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.Entity;
+import com.badlogic.ashley.core.Family;
+import com.badlogic.ashley.utils.ImmutableArray;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.maps.MapLayer;
 import com.badlogic.gdx.maps.MapObject;
@@ -17,28 +20,39 @@ import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
 
-import com.thependulumparadox.control.AIJumpAttackControlModule;
-import com.thependulumparadox.control.AIWanderAttackControlModule;
-import com.thependulumparadox.control.ControlModule;
 import com.thependulumparadox.misc.Constants;
-import com.thependulumparadox.model.component.AnimatedSpriteComponent;
-import com.thependulumparadox.model.component.ControlComponent;
+import com.thependulumparadox.model.component.LevelObjectComponent;
 import com.thependulumparadox.model.component.DynamicBodyComponent;
-import com.thependulumparadox.model.component.EnemyComponent;
-import com.thependulumparadox.model.component.InteractionComponent;
-import com.thependulumparadox.model.component.StateComponent;
-import com.thependulumparadox.model.component.TransformComponent;
 import com.thependulumparadox.model.entity.EntityFactory;
-import com.thependulumparadox.state.TaggedState;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class GameScene extends Scene
 {
+    private World world;
+    private Engine engine;
+    private TiledMap level;
     private MapRenderer renderer;
     private EntityFactory entityFactory;
+
+    private Vector2 startPoint = new Vector2(0,0);
+    private Vector2 endPoint = new Vector2(0,0);
+
+    private List<Body> staticBodies = new ArrayList<>();
+
+    private ComponentMapper<DynamicBodyComponent> dynamicBodyComponentMapper
+            = ComponentMapper.getFor(DynamicBodyComponent.class);
 
     public GameScene(TiledMap level, OrthographicCamera camera, World world, Engine engine)
     {
         super(camera);
+
+        // Level, engine and world
+        this.level = level;
+        this.world = world;
+        this.engine = engine;
+
 
         // Create renderer
         renderer = new OrthogonalTiledMapRenderer(level, 1 / Constants.PPM);
@@ -48,7 +62,35 @@ public class GameScene extends Scene
         entityFactory = new EntityFactory(world);
 
 
-        // Preprocess the level == add physics
+        // Extract control points
+        MapLayer layer = level.getLayers().get("points");
+        for (MapObject object : layer.getObjects())
+        {
+            if (object.getName() != null)
+            {
+                switch (object.getName())
+                {
+                    // Player spawn point
+                    case "start":
+                        Rectangle rectangleStart = ((RectangleMapObject)object).getRectangle();
+                        startPoint = new Vector2(rectangleStart.x / Constants.PPM,
+                                rectangleStart.y / Constants.PPM);
+                        break;
+
+                    // Level goal
+                    case "goal":
+                        Rectangle rectangleEnd = ((RectangleMapObject)object).getRectangle();
+                        endPoint = new Vector2(rectangleEnd.x / Constants.PPM,
+                                rectangleEnd.y / Constants.PPM);
+                        break;
+                }
+            }
+        }
+    }
+
+    public void createCollisionZones()
+    {
+        // Create static bodies
         MapLayer layer = level.getLayers().get("CollisionLayer");
         for (MapObject object : layer.getObjects())
         {
@@ -81,29 +123,25 @@ public class GameScene extends Scene
 
             // Create a fixture from the box and add it to the body
             body.createFixture(fixtureDef);
-        }
 
-        // Create control points
-        layer = level.getLayers().get("points");
-        for (MapObject object : layer.getObjects())
+            // Cache the body
+            staticBodies.add(body);
+        }
+    }
+
+    public void destroyCollisionZones()
+    {
+        for (Body body : staticBodies)
         {
-            if (object.getName() != null)
-            {
-                switch (object.getName())
-                {
-                    // Player spawn point
-                    case "start":
-                        break;
-
-                    // Level goal
-                    case "goal":
-                        break;
-                }
-            }
+            world.destroyBody(body);
         }
+        staticBodies.clear();
+    }
 
+    public void createEntities()
+    {
         // Create collectables
-        layer = level.getLayers().get("pickups");
+        MapLayer layer = level.getLayers().get("pickups");
         for (MapObject object : layer.getObjects())
         {
             if (object.getName() != null)
@@ -114,9 +152,13 @@ public class GameScene extends Scene
                         Rectangle rectangle =  ((RectangleMapObject)object).getRectangle();
                         Vector2 position = new Vector2(rectangle.x/ Constants.PPM,
                                 rectangle.y/ Constants.PPM);
-                        Entity ent = entityFactory.create("10_coin");
-                        ent.getComponent(DynamicBodyComponent.class).position(position);
-                        engine.addEntity(ent);
+                        Entity entity = entityFactory.create("10_coin");
+                        entity.getComponent(DynamicBodyComponent.class).position(position);
+
+                        LevelObjectComponent object1 = new LevelObjectComponent();
+                        entity.add(object1);
+
+                        engine.addEntity(entity);
                         break;
                     case "ammo":
                         break;
@@ -125,7 +167,6 @@ public class GameScene extends Scene
         }
 
         // Create enemies
-        /*
         layer = level.getLayers().get("enemies");
         for (MapObject object : layer.getObjects())
         {
@@ -139,6 +180,10 @@ public class GameScene extends Scene
                                 rectangle1.y/ Constants.PPM);
                         Entity entity1 = entityFactory.create("knight_enemy");
                         entity1.getComponent(DynamicBodyComponent.class).position(position1);
+
+                        LevelObjectComponent object1 = new LevelObjectComponent();
+                        entity1.add(object1);
+
                         engine.addEntity(entity1);
                         break;
 
@@ -148,6 +193,10 @@ public class GameScene extends Scene
                                 rectangle2.y/ Constants.PPM);
                         Entity entity2 = entityFactory.create("ninja_enemy");
                         entity2.getComponent(DynamicBodyComponent.class).position(position2);
+
+                        LevelObjectComponent object2 = new LevelObjectComponent();
+                        entity2.add(object2);
+
                         engine.addEntity(entity2);
                         break;
 
@@ -156,61 +205,17 @@ public class GameScene extends Scene
                 }
             }
         }
-        */
     }
 
-    public void repopulate(TiledMap level, World world, Engine engine){
-
-
-        MapLayer layer = level.getLayers().get("pickups");
-        for (MapObject object : layer.getObjects()) {
-            if (object.getName() != null) {
-                switch (object.getName()) {
-                    case "coin":
-                        Rectangle rect =  ((RectangleMapObject)object).getRectangle();
-                        Vector2 position = new Vector2(rect.x/Constants.PPM,rect.y/Constants.PPM);
-                        Entity ent = entityFactory.create("10_coin");
-                        ent.getComponent(DynamicBodyComponent.class).position(position);
-                        engine.addEntity(ent);
-                        break;
-                    case "ammo":
-                        break;
-                }
-            }
-        }
-
-        layer = level.getLayers().get("enemies");
-        for (MapObject object : layer.getObjects()) {
-            if (object.getName() != null)
-            {
-                switch (object.getName())
-                {
-                    case "attacking": {
-                        Rectangle rect =  ((RectangleMapObject)object).getRectangle();
-                        Vector2 position = new Vector2(rect.x/ Constants.PPM,rect.y/ Constants.PPM);
-                        Entity ent = entityFactory.create("knight_enemy");
-                        ent.getComponent(DynamicBodyComponent.class).position(position);
-                        engine.addEntity(ent);
-                    }
-                    break;
-                    case "walking": {
-                        Rectangle rect =  ((RectangleMapObject)object).getRectangle();
-                        Vector2 position = new Vector2(rect.x/ Constants.PPM,rect.y/ Constants.PPM);
-                        Entity ent = entityFactory.create("ninja_enemy");
-                        ent.getComponent(DynamicBodyComponent.class).position(position);
-                        engine.addEntity(ent);                    }
-                    break;
-                    default:
-                        break;
-                }
-            }
-        }
-    }
-
-    @Override
-    public void show()
+    public void destroyEntities()
     {
-
+        ImmutableArray<Entity> entities = engine.getEntitiesFor(Family.all(LevelObjectComponent.class).get());
+        for (Entity entity : entities)
+        {
+            DynamicBodyComponent body = dynamicBodyComponentMapper.get(entity);
+            world.destroyBody(body.body);
+            engine.removeEntity(entity);
+        }
     }
 
     @Override
@@ -221,33 +226,28 @@ public class GameScene extends Scene
         renderer.render();
     }
 
-    @Override
-    public void resize(int width, int height)
+    public void populate()
     {
-
-    }
-
-    @Override
-    public void pause()
-    {
-
-    }
-
-    @Override
-    public void resume()
-    {
-
-    }
-
-    @Override
-    public void hide()
-    {
-
+        // Populate the level
+        createCollisionZones();
+        createEntities();
     }
 
     @Override
     public void dispose()
     {
+        // Clear everything
+        destroyEntities();
+        destroyCollisionZones();
+    }
 
+    public Vector2 getStartPoint()
+    {
+        return startPoint;
+    }
+
+    public Vector2 getEndPoint()
+    {
+        return endPoint;
     }
 }

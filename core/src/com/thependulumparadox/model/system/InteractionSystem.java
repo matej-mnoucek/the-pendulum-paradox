@@ -6,9 +6,7 @@ import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.EntitySystem;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.utils.ImmutableArray;
-import com.badlogic.gdx.assets.AssetManager;
-import com.badlogic.gdx.audio.Sound;
-import com.badlogic.gdx.physics.box2d.Body;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Contact;
 import com.badlogic.gdx.physics.box2d.ContactImpulse;
 import com.badlogic.gdx.physics.box2d.ContactListener;
@@ -17,7 +15,6 @@ import com.badlogic.gdx.physics.box2d.Manifold;
 import com.badlogic.gdx.physics.box2d.World;
 import com.thependulumparadox.misc.StandardAttributes;
 import com.thependulumparadox.model.component.BulletComponent;
-import com.thependulumparadox.model.component.CleanupComponent;
 import com.thependulumparadox.model.component.CoinComponent;
 import com.thependulumparadox.model.component.DynamicBodyComponent;
 import com.thependulumparadox.model.component.EnemyComponent;
@@ -26,11 +23,8 @@ import com.thependulumparadox.model.component.InteractionComponent;
 import com.thependulumparadox.model.component.PlayerComponent;
 import com.thependulumparadox.model.component.SoundComponent;
 import com.thependulumparadox.model.component.enhancement.Enhancement;
-
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
+import com.thependulumparadox.observer.Event;
+import com.thependulumparadox.observer.ValueEventArgs;
 
 
 public class InteractionSystem extends EntitySystem
@@ -61,16 +55,14 @@ public class InteractionSystem extends EntitySystem
     // Physics world
     private World world;
 
-    //sounds
-    private AssetManager assetManager = new AssetManager();
+    // Events
+    public final Event<ValueEventArgs<PlayerComponent>> playerUpdate = new Event<>();
+    public final Event<ValueEventArgs<PlayerComponent>> playerDeath = new Event<>();
+
 
     public InteractionSystem(World world)
     {
         this.world = world;
-
-        assetManager.load("sounds/die.mp3", Sound.class);
-        assetManager.load("sounds/coin_collect.mp3", Sound.class);
-        assetManager.finishLoading();
 
         // Define collision handling
         world.setContactListener(new ContactListener()
@@ -252,9 +244,9 @@ public class InteractionSystem extends EntitySystem
             PlayerComponent playerComponent = playerComponentMapper.get(player);
             SoundComponent soundComponent = soundComponentMapper.get(player);
 
-            if (player.getComponent(DynamicBodyComponent.class).body.getPosition().y < -10){
-                getEngine().addEntity(new Entity().add(new CleanupComponent(player)));
-            }
+
+            // Invoke player update event
+            playerUpdate.invoke(new ValueEventArgs<>(playerComponent));
 
             // Apply enhancements
             applyEnhancementChain(playerComponent);
@@ -279,6 +271,11 @@ public class InteractionSystem extends EntitySystem
                     // If he is dead, finish him!!!
                     if (enemyComponent.current.lives <= 0)
                     {
+                        // Increment score
+                        playerComponent.score += 1;
+
+
+                        // Remove enemy
                         DynamicBodyComponent body = dynamicBodyComponentMapper.get(interactionEntity);
                         world.destroyBody(body.body);
                         getEngine().removeEntity(interactionEntity);
@@ -333,6 +330,8 @@ public class InteractionSystem extends EntitySystem
                             enhancementChain.chain(enhancement.enhancement);
                         }
                     }
+                    applyEnhancementChain(playerComponent);
+
 
                     // Destroy enhancement after collection
                     world.destroyBody(body.body);
@@ -372,16 +371,14 @@ public class InteractionSystem extends EntitySystem
                         playerComponent.base.lives--;
                         playerComponent.base.health = playerComponent.base.defense;
                     }
+                    applyEnhancementChain(playerComponent);
+
 
                     // If he is dead, finish him!!!
-                    applyEnhancementChain(playerComponent);
                     if (playerComponent.current.lives <= 0)
                     {
-                        //DynamicBodyComponent body = dynamicBodyComponentMapper.get(interactionEntity);
-                        //world.destroyBody(body.body);
-
-                        getEngine().removeEntity(interactionEntity);
-
+                        // Invoke player dead event
+                        playerDeath.invoke(null);
 
                         // Play sound
                         SoundComponent soundComponent = soundComponentMapper.get(interactionEntity);

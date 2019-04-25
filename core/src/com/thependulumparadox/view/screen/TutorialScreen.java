@@ -25,7 +25,6 @@ public class TutorialScreen extends BaseScreen {
 
     public TutorialScreen()
     {
-
         initFonts();
         Label.LabelStyle labelStyle = new Label.LabelStyle();
         labelStyle.font = font24;

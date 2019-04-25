@@ -25,7 +25,7 @@ public class MenuScreen extends BaseScreen
 {
 
     private TextButton btnNewGame;
-    private TextButton btnMultiplayerGame;
+    private TextButton btnMultiPlayerGame;
     private TextButton btnTutorial;
     private TextButton btnHighScore;
     private TextButton btnSettings;
@@ -34,28 +34,18 @@ public class MenuScreen extends BaseScreen
 
     private BitmapFont font24;
 
-    Event<EventArgs> newMultiplayerEvent = new Event<>();
+    Event<EventArgs> newMultiPlayerEvent = new Event<>();
     Event<EventArgs> newGameEvent = new Event<>();
     Event<EventArgs> settingsEvent = new Event<>();
     Event<EventArgs> highScoreEvent = new Event<>();
     Event<EventArgs> tutorialEvent = new Event<>();
     Event<EventArgs> googleLoginEvent = new Event<>();
 
-    private Music menuMusic;
-
-
-    private ISynchronization proxy;
-
-
 
     // Setup the whole layout here
-    public MenuScreen(ISynchronization proxy)
+    public MenuScreen()
     {
-        //super(camera);
-
         this.skin = new Skin(Gdx.files.internal("skins/uiskin.json"));
-
-        this.proxy = proxy;
 
         initFonts();
         Label.LabelStyle labelStyle = new Label.LabelStyle();
@@ -83,11 +73,11 @@ public class MenuScreen extends BaseScreen
             }
         });
 
-        this.btnMultiplayerGame = new TextButton("New Multiplayer Game", skin);
-        btnMultiplayerGame.addListener(new ClickListener(){
+        this.btnMultiPlayerGame = new TextButton("New Multiplayer Game", skin);
+        btnMultiPlayerGame.addListener(new ClickListener(){
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
-                newMultiplayerEvent.invoke(null);
+                newMultiPlayerEvent.invoke(null);
                 return super.touchDown(event, x, y, pointer, button);
             }
 
@@ -155,7 +145,7 @@ public class MenuScreen extends BaseScreen
 
         table.add(btnNewGame).center().size(300,60).padTop(20);
         table.row();
-        table.add(btnMultiplayerGame).center().size(300,60).padTop(20);
+        table.add(btnMultiPlayerGame).center().size(300,60).padTop(20);
         table.row();
         table.add(btnHighScore).center().size(300,60).padTop(20);
         table.row();
@@ -173,7 +163,8 @@ public class MenuScreen extends BaseScreen
     }
 
 
-    private void initFonts(){
+    private void initFonts()
+    {
         FreeTypeFontGenerator generator =
                 new FreeTypeFontGenerator(Gdx.files.internal("fonts/freeagentbold.ttf"));
         FreeTypeFontGenerator.FreeTypeFontParameter params =
@@ -188,8 +179,8 @@ public class MenuScreen extends BaseScreen
         return newGameEvent;
     }
 
-    public Event<EventArgs> getMultiplayerEvent() {
-        return newMultiplayerEvent;
+    public Event<EventArgs> getMultiPlayerEvent() {
+        return newMultiPlayerEvent;
     }
 
     public Event<EventArgs> getSettingsEvent() {

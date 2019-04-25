@@ -98,4 +98,9 @@ public class DynamicBodyComponent implements Component
     {
         body.setActive(activate);
     }
+
+    public void wakeup()
+    {
+        body.setAwake(true);
+    }
 }

@@ -53,6 +53,8 @@ public class ControlSystem extends EntitySystem
     // Entity factory
     AbstractEntityFactory factory;
 
+    private int lastIterationEntityCount = 0;
+
 
     public ControlSystem(World world)
     {
@@ -64,6 +66,26 @@ public class ControlSystem extends EntitySystem
         controlledEntities = engine.getEntitiesFor(Family.all(DynamicBodyComponent.class,
                 ControlComponent.class, StateComponent.class, TransformComponent.class).get());
 
+        initializeEventHandlers();
+        lastIterationEntityCount = controlledEntities.size();
+    }
+
+    private void initializeEventHandlers()
+    {
+        // Remove old handlers
+        for (int i = 0; i < controlledEntities.size(); i++)
+        {
+            Entity entity = controlledEntities.get(i);
+            ControlComponent controlComponent = controlComponentMapper.get(entity);
+
+            controlComponent.controlModule.right.removeAllHandlers();
+            controlComponent.controlModule.left.removeAllHandlers();
+            controlComponent.controlModule.jumpStart.removeAllHandlers();
+            controlComponent.controlModule.attackStart.removeAllHandlers();
+            controlComponent.controlModule.meleeStart.removeAllHandlers();
+        }
+
+        // Create new handlers
         for (int i = 0; i < controlledEntities.size(); i++)
         {
             Entity entity = controlledEntities.get(i);
@@ -148,7 +170,7 @@ public class ControlSystem extends EntitySystem
                 dynamicBodyComponentMapper.get(bullet).position(transformComponent.position);
                 spriteComponentMapper.get(bullet).sprite = bulletVisualsComponent.currentSprite;
                 bulletComponentMapper.get(bullet).shotBy = entity;
-                engine.addEntity(bullet);
+                getEngine().addEntity(bullet);
 
 
                 // Shoot to the right direction
@@ -188,6 +210,12 @@ public class ControlSystem extends EntitySystem
 
     public void update(float deltaTime)
     {
+        if (controlledEntities.size() != lastIterationEntityCount)
+        {
+            initializeEventHandlers();
+            lastIterationEntityCount = controlledEntities.size();
+        }
+
         // Update control modules
         for (int i = 0; i < controlledEntities.size(); i++)
         {

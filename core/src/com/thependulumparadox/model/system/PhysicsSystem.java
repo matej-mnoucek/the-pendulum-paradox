@@ -28,10 +28,10 @@ import java.util.Iterator;
 public class PhysicsSystem extends EntitySystem
 {
     // Constants
-    private static final float TIME_STEP = 1/120f;
-    private static final float MAX_TIME_STEP = 1/16f;
+    private static final float TIME_STEP = 1/240f;
+    private static final float MAX_TIME_STEP = 1/60f;
     private static final int VELOCITY_ITERATIONS = 6;
-    private static final int POSITION_ITERATIONS = 4;
+    private static final int POSITION_ITERATIONS = 2;
 
     // Collision category (bit masks) - 15 bits
     // 000000000000001 = 1 = ground group
@@ -40,8 +40,6 @@ public class PhysicsSystem extends EntitySystem
     // 000000000001000 = 8 = bullet group
     // 000000000010000 = 16 = enhancement group
     // 000000000100000 = 32 = coin group
-    // 000000001000000 = 64 = player trigger group
-    // 000000010000000 = 128 = enemy trigger group
     public enum CollisionCategory
     {
         DEFAULT(1),
@@ -50,8 +48,6 @@ public class PhysicsSystem extends EntitySystem
         BULLET(8),
         ENHANCEMENT(16),
         COIN(32);
-        //PLAYER_TRIGGER(64),
-        //ENEMY_TRIGGER(128);
 
         public final short bits;
         private CollisionCategory(int bits)
@@ -232,7 +228,7 @@ public class PhysicsSystem extends EntitySystem
             // Coin
             case 32:
                 //filter1.categoryBits = CollisionCategory.COIN.bits;
-                //filter1.maskBits = CollisionMask.COIN.bits;
+                filter1.maskBits = CollisionMask.COIN.bits;
                 break;
         }
 
