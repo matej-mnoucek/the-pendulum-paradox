@@ -52,6 +52,8 @@ public class InteractionSystem extends EntitySystem
             = ComponentMapper.getFor(EnemyComponent.class);
     private ComponentMapper<PlayerComponent> playerComponentMapper
             = ComponentMapper.getFor(PlayerComponent.class);
+    private ComponentMapper<SoundComponent> soundComponentMapper
+            = ComponentMapper.getFor(SoundComponent.class);
 
     // Enhancement root
     private Enhancement enhancementChain = null;
@@ -248,6 +250,7 @@ public class InteractionSystem extends EntitySystem
             Entity player = playerEntities.get(i);
             InteractionComponent interactionComponent = interactionComponentMapper.get(player);
             PlayerComponent playerComponent = playerComponentMapper.get(player);
+            SoundComponent soundComponent = soundComponentMapper.get(player);
 
             if (player.getComponent(DynamicBodyComponent.class).body.getPosition().y < -10){
                 getEngine().addEntity(new Entity().add(new CleanupComponent(player)));
@@ -279,10 +282,10 @@ public class InteractionSystem extends EntitySystem
                         DynamicBodyComponent body = dynamicBodyComponentMapper.get(interactionEntity);
                         world.destroyBody(body.body);
                         getEngine().removeEntity(interactionEntity);
-                        Entity enemyDieSound = new Entity();
-                        enemyDieSound.add(new SoundComponent(assetManager.get("sounds/die.mp3", Sound.class),true));
-                        getEngine().addEntity(enemyDieSound);
 
+                        // Play sound
+                        if (soundComponent != null)
+                            soundComponent.enqueuePlay("die");
                     }
                 }
 
@@ -300,9 +303,10 @@ public class InteractionSystem extends EntitySystem
                     world.destroyBody(body.body);
                     getEngine().removeEntity(interactionEntity);
 
-                    Entity coinSound = new Entity();
-                    coinSound.add(new SoundComponent(assetManager.get("sounds/coin_collect.mp3", Sound.class),true));
-                    getEngine().addEntity(coinSound);
+
+                    // Play sound
+                    if (soundComponent != null)
+                        soundComponent.enqueuePlay("collect");
                 }
 
                 // Interaction with enhancement
@@ -333,9 +337,10 @@ public class InteractionSystem extends EntitySystem
                     // Destroy enhancement after collection
                     world.destroyBody(body.body);
                     getEngine().removeEntity(interactionEntity);
-                    Entity EnhancementSound = new Entity();
-                    EnhancementSound.add(new SoundComponent(assetManager.get("sounds/coin_collect.mp3", Sound.class),true));
-                    getEngine().addEntity(EnhancementSound);
+
+                    // Play sound
+                    if (soundComponent != null)
+                        soundComponent.enqueuePlay("collect");
                 }
             }
             // All processed, clear the list
@@ -374,14 +379,15 @@ public class InteractionSystem extends EntitySystem
                     {
                         //DynamicBodyComponent body = dynamicBodyComponentMapper.get(interactionEntity);
                         //world.destroyBody(body.body);
-                        getEngine().removeEntity(interactionEntity);
-                        Entity playerDieSound = new Entity();
-                        playerDieSound.add(new SoundComponent(assetManager.get("sounds/die.mp3", Sound.class),true));
-                        getEngine().addEntity(playerDieSound);
-                        Entity player = getEngine().getEntitiesFor(Family.all(PlayerComponent.class).get()).first();
-                        getEngine().addEntity(new Entity().add(new CleanupComponent(player)));
-                    }
 
+                        getEngine().removeEntity(interactionEntity);
+
+
+                        // Play sound
+                        SoundComponent soundComponent = soundComponentMapper.get(interactionEntity);
+                        if (soundComponent != null)
+                            soundComponent.enqueuePlay("die");
+                    }
                 }
             }
             // All processed, clear the list

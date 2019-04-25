@@ -18,8 +18,8 @@ import com.thependulumparadox.view.ViewState;
 import com.thependulumparadox.view.screen.BaseScreen;
 
 
-public class CleanupSystem extends EntitySystem {
-
+public class LevelManagementSystem extends EntitySystem
+{
     World world;
     ISynchronization proxy;
     IStateMachine viewMachine;
@@ -28,7 +28,7 @@ public class CleanupSystem extends EntitySystem {
     Entity menuMusic;
 
 
-    public CleanupSystem(World world, ISynchronization proxy, IStateMachine viewMachine, ViewState gameOver, BaseScreen gameOverScreen) {
+    public LevelManagementSystem(World world, ISynchronization proxy, IStateMachine viewMachine, ViewState gameOver, BaseScreen gameOverScreen) {
 
         super();
         this.world = world;
@@ -54,7 +54,7 @@ public class CleanupSystem extends EntitySystem {
         if (cleanups.size() != 0 ) {
             Entity player = cleanups.first().getComponent(CleanupComponent.class).getPlayer();
 
-            getEngine().getEntitiesFor(Family.all(MusicComponent.class).get()).first().getComponent(MusicComponent.class).stop();
+            getEngine().getEntitiesFor(Family.all(MusicComponent.class).get()).first().getComponent(MusicComponent.class).play = false;
 
             ImmutableArray EntitiesToDestroy;
             EntitiesToDestroy = getEngine().getEntitiesFor(Family.all(DynamicBodyComponent.class).get());
@@ -65,7 +65,7 @@ public class CleanupSystem extends EntitySystem {
                 }
             }
 
-            proxy.submitScore(player.getComponent(PlayerComponent.class).score);
+            //proxy.submitScore(player.getComponent(PlayerComponent.class).score);
 
             getEngine().removeAllEntities();
             getEngine().addEntity(menuMusic);

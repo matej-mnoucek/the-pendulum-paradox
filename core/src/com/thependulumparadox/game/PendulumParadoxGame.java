@@ -10,11 +10,15 @@ public class PendulumParadoxGame extends ApplicationAdapter
 	private Game game;
 
 	// Standard single player game
-
-    // Multi player game with  synchronization proxy
-    public PendulumParadoxGame(ISynchronization proxy)
+    public PendulumParadoxGame()
     {
-        game = new GamePresenter(proxy);
+        game = new GamePresenter();
+    }
+
+    // Multi player game with synchronization class
+    public PendulumParadoxGame(ISynchronization synchronization)
+    {
+        game = new GamePresenter(synchronization);
     }
 
     @Override

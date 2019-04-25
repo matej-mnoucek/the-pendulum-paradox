@@ -41,7 +41,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
-import com.thependulumparadox.control.MoveCommands;
+import com.thependulumparadox.control.IMoveCommands;
 import com.thependulumparadox.multiplayer.ISynchronization;
 
 import java.util.ArrayList;
@@ -73,7 +73,7 @@ public class NetworkSynchronizationProxy extends AndroidApplication implements I
     //Client used for highscores
     private LeaderboardsClient mLeaderboardClient = null;
 
-    private MoveCommands InputHandler;
+    private IMoveCommands InputHandler;
 
     // Room ID where the currently active game is taking place; null if we're
     // not playing.
@@ -118,7 +118,7 @@ public class NetworkSynchronizationProxy extends AndroidApplication implements I
 
     }
 
-    public void setInputHandler(MoveCommands inputHandler){
+    public void setInputHandler(IMoveCommands inputHandler){
         this.InputHandler = inputHandler;
     }
 
@@ -209,7 +209,7 @@ public class NetworkSynchronizationProxy extends AndroidApplication implements I
     }
 
     @Override
-    public void handleActions() {
+    public void synchronize() {
         while(!actionQueue.isEmpty()){
             String curraction = (String)actionQueue.removeFirst();
             System.out.println("execute action");

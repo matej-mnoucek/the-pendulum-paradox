@@ -10,10 +10,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 
 public class PauseScreen extends BaseScreen
 {
-    @Override
-    public void resize(int width, int height) {
-
-    }
 
     @Override
     public void show() {

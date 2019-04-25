@@ -262,12 +262,6 @@ public class InGameScreen extends BaseScreen
 
     }
 
-
-    @Override
-    public void resize(int width, int height) {
-
-    }
-
     public Stage getStage(){
         return this.stage;
     }

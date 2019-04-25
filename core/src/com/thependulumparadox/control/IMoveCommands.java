@@ -1,8 +1,8 @@
 package com.thependulumparadox.control;
 
-public interface MoveCommands {
+public interface IMoveCommands {
 
-    public MoveCommands getInputSystem();
+    public IMoveCommands getInputSystem();
 
     public void moveLeft();
 

@@ -287,11 +287,6 @@ public class HighScoreScreen extends BaseScreen
     }
 
     @Override
-    public void resize(int width, int height) {
-
-    }
-
-    @Override
     public void pause() {
 
     }
