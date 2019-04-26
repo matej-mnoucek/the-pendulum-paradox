@@ -22,6 +22,7 @@ import com.thependulumparadox.model.component.EnhancementComponent;
 import com.thependulumparadox.model.component.InteractionComponent;
 import com.thependulumparadox.model.component.PlayerComponent;
 import com.thependulumparadox.model.component.SoundComponent;
+import com.thependulumparadox.model.component.StaticBodyComponent;
 import com.thependulumparadox.model.component.enhancement.Enhancement;
 import com.thependulumparadox.observer.Event;
 import com.thependulumparadox.observer.ValueEventArgs;
@@ -34,6 +35,8 @@ public class InteractionSystem extends EntitySystem
 
     private ComponentMapper<DynamicBodyComponent> dynamicBodyComponentMapper
             = ComponentMapper.getFor(DynamicBodyComponent.class);
+    private ComponentMapper<StaticBodyComponent> staticBodyComponentMapper
+            = ComponentMapper.getFor(StaticBodyComponent.class);
     private ComponentMapper<InteractionComponent> interactionComponentMapper
             = ComponentMapper.getFor(InteractionComponent.class);
     private ComponentMapper<BulletComponent> bulletComponentMapper
@@ -291,7 +294,7 @@ public class InteractionSystem extends EntitySystem
                 {
                     CoinComponent coin = coinComponentMapper
                             .get(interactionEntity);
-                    DynamicBodyComponent body = dynamicBodyComponentMapper.get(interactionEntity);
+                    StaticBodyComponent body = staticBodyComponentMapper.get(interactionEntity);
 
                     // Add collected value
                     playerComponent.score += coin.value;
@@ -311,7 +314,7 @@ public class InteractionSystem extends EntitySystem
                 {
                     EnhancementComponent enhancement = enhancementComponentMapper
                             .get(interactionEntity);
-                    DynamicBodyComponent body = dynamicBodyComponentMapper.get(interactionEntity);
+                    StaticBodyComponent body = staticBodyComponentMapper.get(interactionEntity);
 
                     // Permanent enhancement
                     if(enhancement.enhancement.isPermanent())

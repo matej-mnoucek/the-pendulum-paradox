@@ -31,6 +31,7 @@ import com.thependulumparadox.model.component.PlayerComponent;
 import com.thependulumparadox.model.component.SoundComponent;
 import com.thependulumparadox.model.component.SpriteComponent;
 import com.thependulumparadox.model.component.StateComponent;
+import com.thependulumparadox.model.component.StaticBodyComponent;
 import com.thependulumparadox.model.component.TransformComponent;
 import com.thependulumparadox.model.component.enhancement.AddDefenseEnhancement;
 import com.thependulumparadox.model.component.enhancement.AddLifeEnhancement;
@@ -356,11 +357,11 @@ public class EntityFactory extends AbstractEntityFactory
                 spriteCoin1.width = 1f;
                 coin1.add(spriteCoin1);
 
-                DynamicBodyComponent dynamicBodyCoin1 = new DynamicBodyComponent(world);
-                dynamicBodyCoin1.position(transformCoin1.position)
+                StaticBodyComponent staticBodyCoin1 = new StaticBodyComponent(world);
+                staticBodyCoin1.position(transformCoin1.position.x,transformCoin1.position.y)
                         .dimension(0.7f, 1.5f)
                         .activate(true);
-                coin1.add(dynamicBodyCoin1);
+                coin1.add(staticBodyCoin1);
 
                 CoinComponent componentCoin1 = new CoinComponent();
                 componentCoin1.value = 10;
@@ -383,11 +384,11 @@ public class EntityFactory extends AbstractEntityFactory
                 spriteCoin2.width = 1f;
                 coin2.add(spriteCoin2);
 
-                DynamicBodyComponent dynamicBodyCoin2 = new DynamicBodyComponent(world);
-                dynamicBodyCoin2.position(transformCoin2.position)
+                StaticBodyComponent staticBodyCoin2 = new StaticBodyComponent(world);
+                staticBodyCoin2.position(transformCoin2.position.x,transformCoin2.position.y)
                         .dimension(0.7f, 1.5f)
                         .activate(true);
-                coin2.add(dynamicBodyCoin2);
+                coin2.add(staticBodyCoin2);
 
                 CoinComponent componentCoin2 = new CoinComponent();
                 componentCoin2.value = 20;
@@ -410,11 +411,11 @@ public class EntityFactory extends AbstractEntityFactory
                 spriteEnhancement1.width = 1f;
                 enhancement1.add(spriteEnhancement1);
 
-                DynamicBodyComponent dynamicBodyEnhancement1 = new DynamicBodyComponent(world);
-                dynamicBodyEnhancement1.position(transformEnhancement1.position)
+                StaticBodyComponent staticBodyEnhancement1 = new StaticBodyComponent(world);
+                staticBodyEnhancement1.position(transformEnhancement1.position.x,transformEnhancement1.position.y)
                         .dimension(0.7f, 1.5f)
                         .activate(true);
-                enhancement1.add(dynamicBodyEnhancement1);
+                enhancement1.add(staticBodyEnhancement1);
 
                 Enhancement implEnhancement1 = new AddLifeEnhancement(1);
                 EnhancementComponent componentEnhancement1 = new EnhancementComponent(implEnhancement1);
@@ -437,11 +438,11 @@ public class EntityFactory extends AbstractEntityFactory
                 spriteEnhancement2.width = 1f;
                 enhancement2.add(spriteEnhancement2);
 
-                DynamicBodyComponent dynamicBodyEnhancement2 = new DynamicBodyComponent(world);
-                dynamicBodyEnhancement2.position(transformEnhancement2.position)
+                StaticBodyComponent staticBodyEnhancement2 = new StaticBodyComponent(world);
+                staticBodyEnhancement2.position(transformEnhancement2.position.x,transformEnhancement2.position.y)
                         .dimension(0.7f, 1.5f)
                         .activate(true);
-                enhancement2.add(dynamicBodyEnhancement2);
+                enhancement2.add(staticBodyEnhancement2);
 
                 Enhancement implEnhancement2 = new AddDefenseEnhancement(50,5);
                 EnhancementComponent componentEnhancement2 = new EnhancementComponent(implEnhancement2);
@@ -464,11 +465,11 @@ public class EntityFactory extends AbstractEntityFactory
                 spriteEnhancement3.width = 1f;
                 enhancement3.add(spriteEnhancement3);
 
-                DynamicBodyComponent dynamicBodyEnhancement3 = new DynamicBodyComponent(world);
-                dynamicBodyEnhancement3.position(transformEnhancement3.position)
+                StaticBodyComponent staticBodyEnhancement3 = new StaticBodyComponent(world);
+                staticBodyEnhancement3.position(transformEnhancement3.position.x,transformEnhancement3.position.y)
                         .dimension(0.7f, 1.5f)
                         .activate(true);
-                enhancement3.add(dynamicBodyEnhancement3);
+                enhancement3.add(staticBodyEnhancement3);
 
                 Enhancement implEnhancement3 = new MultiplyDamageEnhancement(2,5);
                 EnhancementComponent componentEnhancement3 = new EnhancementComponent(implEnhancement3);

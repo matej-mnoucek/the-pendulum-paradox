@@ -23,7 +23,10 @@ import com.badlogic.gdx.physics.box2d.World;
 import com.thependulumparadox.misc.Constants;
 import com.thependulumparadox.model.component.LevelObjectComponent;
 import com.thependulumparadox.model.component.DynamicBodyComponent;
+import com.thependulumparadox.model.component.StaticBodyComponent;
 import com.thependulumparadox.model.entity.EntityFactory;
+
+import org.lwjgl.Sys;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -43,6 +46,8 @@ public class GameScene extends Scene
 
     private ComponentMapper<DynamicBodyComponent> dynamicBodyComponentMapper
             = ComponentMapper.getFor(DynamicBodyComponent.class);
+    private ComponentMapper<StaticBodyComponent> staticBodyComponentMapper
+            = ComponentMapper.getFor(StaticBodyComponent.class);
 
     public GameScene(TiledMap level, OrthographicCamera camera, World world, Engine engine)
     {
@@ -146,23 +151,19 @@ public class GameScene extends Scene
         {
             if (object.getName() != null)
             {
-                switch (object.getName())
+                Rectangle rectangle =  ((RectangleMapObject)object).getRectangle();
+                Vector2 position = new Vector2(rectangle.x/ Constants.PPM,
+                                               rectangle.y/ Constants.PPM);
+                Entity entity = entityFactory.create(object.getName());
+                if (entity == null)
                 {
-                    case "coin":
-                        Rectangle rectangle =  ((RectangleMapObject)object).getRectangle();
-                        Vector2 position = new Vector2(rectangle.x/ Constants.PPM,
-                                rectangle.y/ Constants.PPM);
-                        Entity entity = entityFactory.create("10_coin");
-                        entity.getComponent(DynamicBodyComponent.class).position(position);
-
-                        LevelObjectComponent object1 = new LevelObjectComponent();
-                        entity.add(object1);
-
-                        engine.addEntity(entity);
-                        break;
-                    case "ammo":
-                        break;
+                    System.out.print("\nInvalid Object name: " + object.getName());
+                    continue;
                 }
+                entity.getComponent(StaticBodyComponent.class).position(position.x,position.y);
+                LevelObjectComponent objectComponent = new LevelObjectComponent();
+                entity.add(objectComponent);
+                engine.addEntity(entity);
             }
         }
 
@@ -172,37 +173,15 @@ public class GameScene extends Scene
         {
             if (object.getName() != null)
             {
-                switch (object.getName())
-                {
-                    case "attacking":
-                        Rectangle rectangle1 =  ((RectangleMapObject)object).getRectangle();
-                        Vector2 position1 = new Vector2(rectangle1.x/ Constants.PPM,
-                                rectangle1.y/ Constants.PPM);
-                        Entity entity1 = entityFactory.create("knight_enemy");
-                        entity1.getComponent(DynamicBodyComponent.class).position(position1);
+                Rectangle rectangle =  ((RectangleMapObject)object).getRectangle();
+                Vector2 position = new Vector2(rectangle.x/ Constants.PPM,
+                                                rectangle.y/ Constants.PPM);
+                Entity enemy = entityFactory.create(object.getName());
+                enemy.getComponent(DynamicBodyComponent.class).position(position);
+                LevelObjectComponent objectComponent = new LevelObjectComponent();
+                enemy.add(objectComponent);
 
-                        LevelObjectComponent object1 = new LevelObjectComponent();
-                        entity1.add(object1);
-
-                        engine.addEntity(entity1);
-                        break;
-
-                    case "walking":
-                        Rectangle rectangle2 =  ((RectangleMapObject)object).getRectangle();
-                        Vector2 position2 = new Vector2(rectangle2.x/ Constants.PPM,
-                                rectangle2.y/ Constants.PPM);
-                        Entity entity2 = entityFactory.create("ninja_enemy");
-                        entity2.getComponent(DynamicBodyComponent.class).position(position2);
-
-                        LevelObjectComponent object2 = new LevelObjectComponent();
-                        entity2.add(object2);
-
-                        engine.addEntity(entity2);
-                        break;
-
-                    default:
-                        break;
-                }
+                engine.addEntity(enemy);
             }
         }
     }
@@ -212,8 +191,15 @@ public class GameScene extends Scene
         ImmutableArray<Entity> entities = engine.getEntitiesFor(Family.all(LevelObjectComponent.class).get());
         for (Entity entity : entities)
         {
-            DynamicBodyComponent body = dynamicBodyComponentMapper.get(entity);
-            world.destroyBody(body.body);
+            DynamicBodyComponent dynamicBody = dynamicBodyComponentMapper.get(entity);
+            if (dynamicBody != null){
+                world.destroyBody(dynamicBody.body);
+            }
+            StaticBodyComponent staticBody = staticBodyComponentMapper.get(entity);
+            if (staticBody != null){
+                world.destroyBody(staticBody.body);
+            }
+
             engine.removeEntity(entity);
         }
     }

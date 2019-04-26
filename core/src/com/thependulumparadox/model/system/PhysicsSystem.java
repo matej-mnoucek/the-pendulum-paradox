@@ -114,6 +114,8 @@ public class PhysicsSystem extends EntitySystem
             StaticBodyComponent component = staticBodyComponentComponentMapper.get(entity);
 
             initializeBody(entity, component.body);
+            TransformComponent transformComponent = transformComponentMapper.get(entity);
+            transformComponent.position = component.body.getPosition();
             component.initialized = true;
         }
 
@@ -140,6 +142,8 @@ public class PhysicsSystem extends EntitySystem
             if (!component.initialized)
             {
                 initializeBody(entity, component.body);
+                TransformComponent transformComponent = transformComponentMapper.get(entity);
+                transformComponent.position = component.body.getPosition();
                 component.initialized = true;
             }
         }
