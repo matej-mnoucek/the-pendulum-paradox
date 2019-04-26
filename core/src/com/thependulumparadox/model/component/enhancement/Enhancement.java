@@ -48,7 +48,8 @@ public abstract class Enhancement
     public void step(float delta)
     {
         // Subtract delta
-        duration -= delta;
+        if (duration > 0)
+            duration -= delta;
 
         if (next != null)
         {

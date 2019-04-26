@@ -18,7 +18,9 @@ public class MultiplyDamageEnhancement extends Enhancement
     @Override
     public void apply(StandardAttributes attributes)
     {
-        attributes.damage *= multiplyFactor;
+        if (duration > 0.0f)
+            attributes.damage *= multiplyFactor;
+
         super.apply(attributes);
     }
 }

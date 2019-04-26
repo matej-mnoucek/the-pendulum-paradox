@@ -138,6 +138,8 @@ public class GameScene extends Scene
     {
         for (Body body : staticBodies)
         {
+            body.setAwake(false);
+            body.setActive(false);
             world.destroyBody(body);
         }
         staticBodies.clear();
@@ -160,9 +162,10 @@ public class GameScene extends Scene
                     System.out.print("\nInvalid Object name: " + object.getName());
                     continue;
                 }
-                entity.getComponent(StaticBodyComponent.class).position(position.x,position.y);
+                entity.getComponent(DynamicBodyComponent.class).position(position);
                 LevelObjectComponent objectComponent = new LevelObjectComponent();
                 entity.add(objectComponent);
+
                 engine.addEntity(entity);
             }
         }
@@ -177,6 +180,11 @@ public class GameScene extends Scene
                 Vector2 position = new Vector2(rectangle.x/ Constants.PPM,
                                                 rectangle.y/ Constants.PPM);
                 Entity enemy = entityFactory.create(object.getName());
+                if (enemy == null)
+                {
+                    System.out.print("\nInvalid Enemy name: " + object.getName());
+                    continue;
+                }
                 enemy.getComponent(DynamicBodyComponent.class).position(position);
                 LevelObjectComponent objectComponent = new LevelObjectComponent();
                 enemy.add(objectComponent);
@@ -188,16 +196,17 @@ public class GameScene extends Scene
 
     public void destroyEntities()
     {
-        ImmutableArray<Entity> entities = engine.getEntitiesFor(Family.all(LevelObjectComponent.class).get());
+        Entity[] entities = engine.getEntitiesFor(Family.all(LevelObjectComponent.class).get())
+                .toArray(Entity.class);
+
         for (Entity entity : entities)
         {
             DynamicBodyComponent dynamicBody = dynamicBodyComponentMapper.get(entity);
-            if (dynamicBody != null){
+            if (dynamicBody != null)
+            {
+                dynamicBody.body.setAwake(false);
+                dynamicBody.body.setActive(false);
                 world.destroyBody(dynamicBody.body);
-            }
-            StaticBodyComponent staticBody = staticBodyComponentMapper.get(entity);
-            if (staticBody != null){
-                world.destroyBody(staticBody.body);
             }
 
             engine.removeEntity(entity);
@@ -235,5 +244,19 @@ public class GameScene extends Scene
     public Vector2 getEndPoint()
     {
         return endPoint;
+    }
+
+    @Override
+    public String toString() {
+
+        String name = "untitled";
+        if (level.getProperties().containsKey("name"))
+        {
+            name = (String) level.getProperties().get("name");
+        }
+
+        return "GameScene{" +
+                "level=" + name +
+                '}';
     }
 }

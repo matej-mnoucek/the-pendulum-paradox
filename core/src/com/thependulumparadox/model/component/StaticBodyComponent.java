@@ -44,9 +44,9 @@ public class StaticBodyComponent implements Component
         polygon.dispose();
     }
 
-    public StaticBodyComponent position(float x, float y)
+    public StaticBodyComponent position(Vector2 position)
     {
-        body.setTransform(new Vector2(x,y), 0);
+        body.setTransform(position, 0);
         return this;
     }
 
@@ -77,7 +77,7 @@ public class StaticBodyComponent implements Component
         return this;
     }
 
-    public StaticBodyComponent trigger(float radius)
+    public StaticBodyComponent addTrigger(float radius)
     {
         FixtureDef fixtureDef = new FixtureDef();
         CircleShape circleShape = new CircleShape();
@@ -89,6 +89,12 @@ public class StaticBodyComponent implements Component
         body.createFixture(fixtureDef);
         circleShape.dispose();
 
+        return this;
+    }
+
+    public StaticBodyComponent makeTrigger()
+    {
+        body.getFixtureList().first().setSensor(true);
         return this;
     }
 

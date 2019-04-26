@@ -164,7 +164,7 @@ public class InteractionSystem extends EntitySystem
                     }
 
 
-                    // Enemy and player in its trigger
+                    // Enemy and player in its addTrigger
                     if(entityA.flags == 2 && entityB.flags == 4)
                     {
                         InteractionComponent interaction = interactionComponentMapper.get(entityB);
@@ -247,12 +247,11 @@ public class InteractionSystem extends EntitySystem
             PlayerComponent playerComponent = playerComponentMapper.get(player);
             SoundComponent soundComponent = soundComponentMapper.get(player);
 
-
             // Invoke player update event
             playerUpdate.invoke(new ValueEventArgs<>(playerComponent));
 
             // Apply enhancements
-            applyEnhancementChain(playerComponent);
+            applyEnhancementChain(playerComponent, delta);
 
             for (int j = 0; j < interactionComponent.interactions.size(); j++)
             {
@@ -275,7 +274,7 @@ public class InteractionSystem extends EntitySystem
                     if (enemyComponent.current.lives <= 0)
                     {
                         // Increment score
-                        playerComponent.score += 1;
+                        playerComponent.score += enemyComponent.score;
 
 
                         // Remove enemy
@@ -294,7 +293,7 @@ public class InteractionSystem extends EntitySystem
                 {
                     CoinComponent coin = coinComponentMapper
                             .get(interactionEntity);
-                    StaticBodyComponent body = staticBodyComponentMapper.get(interactionEntity);
+                    DynamicBodyComponent body = dynamicBodyComponentMapper.get(interactionEntity);
 
                     // Add collected value
                     playerComponent.score += coin.value;
@@ -314,7 +313,7 @@ public class InteractionSystem extends EntitySystem
                 {
                     EnhancementComponent enhancement = enhancementComponentMapper
                             .get(interactionEntity);
-                    StaticBodyComponent body = staticBodyComponentMapper.get(interactionEntity);
+                    DynamicBodyComponent body = dynamicBodyComponentMapper.get(interactionEntity);
 
                     // Permanent enhancement
                     if(enhancement.enhancement.isPermanent())
@@ -333,7 +332,7 @@ public class InteractionSystem extends EntitySystem
                             enhancementChain.chain(enhancement.enhancement);
                         }
                     }
-                    applyEnhancementChain(playerComponent);
+                    applyEnhancementChain(playerComponent, delta);
 
 
                     // Destroy enhancement after collection
@@ -368,13 +367,13 @@ public class InteractionSystem extends EntitySystem
                     // Apply damage to player
                     playerComponent.base.health -= enemyComponent.current.damage;
 
-                    applyEnhancementChain(playerComponent);
+                    applyEnhancementChain(playerComponent, delta);
                     if (playerComponent.current.health <= 0)
                     {
                         playerComponent.base.lives--;
-                        playerComponent.base.health = playerComponent.base.defense;
+                        playerComponent.base.health = playerComponent.current.defense;
                     }
-                    applyEnhancementChain(playerComponent);
+                    applyEnhancementChain(playerComponent, delta);
 
 
                     // If he is dead, finish him!!!
@@ -395,7 +394,7 @@ public class InteractionSystem extends EntitySystem
         }
     }
 
-    private void applyEnhancementChain(PlayerComponent playerComponent)
+    private void applyEnhancementChain(PlayerComponent playerComponent, float delta)
     {
         try
         {
@@ -408,6 +407,7 @@ public class InteractionSystem extends EntitySystem
 
         if (enhancementChain != null)
         {
+            enhancementChain.step(delta);
             enhancementChain.apply(playerComponent.current);
         }
     }

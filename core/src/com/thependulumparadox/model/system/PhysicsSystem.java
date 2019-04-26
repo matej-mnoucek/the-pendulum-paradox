@@ -19,8 +19,6 @@ import com.thependulumparadox.model.component.DynamicBodyComponent;
 import com.thependulumparadox.model.component.StaticBodyComponent;
 import com.thependulumparadox.model.component.TransformComponent;
 
-import java.util.HashSet;
-import java.util.Iterator;
 
 /**
  * The laws of physics live here (mainly Box2D library in the future)
@@ -63,8 +61,8 @@ public class PhysicsSystem extends EntitySystem
     // Bullet group = collides with default and enemy group = 000000000000101
     // Enhancement group = collides with default and player group = 000000000000011
     // Coin group = collides with default and player group = 000000000000011
-    // Player trigger group = collides with enemy and enhancement group = 000000000010100
-    // Enemy trigger group = collides with bullets and player group = 000000000001010
+    // Player addTrigger group = collides with enemy and enhancement group = 000000000010100
+    // Enemy addTrigger group = collides with bullets and player group = 000000000001010
     public enum CollisionMask
     {
         DEFAULT(32767),
@@ -240,7 +238,7 @@ public class PhysicsSystem extends EntitySystem
         // Add fixture 1 collision argument = entity
         body.getFixtureList().first().setUserData(entity);
 
-        // If entity has trigger as well set collision rules and argument
+        // If entity has addTrigger as well set collision rules and argument
         if (body.getFixtureList().size > 1)
         {
             body.getFixtureList().get(1).setFilterData(filter2);

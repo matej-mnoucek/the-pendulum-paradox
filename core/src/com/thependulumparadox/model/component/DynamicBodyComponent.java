@@ -79,7 +79,7 @@ public class DynamicBodyComponent implements Component
         return this;
     }
 
-    public DynamicBodyComponent trigger(float radius)
+    public DynamicBodyComponent addTrigger(float radius)
     {
         FixtureDef fixtureDef = new FixtureDef();
         CircleShape circleShape = new CircleShape();
@@ -91,6 +91,12 @@ public class DynamicBodyComponent implements Component
         Fixture fixture = body.createFixture(fixtureDef);
         circleShape.dispose();
 
+        return this;
+    }
+
+    public DynamicBodyComponent makeTrigger()
+    {
+        body.getFixtureList().first().setSensor(true);
         return this;
     }
 

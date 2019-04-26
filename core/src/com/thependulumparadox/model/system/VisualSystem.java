@@ -120,7 +120,7 @@ public class VisualSystem extends EntitySystem
             {
                 Pair<Range<Float>, Sprite> pair = component.defenseSprites.get(j);
 
-                if (pair.key.contains(player.current.damage))
+                if (pair.key.contains(player.current.defense))
                 {
                     sprite.sprite = pair.value;
                     break;

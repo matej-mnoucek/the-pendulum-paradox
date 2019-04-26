@@ -8,9 +8,12 @@ public class EnemyComponent implements Component
     public StandardAttributes base;
     public StandardAttributes current;
 
+    public int score;
+
     public EnemyComponent()
     {
         base = new StandardAttributes();
         current = new StandardAttributes();
+        score = 5;
     }
 }

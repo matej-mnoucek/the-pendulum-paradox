@@ -1,11 +1,8 @@
 package com.thependulumparadox.model.entity;
 
-import com.badlogic.ashley.core.Component;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.PooledEngine;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.assets.AssetManager;
-import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
 import com.thependulumparadox.control.AIJumpAttackControlModule;
@@ -13,7 +10,6 @@ import com.thependulumparadox.control.AIRunAroundControlModule;
 import com.thependulumparadox.control.AIWanderAttackControlModule;
 import com.thependulumparadox.control.ControlModule;
 import com.thependulumparadox.control.ControlModuleMultiplexer;
-import com.thependulumparadox.control.EventControlModule;
 import com.thependulumparadox.control.KeyboardControlModule;
 import com.thependulumparadox.control.NetworkControlModule;
 import com.thependulumparadox.misc.Range;
@@ -37,7 +33,6 @@ import com.thependulumparadox.model.component.enhancement.AddDefenseEnhancement;
 import com.thependulumparadox.model.component.enhancement.AddLifeEnhancement;
 import com.thependulumparadox.model.component.enhancement.Enhancement;
 import com.thependulumparadox.model.component.enhancement.MultiplyDamageEnhancement;
-import com.thependulumparadox.model.entity.AbstractEntityFactory;
 import com.thependulumparadox.state.TaggedState;
 
 /**
@@ -75,13 +70,13 @@ public class EntityFactory extends AbstractEntityFactory
                 player1.add(sprite1);
 
                 BulletVisualsComponent bulletVisual1 = new BulletVisualsComponent(
-                        "sprites/bullets/circle_bullet_blue.png");
-                bulletVisual1.add(new Range<Float>(0f,1000f),
                         "sprites/bullets/circle_bullet_red.png");
+                bulletVisual1.add(new Range<Float>(150f,1000f),
+                        "sprites/bullets/circle_bullet_violet.png");
                 player1.add(bulletVisual1);
 
                 EnhancementVisualsComponent enhancementVisual1 = new EnhancementVisualsComponent();
-                enhancementVisual1.addDefense(new Range<Float>(0f, 1000f),
+                enhancementVisual1.addDefense(new Range<Float>(200f, 1000f),
                         "sprites/power_ups/powerup_aura_red.png");
                 player1.add(enhancementVisual1);
 
@@ -141,13 +136,13 @@ public class EntityFactory extends AbstractEntityFactory
 
                 BulletVisualsComponent bulletVisual = new BulletVisualsComponent(
                         "sprites/bullets/circle_bullet_blue.png");
-                bulletVisual.add(new Range<Float>(0f,1000f),
-                        "sprites/bullets/circle_bullet_red.png");
+                bulletVisual.add(new Range<Float>(150f,1000f),
+                        "sprites/bullets/circle_bullet_green.png");
                 player2.add(bulletVisual);
 
                 EnhancementVisualsComponent enhancementVisual = new EnhancementVisualsComponent();
-                enhancementVisual.addDefense(new Range<Float>(0f, 1000f),
-                        "sprites/power_ups/powerup_aura_red.png");
+                enhancementVisual.addDefense(new Range<Float>(200f, 1000f),
+                        "sprites/power_ups/powerup_aura_blue.png");
                 player2.add(enhancementVisual);
 
                 AnimatedSpriteComponent animated = new AnimatedSpriteComponent(
@@ -208,7 +203,7 @@ public class EntityFactory extends AbstractEntityFactory
                 DynamicBodyComponent dynamicBodyEnemy1 = new DynamicBodyComponent(world);
                 dynamicBodyEnemy1.position(transformEnemy1.position)
                         .dimension(0.7f, 1.5f)
-                        .trigger(1f)
+                        .addTrigger(1f)
                         .properties(0, 50f, 10f, 0f)
                         .activate(true);
                 enemy1.add(dynamicBodyEnemy1);
@@ -251,7 +246,7 @@ public class EntityFactory extends AbstractEntityFactory
                 DynamicBodyComponent dynamicBodyEnemy2 = new DynamicBodyComponent(world);
                 dynamicBodyEnemy2.position(transformEnemy2.position)
                         .dimension(0.7f, 1.5f)
-                        .trigger(1f)
+                        .addTrigger(1f)
                         .properties(0, 50f, 10f, 0f)
                         .activate(true);
                 enemy2.add(dynamicBodyEnemy2);
@@ -294,7 +289,7 @@ public class EntityFactory extends AbstractEntityFactory
                 DynamicBodyComponent dynamicBodyEnemy3 = new DynamicBodyComponent(world);
                 dynamicBodyEnemy3.position(transformEnemy3.position)
                         .dimension(0.7f, 1.5f)
-                        .trigger(1f)
+                        .addTrigger(1f)
                         .properties(0, 50f, 10f, 0f)
                         .activate(true);
                 enemy3.add(dynamicBodyEnemy3);
@@ -357,12 +352,13 @@ public class EntityFactory extends AbstractEntityFactory
                 spriteCoin1.width = 1f;
                 coin1.add(spriteCoin1);
 
-                StaticBodyComponent staticBodyCoin1 = new StaticBodyComponent(world);
-                staticBodyCoin1.position(transformCoin1.position.x,transformCoin1.position.y)
+                DynamicBodyComponent dynamicBodyCoin1 = new DynamicBodyComponent(world);
+                dynamicBodyCoin1.position(transformCoin1.position)
                         .dimension(0.7f, 1.5f)
+                        .gravityScale(0)
+                        .makeTrigger()
                         .activate(true);
-                staticBodyCoin1.body.getFixtureList().first().setSensor(true);
-                coin1.add(staticBodyCoin1);
+                coin1.add(dynamicBodyCoin1);
 
                 CoinComponent componentCoin1 = new CoinComponent();
                 componentCoin1.value = 10;
@@ -385,12 +381,14 @@ public class EntityFactory extends AbstractEntityFactory
                 spriteCoin2.width = 1f;
                 coin2.add(spriteCoin2);
 
-                StaticBodyComponent staticBodyCoin2 = new StaticBodyComponent(world);
-                staticBodyCoin2.position(transformCoin2.position.x,transformCoin2.position.y)
+                DynamicBodyComponent dynamicBodyCoin2 = new DynamicBodyComponent(world);
+                dynamicBodyCoin2.position(transformCoin2.position)
                         .dimension(0.7f, 1.5f)
+                        .gravityScale(0)
+                        .makeTrigger()
                         .activate(true);
-                coin2.add(staticBodyCoin2);
-                staticBodyCoin2.body.getFixtureList().first().setSensor(true);
+                coin2.add(dynamicBodyCoin2);
+                
                 CoinComponent componentCoin2 = new CoinComponent();
                 componentCoin2.value = 20;
                 coin2.add(componentCoin2);
@@ -412,12 +410,13 @@ public class EntityFactory extends AbstractEntityFactory
                 spriteEnhancement1.width = 1f;
                 enhancement1.add(spriteEnhancement1);
 
-                StaticBodyComponent staticBodyEnhancement1 = new StaticBodyComponent(world);
-                staticBodyEnhancement1.position(transformEnhancement1.position.x,transformEnhancement1.position.y)
+                DynamicBodyComponent dynamicBodyEnhancement1 = new DynamicBodyComponent(world);
+                dynamicBodyEnhancement1.position(transformEnhancement1.position)
                         .dimension(0.7f, 1.5f)
+                        .gravityScale(0)
+                        .makeTrigger()
                         .activate(true);
-                staticBodyEnhancement1.body.getFixtureList().first().setSensor(true);
-                enhancement1.add(staticBodyEnhancement1);
+                enhancement1.add(dynamicBodyEnhancement1);
 
                 Enhancement implEnhancement1 = new AddLifeEnhancement(1);
                 EnhancementComponent componentEnhancement1 = new EnhancementComponent(implEnhancement1);
@@ -440,14 +439,15 @@ public class EntityFactory extends AbstractEntityFactory
                 spriteEnhancement2.width = 1f;
                 enhancement2.add(spriteEnhancement2);
 
-                StaticBodyComponent staticBodyEnhancement2 = new StaticBodyComponent(world);
-                staticBodyEnhancement2.position(transformEnhancement2.position.x,transformEnhancement2.position.y)
+                DynamicBodyComponent dynamicBodyEnhancement2 = new DynamicBodyComponent(world);
+                dynamicBodyEnhancement2.position(transformEnhancement2.position)
                         .dimension(0.7f, 1.5f)
+                        .gravityScale(0)
+                        .makeTrigger()
                         .activate(true);
-                staticBodyEnhancement2.body.getFixtureList().first().setSensor(true);
-                enhancement2.add(staticBodyEnhancement2);
+                enhancement2.add(dynamicBodyEnhancement2);
 
-                Enhancement implEnhancement2 = new AddDefenseEnhancement(50,5);
+                Enhancement implEnhancement2 = new AddDefenseEnhancement(200,15);
                 EnhancementComponent componentEnhancement2 = new EnhancementComponent(implEnhancement2);
                 enhancement2.add(componentEnhancement2);
 
@@ -468,13 +468,15 @@ public class EntityFactory extends AbstractEntityFactory
                 spriteEnhancement3.width = 1f;
                 enhancement3.add(spriteEnhancement3);
 
-                StaticBodyComponent staticBodyEnhancement3 = new StaticBodyComponent(world);
-                staticBodyEnhancement3.position(transformEnhancement3.position.x,transformEnhancement3.position.y)
+                DynamicBodyComponent dynamicBodyEnhancement3 = new DynamicBodyComponent(world);
+                dynamicBodyEnhancement3.position(transformEnhancement3.position)
                         .dimension(0.7f, 1.5f)
+                        .gravityScale(0)
+                        .makeTrigger()
                         .activate(true);
-                staticBodyEnhancement3.body.getFixtureList().first().setSensor(true);
-                enhancement3.add(staticBodyEnhancement3);
-                Enhancement implEnhancement3 = new MultiplyDamageEnhancement(2,5);
+                enhancement3.add(dynamicBodyEnhancement3);
+                
+                Enhancement implEnhancement3 = new MultiplyDamageEnhancement(4, 20);
                 EnhancementComponent componentEnhancement3 = new EnhancementComponent(implEnhancement3);
                 enhancement3.add(componentEnhancement3);
 

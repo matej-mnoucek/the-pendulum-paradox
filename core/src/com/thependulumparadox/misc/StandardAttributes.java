@@ -8,7 +8,19 @@ public class StandardAttributes implements Cloneable
     public float damage = 50;
 
     @Override
-    public Object clone() throws CloneNotSupportedException {
+    public Object clone() throws CloneNotSupportedException
+    {
         return super.clone();
+    }
+
+    @Override
+    public String toString()
+    {
+        return "StandardAttributes{" +
+                "lives=" + lives +
+                ", health=" + health +
+                ", defense=" + defense +
+                ", damage=" + damage +
+                '}';
     }
 }

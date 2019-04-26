@@ -1,5 +1,6 @@
 package com.thependulumparadox.presenter;
 
+import com.badlogic.ashley.core.Component;
 import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.gdx.Game;
@@ -9,8 +10,10 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 
+import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.Box2D;
 import com.badlogic.gdx.physics.box2d.World;
 
 import com.thependulumparadox.control.EventControlModule;
@@ -20,6 +23,7 @@ import com.thependulumparadox.levels.LevelManager;
 import com.thependulumparadox.model.component.MusicComponent;
 import com.thependulumparadox.model.component.ControlComponent;
 import com.thependulumparadox.model.component.PlayerComponent;
+import com.thependulumparadox.model.component.SoundComponent;
 import com.thependulumparadox.model.system.AnimationControlSystem;
 import com.thependulumparadox.model.system.LevelBoundarySystem;
 import com.thependulumparadox.model.system.InteractionSystem;
@@ -61,12 +65,13 @@ import com.thependulumparadox.view.screen.TutorialScreen;
 public class GamePresenter extends Game
 {
     private static final Color CLEAR_COLOR = new Color(0.50f,0.70f,1f,1f);
+    private static final boolean DEBUG = false;
 
     // Component based system root
     Engine ecs = new Engine();
 
     // Physics world
-    World world = new World(new Vector2(0, -10), true);
+    World world = new World(new Vector2(0, -10), false);
 
     // Entity factory
     AbstractEntityFactory entityFactory = new EntityFactory(world);
@@ -119,9 +124,11 @@ public class GamePresenter extends Game
     @Override
     public void create()
     {
+        // Initialize physics
+        Box2D.init();
+
         // Player entity
         mainPlayer = entityFactory.create("first_player");
-
 
 
         // Define screens
@@ -132,21 +139,21 @@ public class GamePresenter extends Game
         settingsScreen = new SettingsScreen();
         tutorialScreen = new TutorialScreen();
 
+        // Load levels
+        TiledMap level1 = new TmxMapLoader().load("levels/level1.tmx");
+        TiledMap level2 = new TmxMapLoader().load("levels/level2.tmx");
+
         // Create menu view states, states are made up of one screen and one scene
-        GameScene menuScene = new GameScene(new TmxMapLoader().load("levels/level1.tmx"),
-                mainCamera, world, ecs);
+        GameScene menuScene = new GameScene(level1, mainCamera, world, ecs);
         viewStateMenu = new ViewState(menuScene, menuScreen);
         viewStateHighScore = new ViewState(menuScene, highScoreScreen);
         viewStateSettings = new ViewState(menuScene, settingsScreen);
         viewStateTutorial = new ViewState(menuScene, tutorialScreen);
 
-
-        // Load levels and add them to the manager
+        // Load levels, add them to the manager and modify camera zoom
         mainCamera.zoom = 1.5f;
-        GameScene levelScene1 = new GameScene(new TmxMapLoader().load("levels/level1.tmx"),
-                mainCamera, world, ecs);
-        GameScene levelScene2 = new GameScene(new TmxMapLoader().load("levels/level2.tmx"),
-                mainCamera, world, ecs);
+        GameScene levelScene1 = new GameScene(level1, mainCamera, world, ecs);
+        GameScene levelScene2 = new GameScene(level2, mainCamera, world, ecs);
 
         levels.addLevel(levelScene1, inGameScreen, gameOverScreen);
         levels.addLevel(levelScene2, inGameScreen, gameOverScreen);
@@ -176,7 +183,8 @@ public class GamePresenter extends Game
         AnimationControlSystem animationControlSystem = new AnimationControlSystem();
         VisualSystem visualSystem = new VisualSystem();
 
-        // Menu entities
+
+        // Music entities
         Entity menuMusic = new Entity();
         menuMusic.add(new MusicComponent(
                 Gdx.audio.newMusic(Gdx.files.internal("sounds/menuMusic.mp3"))));
@@ -192,11 +200,14 @@ public class GamePresenter extends Game
 
 
         // Add some DEBUG systems
-        ecs.addSystem(new PhysicsDebugSystem(world, mainCamera));
-        ecs.addSystem(new FPSDebugSystem());
+        if (DEBUG)
+        {
+            ecs.addSystem(new PhysicsDebugSystem(world, mainCamera));
+            ecs.addSystem(new FPSDebugSystem());
+        }
 
 
-        // LINK MENU LABELS TO VALUES
+        // LINK MENU LABELS TO VALUES (EVENTS)
         interactionSystem.playerUpdate.addHandler((args)->
         {
             ValueEventArgs<PlayerComponent> vargs = args;
@@ -235,12 +246,13 @@ public class GamePresenter extends Game
             }
 
 
-            //Change music
-            ((MusicComponent)menuMusic.getComponents().get(0)).play = true;
-            ((MusicComponent)inGameMusic.getComponents().get(0)).play = false;
+            // Change music
+            menuMusic.getComponent(MusicComponent.class).play = true;
+            inGameMusic.getComponent(MusicComponent.class).play = false;
 
-            //submit highscore if possible
-            if (multiplayerAvailable){
+            // Submit Highscore if possible
+            if (multiplayerAvailable)
+            {
                 synchronization.submitScore(mainPlayer.getComponent(PlayerComponent.class).score);
             }
 
@@ -285,9 +297,9 @@ public class GamePresenter extends Game
                 synchronization.submitScore(mainPlayer.getComponent(PlayerComponent.class).score);
             }
 
-            //Change music
-            ((MusicComponent)menuMusic.getComponents().get(0)).play = true;
-            ((MusicComponent)inGameMusic.getComponents().get(0)).play = false;
+            // Change music
+            menuMusic.getComponent(MusicComponent.class).play = true;
+            inGameMusic.getComponent(MusicComponent.class).play = false;
 
             // Delete all level entities
             ((GameScene)levels.currentLevelScene()).destroyEntities();
@@ -330,11 +342,12 @@ public class GamePresenter extends Game
                 synchronization.submitScore(mainPlayer.getComponent(PlayerComponent.class).score);
             }
 
-            //Change music
-            ((MusicComponent)menuMusic.getComponents().get(0)).play = true;
-            ((MusicComponent)inGameMusic.getComponents().get(0)).play = false;
+            // Change music
+            menuMusic.getComponent(MusicComponent.class).play = true;
+            inGameMusic.getComponent(MusicComponent.class).play = false;
 
             // Delete all level entities
+            System.out.println(((GameScene)levels.currentLevelScene()).toString());
             ((GameScene)levels.currentLevelScene()).destroyEntities();
 
             // Set menu transition
@@ -361,12 +374,15 @@ public class GamePresenter extends Game
                 levels.nextLevel();
             }
 
-
             // Move player to the correct spot
             GameScene scene = (GameScene) levels.currentLevelScene();
             mainPlayer.getComponent(PlayerComponent.class).defaults();
             mainPlayer.getComponent(DynamicBodyComponent.class).position(scene.getStartPoint());
             mainPlayer.getComponent(DynamicBodyComponent.class).wakeup();
+
+            // Set level boundaries
+            levelBoundarySystem.levelEndPoint = ((GameScene)levels.currentLevelScene()).getEndPoint();
+            levelBoundarySystem.checkBoundaries = true;
 
             // Do view transition
             viewMachine.nextState(levels.currentInGameViewState());
@@ -411,9 +427,9 @@ public class GamePresenter extends Game
             // Set inGameScreen's stage as the input processor
             Gdx.input.setInputProcessor(inGameScreen.getStage());
 
-            //stop menu music. will call stop() method on menu music even if sound is currently turned off
-            ((MusicComponent)menuMusic.getComponents().get(0)).play = false;
-            ((MusicComponent)inGameMusic.getComponents().get(0)).play = true;
+            // Stop menu music. will call stop() method on menu music even if sound is currently turned off
+            menuMusic.getComponent(MusicComponent.class).play = false;
+            inGameMusic.getComponent(MusicComponent.class).play = true;
 
             // call on state machine to change state
             viewMachine.nextState(levels.currentInGameViewState());
@@ -476,9 +492,9 @@ public class GamePresenter extends Game
                     // Set inGameScreen's stage as the input processor
                     Gdx.input.setInputProcessor(inGameScreen.getStage());
 
-                    //stop menu music. will call stop() method on menu music even if sound is currently turned off
-                    ((MusicComponent)menuMusic.getComponents().get(0)).play = false;
-                    ((MusicComponent)inGameMusic.getComponents().get(0)).play = true;
+                    // Stop menu music. will call stop() method on menu music even if sound is currently turned off
+                    menuMusic.getComponent(MusicComponent.class).play = false;
+                    inGameMusic.getComponent(MusicComponent.class).play = true;
 
                     // call on state machine to change state
                     viewMachine.nextState(levels.currentInGameViewState());
@@ -521,7 +537,10 @@ public class GamePresenter extends Game
         // Google log in button pressed in main menu
         ((MenuScreen) menuScreen).getGoogleLoginEvent().addHandler((args) -> {
             // invoke google play sign in
-            synchronization.startSignInIntent();
+            if (multiplayerAvailable)
+            {
+                synchronization.startSignInIntent();
+            }
         });
 
         // Sound button pressed from gameplay
