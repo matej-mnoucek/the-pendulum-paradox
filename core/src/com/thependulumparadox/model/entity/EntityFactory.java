@@ -361,6 +361,7 @@ public class EntityFactory extends AbstractEntityFactory
                 staticBodyCoin1.position(transformCoin1.position.x,transformCoin1.position.y)
                         .dimension(0.7f, 1.5f)
                         .activate(true);
+                staticBodyCoin1.body.getFixtureList().first().setSensor(true);
                 coin1.add(staticBodyCoin1);
 
                 CoinComponent componentCoin1 = new CoinComponent();
@@ -389,7 +390,7 @@ public class EntityFactory extends AbstractEntityFactory
                         .dimension(0.7f, 1.5f)
                         .activate(true);
                 coin2.add(staticBodyCoin2);
-
+                staticBodyCoin2.body.getFixtureList().first().setSensor(true);
                 CoinComponent componentCoin2 = new CoinComponent();
                 componentCoin2.value = 20;
                 coin2.add(componentCoin2);
@@ -415,6 +416,7 @@ public class EntityFactory extends AbstractEntityFactory
                 staticBodyEnhancement1.position(transformEnhancement1.position.x,transformEnhancement1.position.y)
                         .dimension(0.7f, 1.5f)
                         .activate(true);
+                staticBodyEnhancement1.body.getFixtureList().first().setSensor(true);
                 enhancement1.add(staticBodyEnhancement1);
 
                 Enhancement implEnhancement1 = new AddLifeEnhancement(1);
@@ -442,6 +444,7 @@ public class EntityFactory extends AbstractEntityFactory
                 staticBodyEnhancement2.position(transformEnhancement2.position.x,transformEnhancement2.position.y)
                         .dimension(0.7f, 1.5f)
                         .activate(true);
+                staticBodyEnhancement2.body.getFixtureList().first().setSensor(true);
                 enhancement2.add(staticBodyEnhancement2);
 
                 Enhancement implEnhancement2 = new AddDefenseEnhancement(50,5);
@@ -469,8 +472,8 @@ public class EntityFactory extends AbstractEntityFactory
                 staticBodyEnhancement3.position(transformEnhancement3.position.x,transformEnhancement3.position.y)
                         .dimension(0.7f, 1.5f)
                         .activate(true);
+                staticBodyEnhancement3.body.getFixtureList().first().setSensor(true);
                 enhancement3.add(staticBodyEnhancement3);
-
                 Enhancement implEnhancement3 = new MultiplyDamageEnhancement(2,5);
                 EnhancementComponent componentEnhancement3 = new EnhancementComponent(implEnhancement3);
                 enhancement3.add(componentEnhancement3);
