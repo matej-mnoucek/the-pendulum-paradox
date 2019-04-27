@@ -347,7 +347,6 @@ public class GamePresenter extends Game
             inGameMusic.getComponent(MusicComponent.class).play = false;
 
             // Delete all level entities
-            System.out.println(((GameScene)levels.currentLevelScene()).toString());
             ((GameScene)levels.currentLevelScene()).destroyEntities();
 
             // Set menu transition

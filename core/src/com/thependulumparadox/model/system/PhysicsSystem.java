@@ -112,8 +112,6 @@ public class PhysicsSystem extends EntitySystem
             StaticBodyComponent component = staticBodyComponentComponentMapper.get(entity);
 
             initializeBody(entity, component.body);
-            TransformComponent transformComponent = transformComponentMapper.get(entity);
-            transformComponent.position = component.body.getPosition();
             component.initialized = true;
         }
 
@@ -172,9 +170,12 @@ public class PhysicsSystem extends EntitySystem
             transformComponent.position = dynamicBodyComponent.body.getPosition();
 
             // Destroy
-            if(dynamicBodyComponent.toDestroy)
+            if(dynamicBodyComponent.toDestroy && dynamicBodyComponent.body != null)
             {
+                dynamicBodyComponent.body.setActive(false);
+                dynamicBodyComponent.body.setAwake(false);
                 world.destroyBody(dynamicBodyComponent.body);
+                dynamicBodyComponent.body = null;
                 getEngine().removeEntity(entity);
             }
         }

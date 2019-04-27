@@ -279,8 +279,14 @@ public class InteractionSystem extends EntitySystem
 
                         // Remove enemy
                         DynamicBodyComponent body = dynamicBodyComponentMapper.get(interactionEntity);
-                        world.destroyBody(body.body);
-                        getEngine().removeEntity(interactionEntity);
+                        if (body.body != null)
+                        {
+                            body.body.setActive(false);
+                            body.body.setAwake(false);
+                            world.destroyBody(body.body);
+                            body.body = null;
+                            getEngine().removeEntity(interactionEntity);
+                        }
 
                         // Play sound
                         if (soundComponent != null)
@@ -299,8 +305,14 @@ public class InteractionSystem extends EntitySystem
                     playerComponent.score += coin.value;
 
                     // Destroy coin after collection
-                    world.destroyBody(body.body);
-                    getEngine().removeEntity(interactionEntity);
+                    if (body.body != null)
+                    {
+                        body.body.setActive(false);
+                        body.body.setAwake(false);
+                        world.destroyBody(body.body);
+                        body.body = null;
+                        getEngine().removeEntity(interactionEntity);
+                    }
 
 
                     // Play sound
@@ -336,8 +348,14 @@ public class InteractionSystem extends EntitySystem
 
 
                     // Destroy enhancement after collection
-                    world.destroyBody(body.body);
-                    getEngine().removeEntity(interactionEntity);
+                    if (body.body != null)
+                    {
+                        body.body.setActive(false);
+                        body.body.setAwake(false);
+                        world.destroyBody(body.body);
+                        body.body = null;
+                        getEngine().removeEntity(interactionEntity);
+                    }
 
                     // Play sound
                     if (soundComponent != null)

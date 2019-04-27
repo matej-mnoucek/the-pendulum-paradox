@@ -14,7 +14,7 @@ import com.badlogic.gdx.utils.Array;
 
 public class StaticBodyComponent implements Component
 {
-    public final Body body;
+    public Body body;
     public boolean initialized = false;
 
     public StaticBodyComponent(World world)

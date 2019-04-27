@@ -14,7 +14,7 @@ import com.thependulumparadox.model.system.PhysicsSystem;
 
 public class DynamicBodyComponent implements Component
 {
-    public final Body body;
+    public Body body;
     public boolean initialized = false;
     public boolean toDestroy = false;
 

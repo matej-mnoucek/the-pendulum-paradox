@@ -100,47 +100,54 @@ public class GameScene extends Scene
         for (MapObject object : layer.getObjects())
         {
             RectangleMapObject rectangle = (RectangleMapObject) object;
+            if (rectangle != null)
+            {
+                // Creating physics body representation
+                BodyDef bodyDef = new BodyDef();
+                bodyDef.type = BodyDef.BodyType.StaticBody;
+                bodyDef.position.x = (rectangle.getRectangle().x + rectangle.getRectangle().width / 2.0f)
+                        / Constants.PPM;
+                bodyDef.position.y = (rectangle.getRectangle().y + rectangle.getRectangle().height / 2.0f)
+                        / Constants.PPM;
 
-            // Creating physics body representation
-            BodyDef bodyDef = new BodyDef();
-            bodyDef.type = BodyDef.BodyType.StaticBody;
-            bodyDef.position.x = (rectangle.getRectangle().x + rectangle.getRectangle().width/2.0f)
-                    / Constants.PPM;
-            bodyDef.position.y = (rectangle.getRectangle().y + rectangle.getRectangle().height/2.0f)
-                    / Constants.PPM;
+                // Add it to the world
+                Body body = world.createBody(bodyDef);
 
-            // Add it to the world
-            Body body = world.createBody(bodyDef);
+                // Create a box (polygon) shape
+                PolygonShape polygon = new PolygonShape();
 
-            // Create a box (polygon) shape
-            PolygonShape polygon = new PolygonShape();
+                // Set the polygon shape as a box
+                polygon.setAsBox((rectangle.getRectangle().width / 2.0f) / Constants.PPM,
+                        (rectangle.getRectangle().height / 2.0f) / Constants.PPM);
 
-            // Set the polygon shape as a box
-            polygon.setAsBox((rectangle.getRectangle().width/2.0f) / Constants.PPM,
-                    (rectangle.getRectangle().height/2.0f) / Constants.PPM);
+                // Create a fixture definition to apply the shape to it
+                FixtureDef fixtureDef = new FixtureDef();
+                fixtureDef.shape = polygon;
+                fixtureDef.density = 1.0f;
+                fixtureDef.friction = 1.0f;
+                fixtureDef.restitution = 0.0f;
 
-            // Create a fixture definition to apply the shape to it
-            FixtureDef fixtureDef = new FixtureDef();
-            fixtureDef.shape = polygon;
-            fixtureDef.density = 1.0f;
-            fixtureDef.friction = 1.0f;
-            fixtureDef.restitution = 0.0f;
+                // Create a fixture from the box and add it to the body
+                body.createFixture(fixtureDef);
 
-            // Create a fixture from the box and add it to the body
-            body.createFixture(fixtureDef);
+                // Cache the body
+                staticBodies.add(body);
 
-            // Cache the body
-            staticBodies.add(body);
+                // Dispose shape
+                polygon.dispose();
+            }
         }
     }
 
     public void destroyCollisionZones()
     {
-        for (Body body : staticBodies)
+        for (int i = 0; i < staticBodies.size(); i++)
         {
+            Body body = staticBodies.get(i);
             body.setAwake(false);
             body.setActive(false);
             world.destroyBody(body);
+            staticBodies.set(i, null);
         }
         staticBodies.clear();
     }
@@ -207,6 +214,7 @@ public class GameScene extends Scene
                 dynamicBody.body.setAwake(false);
                 dynamicBody.body.setActive(false);
                 world.destroyBody(dynamicBody.body);
+                dynamicBody.body = null;
             }
 
             engine.removeEntity(entity);

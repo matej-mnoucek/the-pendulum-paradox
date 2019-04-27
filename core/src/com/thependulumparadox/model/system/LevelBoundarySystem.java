@@ -52,7 +52,7 @@ public class LevelBoundarySystem extends EntitySystem
                 Entity entity = playerEntities.get(i);
                 DynamicBodyComponent body = dynamicBodyComponentMapper.get(entity);
 
-                if (body.body.getPosition().x < levelEndPoint.x)
+                if (body.body.getPosition().dst(levelEndPoint) > 0.3f)
                 {
                     allReached = false;
                     break;
@@ -75,6 +75,7 @@ public class LevelBoundarySystem extends EntitySystem
 
                 if (body.body.getPosition().y < bottomBound.y)
                 {
+                    /*
                     // Player is dead but dont destroy him, only remove from ecs!
                     getEngine().removeEntity(entity);
 
@@ -84,7 +85,7 @@ public class LevelBoundarySystem extends EntitySystem
 
                     // Reset position
                     body.position(new Vector2(0,0));
-
+                    */
 
                     playerOut = true;
                     break;
