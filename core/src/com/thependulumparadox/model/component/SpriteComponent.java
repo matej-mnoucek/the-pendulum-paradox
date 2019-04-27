@@ -4,6 +4,9 @@ import com.badlogic.ashley.core.Component;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 
+/**
+ * Component that provides sprite visual to the corresponding entity
+ */
 public class SpriteComponent implements Component
 {
     public Sprite sprite;

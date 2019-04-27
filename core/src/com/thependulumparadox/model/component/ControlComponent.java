@@ -3,6 +3,10 @@ package com.thependulumparadox.model.component;
 import com.badlogic.ashley.core.Component;
 import com.thependulumparadox.control.ControlModule;
 
+/**
+ * Component that links control module to entity and provides various settings
+ * to fine tune sensitivity, speed limits etc.
+ */
 public class ControlComponent implements Component
 {
     public final ControlModule controlModule;

@@ -4,6 +4,11 @@ import com.thependulumparadox.observer.Event;
 import com.thependulumparadox.observer.EventArgs;
 import com.thependulumparadox.observer.IEvent;
 
+/**
+ * Base class used for providing input to movable entities (player, enemies...)
+ * The various implementations allow entities to be controlled in various ways
+ * (from keyboard, by UI buttons, over network, by AI...)
+ */
 public abstract class ControlModule
 {
     public final IEvent<EventArgs> leftStart;

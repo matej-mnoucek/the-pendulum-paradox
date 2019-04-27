@@ -1,5 +1,8 @@
 package com.thependulumparadox.misc;
 
+/**
+ * Class that holds standard set of attributes common for all movable game entities
+ */
 public class StandardAttributes implements Cloneable
 {
     public int lives = 3;

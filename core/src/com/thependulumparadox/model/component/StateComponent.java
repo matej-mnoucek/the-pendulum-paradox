@@ -7,6 +7,10 @@ import com.thependulumparadox.state.TaggedState;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Component that allows entity to have its internal state
+ * (Used a lot for determining which animation to play based on current state)
+ */
 public class StateComponent implements Component
 {
     public final List<TaggedState> states;

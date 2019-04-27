@@ -1,17 +1,15 @@
 package com.thependulumparadox.control;
 
+/**
+ * Implementation of a control module that receives input over network
+ * @see ControlModule
+ */
 public class NetworkControlModule extends EventControlModule implements IMoveCommands
 {
-
     @Override
     public void update(float delta)
     {
         super.update(delta);
-    }
-
-    @Override
-    public IMoveCommands getInputSystem() {
-        return this;
     }
 
     @Override

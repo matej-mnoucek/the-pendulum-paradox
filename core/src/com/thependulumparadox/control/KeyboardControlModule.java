@@ -3,6 +3,10 @@ package com.thependulumparadox.control;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 
+/**
+ * Implementation of a control module that senses input from keyboard
+ * @see ControlModule
+ */
 public class KeyboardControlModule extends EventControlModule
 {
     // Key mapping

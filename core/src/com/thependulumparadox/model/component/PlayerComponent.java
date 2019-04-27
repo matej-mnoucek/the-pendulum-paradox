@@ -3,6 +3,10 @@ package com.thependulumparadox.model.component;
 import com.badlogic.ashley.core.Component;
 import com.thependulumparadox.misc.StandardAttributes;
 
+/**
+ * Component that identifies player and defines its basic attributes, his score
+ * and id (used for distinguishing between different players in multi player mode)
+ */
 public class PlayerComponent implements Component
 {
     public StandardAttributes base;

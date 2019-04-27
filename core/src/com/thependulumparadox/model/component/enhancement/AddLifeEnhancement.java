@@ -6,7 +6,9 @@ import com.thependulumparadox.model.component.PlayerComponent;
 import com.thependulumparadox.model.component.StaticBodyComponent;
 
 /**
- * Example of modifier that adds some extra lifes
+ * Implementation of enhancement that adds some amount of lives
+ * This enhancement is permanent (not limited by time)
+ * @see Enhancement
  */
 public class AddLifeEnhancement extends Enhancement
 {

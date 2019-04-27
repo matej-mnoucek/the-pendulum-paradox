@@ -5,6 +5,9 @@ import com.badlogic.gdx.Game;
 import com.thependulumparadox.multiplayer.ISynchronization;
 import com.thependulumparadox.presenter.GamePresenter;
 
+/**
+ * Entry point of the game. Creates Presenter class which setups and runs the game logic
+ */
 public class PendulumParadoxGame extends ApplicationAdapter
 {
 	private Game game;

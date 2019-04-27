@@ -1,7 +1,8 @@
 package com.thependulumparadox.misc;
 
-import com.badlogic.gdx.graphics.Color;
-
+/**
+ * A few constants needed throughout several classes
+ */
 public class Constants
 {
     public static final float VIRTUAL_HEIGHT = 720;

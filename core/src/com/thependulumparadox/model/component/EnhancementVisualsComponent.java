@@ -9,6 +9,10 @@ import com.thependulumparadox.misc.Range;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Component that changes appearance of player based on current player stats (add holo shield)
+ * @see BulletVisualsComponent
+ */
 public class EnhancementVisualsComponent implements Component
 {
     public final List<Pair<Range<Float>, Sprite>> defenseSprites;

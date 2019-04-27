@@ -3,6 +3,10 @@ package com.thependulumparadox.command;
 import java.util.LinkedList;
 import java.util.Queue;
 
+/**
+ * Implementation of command queue
+ * @see ICommandQueue
+ */
 public class CommandQueue implements ICommandQueue
 {
     public enum LoopMode {LOOP, ONCE}

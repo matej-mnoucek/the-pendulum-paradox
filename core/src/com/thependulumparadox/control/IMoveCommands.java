@@ -1,9 +1,7 @@
 package com.thependulumparadox.control;
 
-public interface IMoveCommands {
-
-    public IMoveCommands getInputSystem();
-
+public interface IMoveCommands
+{
     public void moveLeft();
 
     public void stopMoveLeft();
@@ -19,5 +17,4 @@ public interface IMoveCommands {
     public void startShooting();
 
     public void stopShooting();
-
 }

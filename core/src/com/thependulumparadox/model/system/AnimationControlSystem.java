@@ -9,7 +9,9 @@ import com.badlogic.ashley.utils.ImmutableArray;
 import com.thependulumparadox.model.component.AnimatedSpriteComponent;
 import com.thependulumparadox.model.component.StateComponent;
 
-
+/**
+ * 
+ */
 public class AnimationControlSystem extends EntitySystem
 {
     private ImmutableArray<Entity> animatedEntities;

@@ -9,6 +9,10 @@ import com.thependulumparadox.misc.Range;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Component that changes appearance of bullets based on current player stats
+ * (Stats can be changed by enhancements, so that would lead to different projectile sprites)
+ */
 public class BulletVisualsComponent implements Component
 {
     public final List<Pair<Range<Float>, Sprite>> bulletSprites;

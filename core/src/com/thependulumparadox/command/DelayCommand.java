@@ -1,5 +1,8 @@
 package com.thependulumparadox.command;
 
+/**
+ * Implementation of delay command, simply waits for given amount of seconds
+ */
 public class DelayCommand implements ICommand
 {
     // Delay in seconds

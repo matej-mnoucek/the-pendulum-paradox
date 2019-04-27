@@ -3,6 +3,10 @@ package com.thependulumparadox.model.component;
 import com.badlogic.ashley.core.Component;
 import com.thependulumparadox.misc.StandardAttributes;
 
+/**
+ * Component that identifies enemy and defines its basic attributes
+ * and score you get for killing it.
+ */
 public class EnemyComponent implements Component
 {
     public StandardAttributes base;

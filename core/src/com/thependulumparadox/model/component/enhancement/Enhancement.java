@@ -5,7 +5,7 @@ import com.thependulumparadox.misc.StandardAttributes;
 
 /**
  * Base class for enhancements (e.g. power-ups, special ammo)
- * using chain of responsibility pattern
+ * Uses chain of responsibility pattern for chaining more of them and applying to a player
  */
 public abstract class Enhancement
 {

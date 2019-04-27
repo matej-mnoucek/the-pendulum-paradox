@@ -12,6 +12,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 
+/**
+ * Simple component that allows entities to play sounds. One component can hold more than one sound.
+ */
 public class SoundComponent implements Component
 {
     // All available sounds

@@ -1,5 +1,10 @@
 package com.thependulumparadox.misc;
 
+/**
+ * Class that implements simple numeric range
+ * Used for determining visualisation of enhancements and bullets based on player stats
+ * @param <T>
+ */
 public class Range<T extends Comparable>
 {
     private T lowerBound;

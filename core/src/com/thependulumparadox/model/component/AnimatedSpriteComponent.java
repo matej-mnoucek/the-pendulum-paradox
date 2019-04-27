@@ -8,6 +8,9 @@ import com.badlogic.gdx.utils.Array;
 
 import java.util.HashMap;
 
+/**
+ * Component that provides sprite based animation visual to the corresponding entity
+ */
 public class AnimatedSpriteComponent implements Component
 {
     public final HashMap<String, Animation<TextureRegion>> animations;

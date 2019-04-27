@@ -8,7 +8,10 @@ import com.thependulumparadox.view.screen.BaseScreen;
 import java.util.ArrayList;
 import java.util.List;
 
-
+/**
+ * Implementation of level manager
+ * @see ILevelManager
+ */
 public class LevelManager implements ILevelManager
 {
     private List<ViewState> levels;

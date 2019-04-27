@@ -2,6 +2,10 @@ package com.thependulumparadox.command;
 
 import com.thependulumparadox.observer.IEvent;
 
+/**
+ * Implementation of invoke command, simply invokes given event
+ * Could also keep invoking the event every frame for given period of time [s]
+ */
 public class InvokeCommand implements ICommand
 {
     private IEvent event;

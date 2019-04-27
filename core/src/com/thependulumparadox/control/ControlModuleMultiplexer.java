@@ -6,6 +6,11 @@ import com.thependulumparadox.observer.IEvent;
 
 import javax.naming.ldap.Control;
 
+/**
+ * This class allows entity to be controlled by more than one control module at the same time
+ * The scenario in our case allows player entity to receive input from UI buttons
+ * as well as from keyboard (at the same time)
+ */
 public class ControlModuleMultiplexer extends EventControlModule
 {
     private ControlModule first;

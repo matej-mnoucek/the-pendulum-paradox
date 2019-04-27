@@ -1,5 +1,10 @@
 package com.thependulumparadox.misc;
 
+/**
+ * Simple class that encapsulates two arbitrary values (e.g. useful for storing key/value pairs)
+ * @param <X>
+ * @param <Y>
+ */
 public class Pair<X, Y>
 {
     public final X key;

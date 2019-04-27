@@ -5,6 +5,10 @@ import com.badlogic.gdx.Input;
 import com.thependulumparadox.observer.EventArgs;
 import com.thependulumparadox.observer.IEvent;
 
+/**
+ * Implementation of a control module that is driven by events
+ * @see ControlModule
+ */
 public class EventControlModule extends ControlModule
 {
     private boolean rightButtonPressed = false;

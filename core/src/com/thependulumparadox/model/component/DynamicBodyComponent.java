@@ -12,6 +12,10 @@ import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
 import com.thependulumparadox.model.system.PhysicsSystem;
 
+/**
+ * Component that provides entity with physics.
+ * It simulates dynamic body == able to move around and interact.
+ */
 public class DynamicBodyComponent implements Component
 {
     public Body body;

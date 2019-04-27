@@ -36,7 +36,8 @@ import com.thependulumparadox.model.component.enhancement.MultiplyDamageEnhancem
 import com.thependulumparadox.state.TaggedState;
 
 /**
- * Factory for all components (makes component creation easier)
+ * Implementation of factory for entities (makes their creation easier)
+ * @see AbstractEntityFactory
  */
 public class EntityFactory extends AbstractEntityFactory
 {

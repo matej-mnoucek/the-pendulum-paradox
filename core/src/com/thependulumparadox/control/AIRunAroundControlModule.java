@@ -5,6 +5,14 @@ import com.thependulumparadox.command.DelayCommand;
 import com.thependulumparadox.command.ICommand;
 import com.thependulumparadox.command.InvokeCommand;
 
+/**
+ * Implementation of a control module that is driven by list of predefined commands
+ * Used as pseudo AI input provider for all enemies in the game
+ * In the constructor there is a list of predefined behaviour
+ * @see com.thependulumparadox.command.ICommandQueue
+ * @see ICommand
+ * @see ControlModule
+ */
 public class AIRunAroundControlModule extends ControlModule
 {
     private final CommandQueue queue;

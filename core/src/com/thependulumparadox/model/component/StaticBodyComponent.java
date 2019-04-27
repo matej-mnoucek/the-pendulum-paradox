@@ -12,6 +12,11 @@ import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
 
+/**
+ * Component that provides entity with physics.
+ * It simulates static body == NOT able to move around.
+ * Mainly used as collision zones for level geometry
+ */
 public class StaticBodyComponent implements Component
 {
     public Body body;
