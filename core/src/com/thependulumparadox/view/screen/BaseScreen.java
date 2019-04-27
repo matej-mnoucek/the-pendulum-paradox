@@ -11,7 +11,7 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 import com.thependulumparadox.misc.Constants;
 
 /**
- * This class represents an UI layer (HUD, menu, high score table...)
+ * This class represents base UI layer (HUD, menu, high score table...)
  */
 public abstract class BaseScreen implements Screen
 {

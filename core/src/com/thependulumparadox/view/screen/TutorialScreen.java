@@ -13,6 +13,9 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.thependulumparadox.observer.Event;
 import com.thependulumparadox.observer.EventArgs;
 
+/**
+ * Tutorial UI
+ */
 public class TutorialScreen extends BaseScreen {
 
     private BitmapFont font24;

@@ -59,8 +59,9 @@ import com.thependulumparadox.view.screen.SettingsScreen;
 import com.thependulumparadox.view.screen.TutorialScreen;
 
 /**
- * The main control class of the whole game.
+ * The main control class of the whole game
  * It is closer to MVP pattern than to MVC and that's why it's called Presenter
+ * It uses Entity Component System as model and State machine as view
  */
 public class GamePresenter extends Game
 {

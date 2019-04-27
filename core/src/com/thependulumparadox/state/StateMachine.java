@@ -5,6 +5,10 @@ import com.thependulumparadox.view.ViewState;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Implementation of basic state machine
+ * @see IStateMachine
+ */
 public class StateMachine implements IStateMachine
 {
     private List<IState> states = new ArrayList<>();

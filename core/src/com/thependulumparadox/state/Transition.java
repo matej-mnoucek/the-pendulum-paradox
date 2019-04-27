@@ -1,5 +1,9 @@
 package com.thependulumparadox.state;
 
+/**
+ * Basic implementation of transition
+ * @see ITransition
+ */
 public class Transition implements ITransition
 {
     private final IState from;

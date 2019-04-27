@@ -18,6 +18,9 @@ import com.badlogic.gdx.utils.Align;
 import com.thependulumparadox.observer.Event;
 import com.thependulumparadox.observer.EventArgs;
 
+/**
+ * InGame UI aka HUD
+ */
 public class InGameScreen extends BaseScreen
 {
     private Label lifeLabel;

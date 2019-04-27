@@ -4,7 +4,7 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 
 /**
- *  This class represents a scene/map loaded from external Tiled level editor
+ *  This class represents base class for storing level geometry
  */
 public abstract class Scene implements Screen
 {

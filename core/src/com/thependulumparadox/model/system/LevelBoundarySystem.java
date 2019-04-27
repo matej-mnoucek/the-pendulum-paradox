@@ -14,7 +14,10 @@ import com.thependulumparadox.observer.Event;
 import com.thependulumparadox.observer.EventArgs;
 import com.thependulumparadox.view.scene.GameScene;
 
-
+/**
+ * System that evaluates players position in a level and prevents him from leaving its bounds
+ * (e.g. by falling through water) and also detects that he has already arrived to the end point
+ */
 public class LevelBoundarySystem extends EntitySystem
 {
     private final float DEATH_BOUND = -10f;
@@ -75,18 +78,6 @@ public class LevelBoundarySystem extends EntitySystem
 
                 if (body.body.getPosition().y < bottomBound.y)
                 {
-                    /*
-                    // Player is dead but dont destroy him, only remove from ecs!
-                    getEngine().removeEntity(entity);
-
-                    // Clear forces
-                    body.body.setLinearVelocity(0,0);
-                    body.body.setAngularVelocity(0);
-
-                    // Reset position
-                    body.position(new Vector2(0,0));
-                    */
-
                     playerOut = true;
                     break;
                 }

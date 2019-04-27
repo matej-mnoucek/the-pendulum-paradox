@@ -19,6 +19,9 @@ import com.thependulumparadox.presenter.GamePresenter;
 import javax.management.StandardEmitterMBean;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 
+/**
+ * Game over UI
+ */
 public class GameOverScreen extends BaseScreen{
 
     private Label headLine;

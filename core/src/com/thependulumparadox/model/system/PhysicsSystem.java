@@ -21,7 +21,10 @@ import com.thependulumparadox.model.component.TransformComponent;
 
 
 /**
- * The laws of physics live here (mainly Box2D library in the future)
+ * The laws of physics live here (mainly Box2D library)
+ * System also defined object categories and collision matrix (what collides with what)
+ * @see DynamicBodyComponent
+ * @see StaticBodyComponent
  */
 public class PhysicsSystem extends EntitySystem
 {

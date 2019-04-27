@@ -13,7 +13,9 @@ import com.thependulumparadox.model.component.MusicComponent;
 import com.thependulumparadox.model.component.SoundComponent;
 
 /**
- * Music and sounds playback rules
+ * This system handles music and sounds playback
+ * @see SoundComponent
+ * @see MusicComponent
  */
 public class SoundSystem extends EntitySystem
 {

@@ -22,7 +22,9 @@ import com.thependulumparadox.presenter.GamePresenter;
 
 import java.util.ArrayList;
 
-
+/**
+ * High score UI
+ */
 public class HighScoreScreen extends BaseScreen
 {
     private String[] names;

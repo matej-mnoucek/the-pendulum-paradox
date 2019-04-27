@@ -15,6 +15,9 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.thependulumparadox.observer.Event;
 import com.thependulumparadox.observer.EventArgs;
 
+/**
+ * Settings UI
+ */
 public class SettingsScreen extends BaseScreen {
 
     private Button btnSound;

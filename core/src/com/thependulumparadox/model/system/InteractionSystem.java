@@ -27,7 +27,14 @@ import com.thependulumparadox.model.component.enhancement.Enhancement;
 import com.thependulumparadox.observer.Event;
 import com.thependulumparadox.observer.ValueEventArgs;
 
-
+/**
+ * System that handles interaction between entities in a level
+ * e.g. attacks and receiving damage, picking up enhancements, coins...
+ * @see EnemyComponent
+ * @see PlayerComponent
+ * @see BulletComponent
+ * @see CoinComponent
+ */
 public class InteractionSystem extends EntitySystem
 {
     private ImmutableArray<Entity> playerEntities;

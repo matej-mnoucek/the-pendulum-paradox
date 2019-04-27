@@ -31,6 +31,11 @@ import org.lwjgl.Sys;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * A scene or map loaded from external Tiled level editor
+ * The class also contains logic for creating entities and populating the level
+ * @see Scene
+ */
 public class GameScene extends Scene
 {
     private World world;

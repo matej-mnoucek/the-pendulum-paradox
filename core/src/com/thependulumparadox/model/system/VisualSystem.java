@@ -23,7 +23,9 @@ import com.thependulumparadox.model.component.StaticBodyComponent;
 import com.thependulumparadox.model.component.TransformComponent;
 
 /**
- * System that renders enhancement auras and different bullets
+ * System that renders enhancement auras and different bullets based on player stats
+ * @see BulletVisualsComponent
+ * @see EnhancementVisualsComponent
  */
 public class VisualSystem extends EntitySystem
 {

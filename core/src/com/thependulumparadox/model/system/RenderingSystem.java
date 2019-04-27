@@ -14,7 +14,10 @@ import com.thependulumparadox.model.component.SpriteComponent;
 import com.thependulumparadox.model.component.TransformComponent;
 
 /**
- * All the logic for graphics components
+ * This system is responsible for drawing all entity sprites
+ * (even the ones controlled by animations)
+ * @see SpriteComponent
+ * @see AnimatedSpriteComponent
  */
 public class RenderingSystem extends EntitySystem
 {
@@ -90,6 +93,7 @@ public class RenderingSystem extends EntitySystem
             TextureRegion textureRegion = animatedSpriteComponent.animations
                     .get(animatedSpriteComponent.currentAnimation).getKeyFrame(stateTime);
             spriteBatch.setProjectionMatrix(camera.combined);
+
             spriteBatch.draw(textureRegion,
                     transformComponent.position.x - animatedSpriteComponent.width/2.0f,
                     transformComponent.position.y - animatedSpriteComponent.height/2.0f,

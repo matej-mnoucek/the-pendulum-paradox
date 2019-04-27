@@ -15,6 +15,10 @@ import com.thependulumparadox.state.TaggedState;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * System which handles switching between different entity states
+ * @see StateComponent
+ */
 public class StateSystem extends EntitySystem
 {
     private ImmutableArray<Entity> stateEntities;

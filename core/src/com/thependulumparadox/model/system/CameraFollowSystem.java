@@ -11,7 +11,7 @@ import com.thependulumparadox.model.component.PlayerComponent;
 import com.thependulumparadox.model.component.TransformComponent;
 
 /**
- * The laws of physics live here (mainly Box2D library in the future)
+ * Simple system for following the player with the game camera
  */
 public class CameraFollowSystem extends EntitySystem {
     private Entity followedEntity = null;

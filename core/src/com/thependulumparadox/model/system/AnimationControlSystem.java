@@ -10,7 +10,9 @@ import com.thependulumparadox.model.component.AnimatedSpriteComponent;
 import com.thependulumparadox.model.component.StateComponent;
 
 /**
- * 
+ * System that processes animated sprite components, update frames to render
+ * and switches animations based on the current entity state
+ * @see AnimatedSpriteComponent
  */
 public class AnimationControlSystem extends EntitySystem
 {

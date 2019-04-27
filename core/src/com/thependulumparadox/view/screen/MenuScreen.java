@@ -21,6 +21,9 @@ import com.thependulumparadox.observer.Event;
 import com.thependulumparadox.observer.EventArgs;
 import com.thependulumparadox.presenter.GamePresenter;
 
+/**
+ * Menu UI
+ */
 public class MenuScreen extends BaseScreen
 {
 

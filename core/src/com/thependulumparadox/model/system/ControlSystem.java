@@ -25,7 +25,9 @@ import com.thependulumparadox.model.entity.EntityFactory;
 
 
 /**
- * All the logic for handling input from the user (locally)
+ * System that converts events from control modules into real actions executed on an entity
+ * e.g. run left, right, attack, jump
+ * @see ControlComponent
  */
 public class ControlSystem extends EntitySystem
 {
