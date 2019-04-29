@@ -106,6 +106,8 @@ public class GamePresenter extends Game
     // Multi player
     private boolean multiplayerAvailable = false;
     private ISynchronization synchronization;
+    Event<EventArgs> startMultiplayer;
+
 
 
     // Single player constructor
@@ -445,8 +447,9 @@ public class GamePresenter extends Game
             }
         });
 
-
-        Event<EventArgs> startMultiplayer = synchronization.getStartMultiplayerEvent();
+        if (multiplayerAvailable) {
+            startMultiplayer = synchronization.getStartMultiplayerEvent();
+        }
 
         startMultiplayer.addHandler((arg) ->
         {
@@ -691,7 +694,7 @@ public class GamePresenter extends Game
         {
             synchronization.synchronize();
         }
-        
+
         // Update ECS
         ecs.update(delta);
     }
