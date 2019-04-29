@@ -9,6 +9,7 @@ import android.view.KeyEvent;
 
 import com.badlogic.gdx.backends.android.AndroidApplication;
 import com.badlogic.gdx.backends.android.AndroidApplicationConfiguration;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Queue;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
@@ -97,7 +98,7 @@ public class NetworkSynchronizationProxy extends AndroidApplication implements I
     String mMyId = null;
 
     // Message buffer for sending messages
-    byte[] mMsgBuf = new byte[4];
+    byte[] mMsgBuf = new byte[100];
 
     Queue actionQueue = new Queue();
 
@@ -205,13 +206,16 @@ public class NetworkSynchronizationProxy extends AndroidApplication implements I
     }
 
     @Override
-    public void sendAction(String action) {
+    public void sendAction(String action, Vector2 pos) {
         if (mParticipants.size() == 0){
             return;
         }
         for (Participant p : mParticipants) {
             if (p.getParticipantId().equals(mMyId)) {
                 continue;
+            }
+            if (pos != null){
+                action += pos.toString();
             }
             sendReliableMessage(p , action);
         }
@@ -221,6 +225,13 @@ public class NetworkSynchronizationProxy extends AndroidApplication implements I
     public void synchronize() {
         while(!actionQueue.isEmpty()){
             String curraction = (String)actionQueue.removeFirst();
+            if (curraction.contains("(")){
+                String[] str = curraction.split("(",1);
+                curraction = str[0];
+                String[] pos = str[1].replace(")","").split(",");
+                Vector2 position = new Vector2(Integer.parseInt(pos[0]),Integer.parseInt(pos[1]));
+            }
+
             System.out.println("execute action");
             switch (curraction) {
                 case "L":
@@ -229,7 +240,7 @@ public class NetworkSynchronizationProxy extends AndroidApplication implements I
                     break;
                 case "SL":
                     //stop move left
-                    InputHandler.stopMoveLeft();
+                    InputHandler.stopMoveLeft(position);
                     break;
                 case "R":
                     //execute move right
@@ -237,7 +248,7 @@ public class NetworkSynchronizationProxy extends AndroidApplication implements I
                     break;
                 case "SR":
                     //stop move right
-                    InputHandler.stopMoveRight();
+                    InputHandler.stopMoveRight(position);
                     break;
                 case "J":
                     //execute jump
@@ -245,7 +256,7 @@ public class NetworkSynchronizationProxy extends AndroidApplication implements I
                     break;
                 case "SJ":
                     //stop execute jump
-                    InputHandler.stopJump();
+                    InputHandler.stopJump(position);
                     break;
                 case "S":
                     //start shooting
@@ -253,7 +264,7 @@ public class NetworkSynchronizationProxy extends AndroidApplication implements I
                     break;
                 case "SS":
                     //stop shooting
-                    InputHandler.stopShooting();
+                    InputHandler.stopShooting(position);
                     break;
                 default:
                     //error
