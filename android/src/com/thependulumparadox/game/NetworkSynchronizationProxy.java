@@ -19,13 +19,11 @@ import com.google.android.gms.games.AnnotatedData;
 import com.google.android.gms.games.Games;
 import com.google.android.gms.games.GamesActivityResultCodes;
 import com.google.android.gms.games.GamesCallbackStatusCodes;
-import com.google.android.gms.games.GamesClient;
 import com.google.android.gms.games.GamesClientStatusCodes;
 import com.google.android.gms.games.LeaderboardsClient;
 import com.google.android.gms.games.Player;
 import com.google.android.gms.games.PlayersClient;
 import com.google.android.gms.games.RealTimeMultiplayerClient;
-import com.google.android.gms.games.leaderboard.LeaderboardBuffer;
 import com.google.android.gms.games.leaderboard.LeaderboardScore;
 import com.google.android.gms.games.leaderboard.LeaderboardScoreBuffer;
 import com.google.android.gms.games.leaderboard.LeaderboardVariant;
@@ -88,7 +86,10 @@ public class NetworkSynchronizationProxy extends AndroidApplication implements I
     // Holds the configuration of the current room.
     RoomConfig mRoomConfig;
 
+
+    //holds the top 10 players on the leaderboard
     String Leaderboard = "";
+
     // The participants in the currently active game
     ArrayList<Participant> mParticipants = new ArrayList<>();
 
@@ -212,7 +213,7 @@ public class NetworkSynchronizationProxy extends AndroidApplication implements I
             if (p.getParticipantId().equals(mMyId)) {
                 continue;
             }
-            sendUnreliableMessage(p , action);
+            sendReliableMessage(p , action);
         }
     }
 
