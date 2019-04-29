@@ -225,11 +225,13 @@ public class NetworkSynchronizationProxy extends AndroidApplication implements I
     public void synchronize() {
         while(!actionQueue.isEmpty()){
             String curraction = (String)actionQueue.removeFirst();
+            Vector2 position = null;
             if (curraction.contains("(")){
-                String[] str = curraction.split("(",1);
+                String[] str = curraction.replace("(","/").split("/");
+                System.out.println(str[0]);
                 curraction = str[0];
                 String[] pos = str[1].replace(")","").split(",");
-                Vector2 position = new Vector2(Integer.parseInt(pos[0]),Integer.parseInt(pos[1]));
+                position = new Vector2(Float.parseFloat(pos[0]),Float.parseFloat(pos[1]));
             }
 
             System.out.println("execute action");
@@ -256,7 +258,7 @@ public class NetworkSynchronizationProxy extends AndroidApplication implements I
                     break;
                 case "SJ":
                     //stop execute jump
-                    InputHandler.stopJump(position);
+                    InputHandler.stopJump();
                     break;
                 case "S":
                     //start shooting
@@ -264,7 +266,7 @@ public class NetworkSynchronizationProxy extends AndroidApplication implements I
                     break;
                 case "SS":
                     //stop shooting
-                    InputHandler.stopShooting(position);
+                    InputHandler.stopShooting();
                     break;
                 default:
                     //error

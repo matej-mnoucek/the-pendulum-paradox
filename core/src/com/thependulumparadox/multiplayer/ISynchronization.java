@@ -1,6 +1,7 @@
 package com.thependulumparadox.multiplayer;
 
 
+import com.badlogic.gdx.math.Vector2;
 import com.thependulumparadox.control.IMoveCommands;
 import com.thependulumparadox.observer.Event;
 
@@ -12,7 +13,7 @@ public interface ISynchronization
     void startSignInIntent();
     void startQuickGame();
     boolean isRoomFull();
-    void sendAction(String action);
+    void sendAction(String action, Vector2 position);
     void synchronize();
     void setInputHandler(IMoveCommands inputHandler);
     String getHighscore();

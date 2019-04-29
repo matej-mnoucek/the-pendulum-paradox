@@ -29,8 +29,8 @@ public class NetworkControlModule extends EventControlModule implements IMoveCom
     public void stopMoveLeft(Vector2 position)
     {
         leftEnd();
-        body.getPosition().x = position.x;
-        body.getPosition().y = position.y;
+        body.setTransform(position,0);
+
     }
 
     @Override
@@ -39,8 +39,8 @@ public class NetworkControlModule extends EventControlModule implements IMoveCom
     public void stopMoveRight(Vector2 position)
     {
         rightEnd();
-        body.getPosition().x = position.x;
-        body.getPosition().y = position.y;
+
+        body.setTransform(position,0);
     }
 
     @Override

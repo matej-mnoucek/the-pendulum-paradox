@@ -620,7 +620,7 @@ public class GamePresenter extends Game
         ((InGameScreen) inGameScreen).getLeftEvent().addHandler((args) -> {
 
             if(multiplayerAvailable)
-                synchronization.sendAction("L");
+                synchronization.sendAction("L",null);
 
             ((EventControlModule) mainPlayer.getComponent(ControlComponent.class).controlModule).leftStart();
         });
@@ -630,7 +630,7 @@ public class GamePresenter extends Game
             if(multiplayerAvailable)
             {
                 DynamicBodyComponent body = mainPlayer.getComponent(DynamicBodyComponent.class);
-                synchronization.sendAction("SL" + body.body.getPosition());
+                synchronization.sendAction("SL" , body.body.getPosition());
             }
 
             ((EventControlModule) mainPlayer.getComponent(ControlComponent.class).controlModule).leftEnd();
@@ -639,7 +639,7 @@ public class GamePresenter extends Game
         ((InGameScreen) inGameScreen).getRightEvent().addHandler((args) -> {
 
             if(multiplayerAvailable)
-                synchronization.sendAction("R");
+                synchronization.sendAction("R", null);
 
             ((EventControlModule) mainPlayer.getComponent(ControlComponent.class).controlModule).rightStart();
         });
@@ -649,7 +649,7 @@ public class GamePresenter extends Game
             if(multiplayerAvailable)
             {
                 DynamicBodyComponent body = mainPlayer.getComponent(DynamicBodyComponent.class);
-                synchronization.sendAction("SR" + body.body.getPosition());
+                synchronization.sendAction("SR" , body.body.getPosition());
             }
 
             ((EventControlModule) mainPlayer.getComponent(ControlComponent.class).controlModule).rightEnd();
@@ -658,7 +658,7 @@ public class GamePresenter extends Game
         ((InGameScreen) inGameScreen).getShootEvent().addHandler((args) -> {
 
             if(multiplayerAvailable)
-                synchronization.sendAction("S");
+                synchronization.sendAction("S", null);
 
             ((EventControlModule) mainPlayer.getComponent(ControlComponent.class).controlModule).attackStart();
         });
@@ -666,7 +666,7 @@ public class GamePresenter extends Game
         ((InGameScreen) inGameScreen).getStopShootEvent().addHandler((args) -> {
 
             if(multiplayerAvailable)
-                synchronization.sendAction("SS");
+                synchronization.sendAction("SS", null);
 
             ((EventControlModule) mainPlayer.getComponent(ControlComponent.class).controlModule).attackEnd();
         });
@@ -674,7 +674,7 @@ public class GamePresenter extends Game
         ((InGameScreen) inGameScreen).getJumpEvent().addHandler((args) -> {
 
             if(multiplayerAvailable)
-                synchronization.sendAction("J");
+                synchronization.sendAction("J", null);
 
             ((EventControlModule) mainPlayer.getComponent(ControlComponent.class).controlModule).jumpStart();
         });
