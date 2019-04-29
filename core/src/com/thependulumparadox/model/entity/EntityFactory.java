@@ -180,7 +180,7 @@ public class EntityFactory extends AbstractEntityFactory
                         .addSound("die", Gdx.audio.newSound(Gdx.files.internal("sounds/die.mp3")));
                 player2.add(sound2);
 
-                ControlModule module = new NetworkControlModule();
+                ControlModule module = new NetworkControlModule(dynamicBodyComponent.body);
                 ControlComponent control = new ControlComponent(module);
                 player2.add(control);
 

@@ -1,11 +1,22 @@
 package com.thependulumparadox.control;
 
+import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.Body;
+import com.thependulumparadox.model.component.DynamicBodyComponent;
+
 /**
  * Implementation of a control module that receives input over network
  * @see ControlModule
  */
 public class NetworkControlModule extends EventControlModule implements IMoveCommands
 {
+    private Body body;
+
+    public NetworkControlModule(Body body)
+    {
+        this.body = body;
+    }
+
     @Override
     public void update(float delta)
     {
@@ -13,19 +24,31 @@ public class NetworkControlModule extends EventControlModule implements IMoveCom
     }
 
     @Override
-    public void moveLeft() {leftStart();}
+    public void moveLeft() { leftStart(); }
     @Override
-    public void stopMoveLeft() {leftEnd();}
+    public void stopMoveLeft(Vector2 position)
+    {
+        leftEnd();
+        body.getPosition().x = position.x;
+        body.getPosition().y = position.y;
+    }
+
     @Override
-    public void moveRight() {rightStart();}
+    public void moveRight() { rightStart(); }
     @Override
-    public void stopMoveRight() {rightEnd();}
+    public void stopMoveRight(Vector2 position)
+    {
+        rightEnd();
+        body.getPosition().x = position.x;
+        body.getPosition().y = position.y;
+    }
+
     @Override
-    public void jump() {jumpStart();}
+    public void jump() { jumpStart(); }
     @Override
-    public void stopJump() {jumpEnd();}
+    public void stopJump() { jumpEnd(); }
     @Override
-    public void startShooting() {attackStart();}
+    public void startShooting() { attackStart(); }
     @Override
-    public void stopShooting() {attackEnd();}
+    public void stopShooting() { attackEnd(); }
 }
