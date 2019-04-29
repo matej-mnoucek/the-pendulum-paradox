@@ -452,8 +452,7 @@ public class NetworkSynchronizationProxy extends AndroidApplication implements I
                         // show waiting room UI
                         startActivityForResult(intent, RC_WAITING_ROOM);
                     }
-                })
-                .addOnFailureListener(createFailureListener("There was a problem getting the waiting room!"));
+                });
     }
 
 
@@ -485,8 +484,7 @@ public class NetworkSynchronizationProxy extends AndroidApplication implements I
                             mPlayerId = player.getPlayerId();
 
                         }
-                    })
-                    .addOnFailureListener(createFailureListener("There was a problem getting the player id!"));
+                    });
             UpdateHighscore();
         }
 
@@ -495,14 +493,6 @@ public class NetworkSynchronizationProxy extends AndroidApplication implements I
 
     }
 
-    private OnFailureListener createFailureListener(final String string) {
-        return new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                handleException(e, string);
-            }
-        };
-    }
 
     public void onDisconnected() {
 

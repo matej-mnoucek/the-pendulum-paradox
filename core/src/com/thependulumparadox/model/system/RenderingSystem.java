@@ -44,6 +44,7 @@ public class RenderingSystem extends EntitySystem
     @Override
     public void addedToEngine(Engine engine)
     {
+
         spriteEntities = engine.getEntitiesFor(Family.all(TransformComponent.class,
                 SpriteComponent.class).get());
         animatedEntities = engine.getEntitiesFor(Family.all(TransformComponent.class,
