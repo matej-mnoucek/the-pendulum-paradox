@@ -683,6 +683,8 @@ public class GamePresenter extends Game
             synchronization.synchronize();
         }
 
+        ;
+
         // Update ECS
         ecs.update(delta);
     }
