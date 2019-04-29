@@ -628,7 +628,10 @@ public class GamePresenter extends Game
         ((InGameScreen) inGameScreen).getStopLeftEvent().addHandler((args) -> {
 
             if(multiplayerAvailable)
-                synchronization.sendAction("SL");
+            {
+                DynamicBodyComponent body = mainPlayer.getComponent(DynamicBodyComponent.class);
+                synchronization.sendAction("SL" + body.body.getPosition());
+            }
 
             ((EventControlModule) mainPlayer.getComponent(ControlComponent.class).controlModule).leftEnd();
         });
@@ -644,7 +647,10 @@ public class GamePresenter extends Game
         ((InGameScreen) inGameScreen).getStopRightEvent().addHandler((args) -> {
 
             if(multiplayerAvailable)
-                synchronization.sendAction("SR");
+            {
+                DynamicBodyComponent body = mainPlayer.getComponent(DynamicBodyComponent.class);
+                synchronization.sendAction("SR" + body.body.getPosition());
+            }
 
             ((EventControlModule) mainPlayer.getComponent(ControlComponent.class).controlModule).rightEnd();
         });
