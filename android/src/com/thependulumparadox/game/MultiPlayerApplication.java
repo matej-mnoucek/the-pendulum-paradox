@@ -128,7 +128,7 @@ public class MultiPlayerApplication extends AndroidApplication implements ISynch
         mGoogleSignInClient = GoogleSignIn.getClient(this, GoogleSignInOptions.DEFAULT_GAMES_SIGN_IN);
 
     }
-    public boolean isSignedIn(){
+    public boolean isUserSignedIn(){
         return (mSignedInAccount != null);
     }
 
@@ -141,33 +141,42 @@ public class MultiPlayerApplication extends AndroidApplication implements ISynch
     }
 
 
-    public void submitScore(int score){
-        mLeaderboardClient = Games.getLeaderboardsClient(this,GoogleSignIn.getLastSignedInAccount(this));
-        mLeaderboardClient.submitScoreImmediate( "CgkI--f1q4ANEAIQBA",score).addOnSuccessListener(new OnSuccessListener<ScoreSubmissionData>() {
-            @Override
-            public void onSuccess(ScoreSubmissionData scoreSubmissionData) {
-            }
-        });
+    public void submitScore(int score)
+    {
+        if (isUserSignedIn())
+        {
+            mLeaderboardClient = Games.getLeaderboardsClient(this, GoogleSignIn.getLastSignedInAccount(this));
+            mLeaderboardClient.submitScoreImmediate("CgkI--f1q4ANEAIQBA", score)
+                    .addOnSuccessListener(new OnSuccessListener<ScoreSubmissionData>() {
+                @Override
+                public void onSuccess(ScoreSubmissionData scoreSubmissionData) {
+                }
+            });
+        }
     }
 
     public void UpdateHighscore(){
-        mLeaderboardClient = Games.getLeaderboardsClient(this,mSignedInAccount);
-        mLeaderboardClient.loadTopScores("CgkI--f1q4ANEAIQBA", LeaderboardVariant.TIME_SPAN_ALL_TIME, LeaderboardVariant.COLLECTION_PUBLIC,10,true).addOnSuccessListener(new OnSuccessListener<AnnotatedData<LeaderboardsClient.LeaderboardScores>>() {
-            @Override
-            public void onSuccess(AnnotatedData<LeaderboardsClient.LeaderboardScores> leaderboardScores) {
-                LeaderboardScoreBuffer scores = leaderboardScores.get().getScores();
-                String str = "";
-                for(int i = 0; i < scores.getCount(); i++){
-                    LeaderboardScore score = scores.get(i);
-                    String name = score.getScoreHolderDisplayName();
-                    String points = score.getDisplayScore();
-                    str += name + ":" + points + "!";
+
+        if(isUserSignedIn())
+        {
+            mLeaderboardClient = Games.getLeaderboardsClient(this, mSignedInAccount);
+            mLeaderboardClient.loadTopScores("CgkI--f1q4ANEAIQBA", LeaderboardVariant.TIME_SPAN_ALL_TIME, LeaderboardVariant.COLLECTION_PUBLIC, 10, true).addOnSuccessListener(new OnSuccessListener<AnnotatedData<LeaderboardsClient.LeaderboardScores>>() {
+                @Override
+                public void onSuccess(AnnotatedData<LeaderboardsClient.LeaderboardScores> leaderboardScores) {
+                    LeaderboardScoreBuffer scores = leaderboardScores.get().getScores();
+                    String str = "";
+                    for (int i = 0; i < scores.getCount(); i++) {
+                        LeaderboardScore score = scores.get(i);
+                        String name = score.getScoreHolderDisplayName();
+                        String points = score.getDisplayScore();
+                        str += name + ":" + points + "!";
+                    }
+                    if (str != "") {
+                        Leaderboard = str;
+                    }
                 }
-                if (str != "") {
-                    Leaderboard = str;
-                }
-            }
-        });
+            });
+        }
     }
 
 
@@ -175,8 +184,6 @@ public class MultiPlayerApplication extends AndroidApplication implements ISynch
     public String getHighscore(){
         UpdateHighscore();
         return this.Leaderboard;
-
-
     }
 
     @Override
@@ -208,7 +215,7 @@ public class MultiPlayerApplication extends AndroidApplication implements ISynch
     }
 
     @Override
-    public boolean isRoomFull(){
+    public boolean isGameInProgress(){
         return roomFull;
     }
 

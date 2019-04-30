@@ -1,6 +1,5 @@
 package com.thependulumparadox.presenter;
 
-import com.badlogic.ashley.core.Component;
 import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.gdx.Game;
@@ -23,7 +22,6 @@ import com.thependulumparadox.levels.LevelManager;
 import com.thependulumparadox.model.component.MusicComponent;
 import com.thependulumparadox.model.component.ControlComponent;
 import com.thependulumparadox.model.component.PlayerComponent;
-import com.thependulumparadox.model.component.SoundComponent;
 import com.thependulumparadox.model.system.AnimationControlSystem;
 import com.thependulumparadox.model.system.LevelBoundarySystem;
 import com.thependulumparadox.model.system.InteractionSystem;
@@ -104,24 +102,24 @@ public class GamePresenter extends Game
     Entity secondPlayer = null;
 
     // Multi player
-    private boolean multiplayerAvailable = false;
+    private boolean multiPlayerAvailable = false;
+    private boolean multiPlayerGameReady = true;
+    private Event<EventArgs> multiPlayerHasStarted;
     private ISynchronization synchronization;
-    Event<EventArgs> startMultiplayer;
-    private boolean startMulti = true;
 
 
 
     // Single player constructor
     public GamePresenter()
     {
-        multiplayerAvailable = false;
+        multiPlayerAvailable = false;
         this.synchronization = null;
     }
 
     // Multi player constructor
     public GamePresenter(ISynchronization synchronization)
     {
-        multiplayerAvailable = true;
+        multiPlayerAvailable = true;
         this.synchronization = synchronization;
     }
 
@@ -255,7 +253,7 @@ public class GamePresenter extends Game
             inGameMusic.getComponent(MusicComponent.class).play = false;
 
             // Submit Highscore if possible
-            if (multiplayerAvailable)
+            if (multiPlayerAvailable)
             {
                 synchronization.submitScore(mainPlayer.getComponent(PlayerComponent.class).score);
             }
@@ -297,7 +295,8 @@ public class GamePresenter extends Game
             }
 
             //submit highscore if possible
-            if (multiplayerAvailable){
+            if (multiPlayerAvailable)
+            {
                 synchronization.submitScore(mainPlayer.getComponent(PlayerComponent.class).score);
             }
 
@@ -342,7 +341,8 @@ public class GamePresenter extends Game
             }
 
             //submit highscore if possible
-            if (multiplayerAvailable){
+            if (multiPlayerAvailable)
+            {
                 synchronization.submitScore(mainPlayer.getComponent(PlayerComponent.class).score);
             }
 
@@ -441,79 +441,75 @@ public class GamePresenter extends Game
         // Link game start
         ((MenuScreen) menuScreen).getMultiPlayerEvent().addHandler((args) ->
         {
-
-            if(multiplayerAvailable)
+            // Check if everything is ready to start multiplayer game
+            if(multiPlayerAvailable && synchronization.isUserSignedIn())
             {
-                startMulti = false;
+                // Start preparing multiplayer game
+                multiPlayerGameReady = false;
                 synchronization.startQuickGame();
 
-            }
+                // Create second player entity
+                secondPlayer = entityFactory.create("second_player");
+                Vector2 player2Position = ((GameScene) levels.currentLevelScene()).getStartPoint();
+                // Move player a bit to the side in order to prevent overlap
+                player2Position.x += 1;
+                secondPlayer.getComponent(DynamicBodyComponent.class)
+                        .position(player2Position)
+                        .wakeup();
+                ecs.addEntity(secondPlayer);
 
-            // Create second player entity
-            secondPlayer = entityFactory.create("second_player");
-            Vector2 player2Position = ((GameScene)levels.currentLevelScene()).getStartPoint();
-            // Move player a bit to the side in order to prevent overlap
-            player2Position.x += 1;
-            secondPlayer.getComponent(DynamicBodyComponent.class)
-                    .position(player2Position)
-                    .wakeup();
-            ecs.addEntity(secondPlayer);
-
-            if(multiplayerAvailable)
-            {
-                synchronization.setInputHandler((NetworkControlModule)secondPlayer
+                // Set input handler
+                synchronization.setInputHandler((NetworkControlModule) secondPlayer
                         .getComponent(ControlComponent.class).controlModule);
+
+
+                // Add main player
+                ecs.addEntity(mainPlayer);
+                mainPlayer.getComponent(PlayerComponent.class).defaults();
+                mainPlayer.getComponent(DynamicBodyComponent.class)
+                        .position(((GameScene) levels.currentLevelScene()).getStartPoint())
+                        .wakeup();
+
+                // Create entities for the first level
+                ((GameScene) levels.currentLevelScene()).populate();
+
+                // Include system for checking player position in the level
+                ecs.addSystem(levelBoundarySystem);
+                levelBoundarySystem.levelEndPoint = ((GameScene) levels.currentLevelScene()).getEndPoint();
+                levelBoundarySystem.checkBoundaries = true;
+
+                // Add all basic systems
+                ecs.addSystem(stateSystem);
+                ecs.addSystem(cameraFollowSystem);
+                ecs.addSystem(renderingSystem);
+                ecs.addSystem(controlSystem);
+                ecs.addSystem(physicsSystem);
+                ecs.addSystem(animationControlSystem);
+                ecs.addSystem(interactionSystem);
+                ecs.addSystem(visualSystem);
+
+
+                // Set inGameScreen's stage as the input processor
+                Gdx.input.setInputProcessor(inGameScreen.getStage());
+
+                // Stop menu music. will call stop() method on menu music even if sound is currently turned off
+                menuMusic.getComponent(MusicComponent.class).play = false;
+                inGameMusic.getComponent(MusicComponent.class).play = true;
+
+                // call on state machine to change state
+                viewMachine.nextState(levels.currentInGameViewState());
             }
-
-
-            // Add main player
-            ecs.addEntity(mainPlayer);
-            mainPlayer.getComponent(PlayerComponent.class).defaults();
-            mainPlayer.getComponent(DynamicBodyComponent.class)
-                    .position(((GameScene)levels.currentLevelScene()).getStartPoint())
-                    .wakeup();
-
-            // Create entities for the first level
-            ((GameScene)levels.currentLevelScene()).populate();
-
-            // Include system for checking player position in the level
-            ecs.addSystem(levelBoundarySystem);
-            levelBoundarySystem.levelEndPoint = ((GameScene)levels.currentLevelScene()).getEndPoint();
-            levelBoundarySystem.checkBoundaries = true;
-
-            // Add all basic systems
-            ecs.addSystem(stateSystem);
-            ecs.addSystem(cameraFollowSystem);
-            ecs.addSystem(renderingSystem);
-            ecs.addSystem(controlSystem);
-            ecs.addSystem(physicsSystem);
-            ecs.addSystem(animationControlSystem);
-            ecs.addSystem(interactionSystem);
-            ecs.addSystem(visualSystem);
-
-
-            // Set inGameScreen's stage as the input processor
-            Gdx.input.setInputProcessor(inGameScreen.getStage());
-
-            // Stop menu music. will call stop() method on menu music even if sound is currently turned off
-            menuMusic.getComponent(MusicComponent.class).play = false;
-            inGameMusic.getComponent(MusicComponent.class).play = true;
-
-            // call on state machine to change state
-            viewMachine.nextState(levels.currentInGameViewState());
-
         });
 
-        if (multiplayerAvailable) {
-            startMultiplayer = synchronization.getStartMultiplayerEvent();
-        }
-
-
-        startMultiplayer.addHandler((arg) ->
+        // If multiplayer is ready to start link multiplayer has started event
+        if (multiPlayerAvailable)
         {
-            startMulti = true;
-
-        });
+            multiPlayerHasStarted = synchronization.getStartMultiplayerEvent();
+            multiPlayerHasStarted.addHandler((arg) ->
+            {
+                multiPlayerGameReady = true;
+            });
+        }
 
 
         // REST OF BUTTON EVENTS FROM VARIOUS MENUS
@@ -530,7 +526,7 @@ public class GamePresenter extends Game
         ((MenuScreen) menuScreen).getHighScoreEvent().addHandler((args) -> {
             // set input processor to new State's BaseScreen stage
             Gdx.input.setInputProcessor(highScoreScreen.getStage());
-            if (multiplayerAvailable){
+            if (multiPlayerAvailable){
                 ((HighScoreScreen)highScoreScreen).populateHighScoreList(synchronization.getHighscore());
             }else{
                 ((HighScoreScreen)highScoreScreen).populateHighScoreList("");
@@ -550,7 +546,7 @@ public class GamePresenter extends Game
         // Google log in button pressed in main menu
         ((MenuScreen) menuScreen).getGoogleLoginEvent().addHandler((args) -> {
             // invoke google play sign in
-            if (multiplayerAvailable)
+            if (multiPlayerAvailable)
             {
                 synchronization.startSignInIntent();
             }
@@ -577,7 +573,7 @@ public class GamePresenter extends Game
         ((GameOverScreen) gameOverScreen).getHighScoreEvent().addHandler((args) -> {
             // set input processor to new State's BaseScreen stage
             Gdx.input.setInputProcessor(highScoreScreen.getStage());
-            if (multiplayerAvailable){
+            if (multiPlayerAvailable){
                 ((HighScoreScreen)highScoreScreen).populateHighScoreList(synchronization.getHighscore());
             }else{
                 ((HighScoreScreen)highScoreScreen).populateHighScoreList("");
@@ -632,7 +628,7 @@ public class GamePresenter extends Game
         // CONTROL EVENTS
         ((InGameScreen) inGameScreen).getLeftEvent().addHandler((args) -> {
 
-            if(multiplayerAvailable)
+            if(multiPlayerAvailable)
                 synchronization.sendAction("L",null);
 
             ((EventControlModule) mainPlayer.getComponent(ControlComponent.class).controlModule).leftStart();
@@ -640,7 +636,7 @@ public class GamePresenter extends Game
 
         ((InGameScreen) inGameScreen).getStopLeftEvent().addHandler((args) -> {
 
-            if(multiplayerAvailable)
+            if(multiPlayerAvailable)
             {
                 DynamicBodyComponent body = mainPlayer.getComponent(DynamicBodyComponent.class);
                 synchronization.sendAction("SL" , body.body.getPosition());
@@ -651,7 +647,7 @@ public class GamePresenter extends Game
 
         ((InGameScreen) inGameScreen).getRightEvent().addHandler((args) -> {
 
-            if(multiplayerAvailable)
+            if(multiPlayerAvailable)
                 synchronization.sendAction("R", null);
 
             ((EventControlModule) mainPlayer.getComponent(ControlComponent.class).controlModule).rightStart();
@@ -659,7 +655,7 @@ public class GamePresenter extends Game
 
         ((InGameScreen) inGameScreen).getStopRightEvent().addHandler((args) -> {
 
-            if(multiplayerAvailable)
+            if(multiPlayerAvailable)
             {
                 DynamicBodyComponent body = mainPlayer.getComponent(DynamicBodyComponent.class);
                 synchronization.sendAction("SR" , body.body.getPosition());
@@ -670,7 +666,7 @@ public class GamePresenter extends Game
 
         ((InGameScreen) inGameScreen).getShootEvent().addHandler((args) -> {
 
-            if(multiplayerAvailable)
+            if(multiPlayerAvailable)
                 synchronization.sendAction("S", null);
 
             ((EventControlModule) mainPlayer.getComponent(ControlComponent.class).controlModule).attackStart();
@@ -678,7 +674,7 @@ public class GamePresenter extends Game
 
         ((InGameScreen) inGameScreen).getStopShootEvent().addHandler((args) -> {
 
-            if(multiplayerAvailable)
+            if(multiPlayerAvailable)
                 synchronization.sendAction("SS", null);
 
             ((EventControlModule) mainPlayer.getComponent(ControlComponent.class).controlModule).attackEnd();
@@ -686,7 +682,7 @@ public class GamePresenter extends Game
 
         ((InGameScreen) inGameScreen).getJumpEvent().addHandler((args) -> {
 
-            if(multiplayerAvailable)
+            if(multiPlayerAvailable)
                 synchronization.sendAction("J", null);
 
             ((EventControlModule) mainPlayer.getComponent(ControlComponent.class).controlModule).jumpStart();
@@ -696,16 +692,20 @@ public class GamePresenter extends Game
 
     public void update(float delta)
     {
-        // If multi player game, synchronize
-        if(multiplayerAvailable)
+        // If multi player game, synchronize + update ECS
+        if(multiPlayerAvailable)
         {
             synchronization.synchronize();
-            if (startMulti){
+
+            // If game is not ready yet
+            if (multiPlayerGameReady)
+            {
                 ecs.update(delta);
             }
         }
-        else{
-            // Update ECS
+        else
+        {
+            // Only update ECS
             ecs.update(delta);
         }
 

@@ -11,13 +11,13 @@ import com.thependulumparadox.observer.Event;
 public interface ISynchronization
 {
     void startSignInIntent();
+    boolean isUserSignedIn();
     void startQuickGame();
-    boolean isRoomFull();
-    boolean isSignedIn();
+    boolean isGameInProgress();
+    Event getStartMultiplayerEvent();
+    void setInputHandler(IMoveCommands inputHandler);
     void sendAction(String action, Vector2 position);
     void synchronize();
-    void setInputHandler(IMoveCommands inputHandler);
     String getHighscore();
     void submitScore(int score);
-    Event getStartMultiplayerEvent();
 }
