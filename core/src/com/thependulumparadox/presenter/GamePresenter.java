@@ -107,6 +107,7 @@ public class GamePresenter extends Game
     private boolean multiplayerAvailable = false;
     private ISynchronization synchronization;
     Event<EventArgs> startMultiplayer;
+    private boolean startMulti = true;
 
 
 
@@ -440,19 +441,13 @@ public class GamePresenter extends Game
         // Link game start
         ((MenuScreen) menuScreen).getMultiPlayerEvent().addHandler((args) ->
         {
+
             if(multiplayerAvailable)
             {
+                startMulti = false;
                 synchronization.startQuickGame();
 
             }
-        });
-
-        if (multiplayerAvailable) {
-            startMultiplayer = synchronization.getStartMultiplayerEvent();
-        }
-
-        startMultiplayer.addHandler((arg) ->
-        {
 
             // Create second player entity
             secondPlayer = entityFactory.create("second_player");
@@ -506,6 +501,18 @@ public class GamePresenter extends Game
 
             // call on state machine to change state
             viewMachine.nextState(levels.currentInGameViewState());
+
+        });
+
+        if (multiplayerAvailable) {
+            startMultiplayer = synchronization.getStartMultiplayerEvent();
+        }
+
+
+        startMultiplayer.addHandler((arg) ->
+        {
+            startMulti = true;
+
         });
 
 
@@ -693,10 +700,15 @@ public class GamePresenter extends Game
         if(multiplayerAvailable)
         {
             synchronization.synchronize();
+            if (startMulti){
+                ecs.update(delta);
+            }
+        }
+        else{
+            // Update ECS
+            ecs.update(delta);
         }
 
-        // Update ECS
-        ecs.update(delta);
     }
 
     @Override

@@ -103,6 +103,11 @@ public class NetworkSynchronizationProxy extends AndroidApplication implements I
     Queue actionQueue = new Queue();
 
 
+    private String mPlayerId;
+
+    // The currently signed in account
+    GoogleSignInAccount mSignedInAccount = null;
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -123,6 +128,9 @@ public class NetworkSynchronizationProxy extends AndroidApplication implements I
 
         mGoogleSignInClient = GoogleSignIn.getClient(this, GoogleSignInOptions.DEFAULT_GAMES_SIGN_IN);
 
+    }
+    public boolean isSignedIn(){
+        return (mSignedInAccount != null);
     }
 
     public void setInputHandler(IMoveCommands inputHandler){
@@ -262,7 +270,7 @@ public class NetworkSynchronizationProxy extends AndroidApplication implements I
                     break;
                 case "S":
                     //start shooting
-                    InputHandler.startShooting();
+                    InputHandler.startShooting(position);
                     break;
                 case "SS":
                     //stop shooting
@@ -461,11 +469,6 @@ public class NetworkSynchronizationProxy extends AndroidApplication implements I
      * CALLBACKS SECTION. This section shows how we implement the several games
      * API callbacks.
      */
-
-    private String mPlayerId;
-
-    // The currently signed in account, used to check the account has changed outside of this activity when resuming.
-    GoogleSignInAccount mSignedInAccount = null;
 
     private void onConnected(GoogleSignInAccount googleSignInAccount) {
         if (mSignedInAccount != googleSignInAccount) {

@@ -16,7 +16,7 @@ public interface IMoveCommands
 
     public void stopJump();
 
-    public void startShooting();
+    public void startShooting(Vector2 position);
 
     public void stopShooting();
 }

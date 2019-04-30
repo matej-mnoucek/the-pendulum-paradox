@@ -48,7 +48,9 @@ public class NetworkControlModule extends EventControlModule implements IMoveCom
     @Override
     public void stopJump() { jumpEnd(); }
     @Override
-    public void startShooting() { attackStart(); }
+    public void startShooting(Vector2 position  ) {
+        body.setTransform(position,0);
+        attackStart(); }
     @Override
     public void stopShooting() { attackEnd(); }
 }

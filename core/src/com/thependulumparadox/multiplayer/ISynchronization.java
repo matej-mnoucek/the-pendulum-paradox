@@ -13,6 +13,7 @@ public interface ISynchronization
     void startSignInIntent();
     void startQuickGame();
     boolean isRoomFull();
+    boolean isSignedIn();
     void sendAction(String action, Vector2 position);
     void synchronize();
     void setInputHandler(IMoveCommands inputHandler);
