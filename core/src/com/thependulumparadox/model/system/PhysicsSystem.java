@@ -31,8 +31,8 @@ public class PhysicsSystem extends EntitySystem
     // Constants
     private static final float TIME_STEP = 1/240f;
     private static final float MAX_TIME_STEP = 1/60f;
-    private static final int VELOCITY_ITERATIONS = 6;
-    private static final int POSITION_ITERATIONS = 2;
+    private static final int VELOCITY_ITERATIONS = 12;
+    private static final int POSITION_ITERATIONS = 10;
 
     // Collision category (bit masks) - 15 bits
     // 000000000000001 = 1 = ground group

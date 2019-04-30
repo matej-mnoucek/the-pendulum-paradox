@@ -146,17 +146,22 @@ public class MenuScreen extends BaseScreen
             }
         });
 
-        table.add(btnNewGame).center().size(300,60).padTop(20);
+        Label gameName = new Label("THE PENDULUM PARADOX", labelStyle);
+        gameName.setFontScale(1.2f);
+
+        table.add(gameName);
         table.row();
-        table.add(btnMultiPlayerGame).center().size(300,60).padTop(20);
+        table.add(btnNewGame).center().size(300,55).padTop(30);
         table.row();
-        table.add(btnHighScore).center().size(300,60).padTop(20);
+        table.add(btnMultiPlayerGame).center().size(300,55).padTop(20);
         table.row();
-        table.add(btnSettings).center().size(300,60).padTop(20);
+        table.add(btnHighScore).center().size(300,55).padTop(20);
         table.row();
-        table.add(btnTutorial).center().size(300,60).padTop(20);
+        table.add(btnSettings).center().size(300,55).padTop(20);
         table.row();
-        table.add(btnGoogleLogin).center().size(300,60).padTop(20);
+        table.add(btnTutorial).center().size(300,55).padTop(20);
+        table.row();
+        table.add(btnGoogleLogin).center().size(300,55).padTop(20);
 
         stage.addActor(table);
     }

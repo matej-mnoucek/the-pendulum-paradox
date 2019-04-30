@@ -37,7 +37,6 @@ import com.google.android.gms.games.multiplayer.realtime.RoomConfig;
 import com.google.android.gms.games.multiplayer.realtime.RoomStatusUpdateCallback;
 import com.google.android.gms.games.multiplayer.realtime.RoomUpdateCallback;
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.thependulumparadox.control.IMoveCommands;
@@ -48,7 +47,7 @@ import com.thependulumparadox.observer.EventArgs;
 import java.util.ArrayList;
 import java.util.List;
 
-public class NetworkSynchronizationProxy extends AndroidApplication implements ISynchronization {
+public class MultiPlayerApplication extends AndroidApplication implements ISynchronization {
 
     //Based on Buttonclicker tutorial from android developers
 
@@ -360,7 +359,7 @@ public class NetworkSynchronizationProxy extends AndroidApplication implements I
         }
 
 
-        new AlertDialog.Builder(NetworkSynchronizationProxy.this)
+        new AlertDialog.Builder(MultiPlayerApplication.this)
                 .setTitle("Error")
                 .setMessage("\n" + errorString)
                 .setNeutralButton(android.R.string.ok, null)
