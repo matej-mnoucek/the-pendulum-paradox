@@ -670,9 +670,10 @@ public class GamePresenter extends Game
 
         ((InGameScreen) inGameScreen).getShootEvent().addHandler((args) -> {
 
-            if(multiplayerAvailable)
-                synchronization.sendAction("S", null);
-
+            if(multiplayerAvailable) {
+                DynamicBodyComponent body = mainPlayer.getComponent(DynamicBodyComponent.class);
+                synchronization.sendAction("S", body.body.getPosition());
+            }
             ((EventControlModule) mainPlayer.getComponent(ControlComponent.class).controlModule).attackStart();
         });
 
