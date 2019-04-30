@@ -350,6 +350,8 @@ public class MultiPlayerApplication extends AndroidApplication implements ISynch
                 break;
             case GamesClientStatusCodes.MATCH_ERROR_LOCALLY_MODIFIED:
                 break;
+            case GamesClientStatusCodes.SIGN_IN_REQUIRED:
+                break;
             default:
                 break;
         }
@@ -361,7 +363,7 @@ public class MultiPlayerApplication extends AndroidApplication implements ISynch
 
         new AlertDialog.Builder(MultiPlayerApplication.this)
                 .setTitle("Error")
-                .setMessage("\n" + errorString)
+                .setMessage("\n" + "hi" + errorString)
                 .setNeutralButton(android.R.string.ok, null)
                 .show();
     }
