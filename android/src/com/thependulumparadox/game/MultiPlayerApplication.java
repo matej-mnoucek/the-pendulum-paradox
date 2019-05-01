@@ -151,11 +151,16 @@ public class MultiPlayerApplication extends AndroidApplication implements ISynch
         {
             mLeaderboardClient = Games.getLeaderboardsClient(this, GoogleSignIn.getLastSignedInAccount(this));
             mLeaderboardClient.submitScoreImmediate("CgkI--f1q4ANEAIQBA", score)
-                    .addOnSuccessListener(new OnSuccessListener<ScoreSubmissionData>() {
-                @Override
-                public void onSuccess(ScoreSubmissionData scoreSubmissionData) {
-                }
-            });
+                   .addOnCompleteListener(new OnCompleteListener<ScoreSubmissionData>() {
+                                              @Override
+                                              public void onComplete(@NonNull Task<ScoreSubmissionData> task) {
+                                                  if (task.isSuccessful()) {
+                                                  } else {
+                                                      handleException(task.getException(), "");
+                                                  }
+                                              }
+                                          }
+                   );
         }
     }
 
@@ -215,7 +220,15 @@ public class MultiPlayerApplication extends AndroidApplication implements ISynch
                 .setRoomStatusUpdateCallback(mRoomStatusUpdateCallback)
                 .setAutoMatchCriteria(autoMatchCriteria)
                 .build();
-        mRealTimeMultiplayerClient.create(mRoomConfig);
+        mRealTimeMultiplayerClient.create(mRoomConfig).addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                if (task.isSuccessful()) {
+                } else {
+                    handleException(task.getException(), "");
+                }
+            }
+        });
     }
 
     @Override
@@ -309,6 +322,7 @@ public class MultiPlayerApplication extends AndroidApplication implements ISynch
                             onConnected(task.getResult());
                             UpdateHighscore();
                         } else {
+                            handleException(task.getException(), "");
                             onDisconnected();
                         }
                     }
@@ -384,17 +398,9 @@ public class MultiPlayerApplication extends AndroidApplication implements ISynch
                 onConnected(account);
 
             } catch (ApiException apiException) {
-                String message = apiException.getMessage();
-                if (message == null || message.isEmpty()) {
-                    message = "nope";
-                }
+                handleException(apiException,"");
 
                 onDisconnected();
-
-                new AlertDialog.Builder(this)
-                        .setMessage(message)
-                        .setNeutralButton(android.R.string.ok, null)
-                        .show();
             }
 
         } else if (requestCode == RC_WAITING_ROOM) {
