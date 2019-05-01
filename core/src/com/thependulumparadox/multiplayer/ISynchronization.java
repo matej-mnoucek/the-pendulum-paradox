@@ -15,6 +15,7 @@ public interface ISynchronization
     void startQuickGame();
     boolean isGameInProgress();
     Event getStartMultiplayerEvent();
+    Event getStopMultiplayerEvent();
     void setInputHandler(IMoveCommands inputHandler);
     void sendAction(String action, Vector2 position);
     void synchronize();

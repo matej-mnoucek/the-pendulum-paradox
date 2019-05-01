@@ -105,6 +105,7 @@ public class GamePresenter extends Game
     private boolean multiPlayerAvailable = false;
     private boolean multiPlayerGameReady = true;
     private Event<EventArgs> multiPlayerHasStarted;
+    private Event<EventArgs> stopMultiGame;
     private ISynchronization synchronization;
 
 
@@ -499,6 +500,9 @@ public class GamePresenter extends Game
                 // call on state machine to change state
                 viewMachine.nextState(levels.currentInGameViewState());
             }
+            else{
+
+            }
         });
 
         // If multiplayer is ready to start link multiplayer has started event
@@ -509,6 +513,11 @@ public class GamePresenter extends Game
             {
                 multiPlayerGameReady = true;
             });
+
+            stopMultiGame = synchronization.getStopMultiplayerEvent();
+            stopMultiGame.addHandler((args) ->{
+                ((InGameScreen) inGameScreen).getMenuEvent().invoke(null);
+            } );
         }
 
 
@@ -527,7 +536,13 @@ public class GamePresenter extends Game
             // set input processor to new State's BaseScreen stage
             Gdx.input.setInputProcessor(highScoreScreen.getStage());
             if (multiPlayerAvailable){
-                ((HighScoreScreen)highScoreScreen).populateHighScoreList(synchronization.getHighscore());
+                if(synchronization.isUserSignedIn()) {
+                    ((HighScoreScreen) highScoreScreen).populateHighScoreList(synchronization.getHighscore());
+                }else{
+                    ((HighScoreScreen) highScoreScreen).populateHighScoreList("");
+
+                }
+
             }else{
                 ((HighScoreScreen)highScoreScreen).populateHighScoreList("");
             }
@@ -574,7 +589,12 @@ public class GamePresenter extends Game
             // set input processor to new State's BaseScreen stage
             Gdx.input.setInputProcessor(highScoreScreen.getStage());
             if (multiPlayerAvailable){
-                ((HighScoreScreen)highScoreScreen).populateHighScoreList(synchronization.getHighscore());
+                if(synchronization.isUserSignedIn()) {
+                    ((HighScoreScreen) highScoreScreen).populateHighScoreList(synchronization.getHighscore());
+                }else{
+                    ((HighScoreScreen) highScoreScreen).populateHighScoreList("");
+
+                }
             }else{
                 ((HighScoreScreen)highScoreScreen).populateHighScoreList("");
             }            // call on state machine to change state

@@ -230,7 +230,6 @@ public class HighScoreScreen extends BaseScreen
                 names[i] = "----";
             }
         }else {
-            System.out.println(highscores);
             String[] scores = highscores.split("!");
             for (int i = 0; i < scores.length; i++) {
                 String[] temp = scores[i].split(":");

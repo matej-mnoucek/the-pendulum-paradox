@@ -76,7 +76,7 @@ public class MultiPlayerApplication extends AndroidApplication implements ISynch
     private IMoveCommands InputHandler;
 
     public Event<EventArgs> StartMultiplayerEvent = new Event<>();
-
+    public Event<EventArgs> StopMultiplayerEvent = new Event<>();
 
     // Room ID where the currently active game is taking place; null if we're
     // not playing.
@@ -138,6 +138,10 @@ public class MultiPlayerApplication extends AndroidApplication implements ISynch
 
     public Event getStartMultiplayerEvent(){
         return StartMultiplayerEvent;
+    }
+
+    public Event getStopMultiplayerEvent(){
+        return StopMultiplayerEvent;
     }
 
 
@@ -231,7 +235,7 @@ public class MultiPlayerApplication extends AndroidApplication implements ISynch
             if (pos != null){
                 action += pos.toString();
             }
-            sendReliableMessage(p , action);
+            sendUnreliableMessage(p , action);
         }
     }
 
@@ -345,19 +349,11 @@ public class MultiPlayerApplication extends AndroidApplication implements ISynch
         switch (status) {
             case GamesCallbackStatusCodes.OK:
                 break;
-            case GamesClientStatusCodes.MULTIPLAYER_ERROR_NOT_TRUSTED_TESTER:
-                break;
-            case GamesClientStatusCodes.MATCH_ERROR_ALREADY_REMATCHED:
-                break;
-            case GamesClientStatusCodes.NETWORK_ERROR_OPERATION_FAILED:
-                break;
-            case GamesClientStatusCodes.INTERNAL_ERROR:
-                break;
-            case GamesClientStatusCodes.MATCH_ERROR_INACTIVE_MATCH:
-                break;
-            case GamesClientStatusCodes.MATCH_ERROR_LOCALLY_MODIFIED:
-                break;
             case GamesClientStatusCodes.SIGN_IN_REQUIRED:
+                errorString = "you need to log in for this!";
+                break;
+            case GamesClientStatusCodes.NETWORK_ERROR:
+                errorString = "there was a network error!";
                 break;
             default:
                 break;
@@ -369,8 +365,8 @@ public class MultiPlayerApplication extends AndroidApplication implements ISynch
 
 
         new AlertDialog.Builder(MultiPlayerApplication.this)
-                .setTitle("Error")
-                .setMessage("\n" + "hi" + errorString)
+                .setTitle("Oops!")
+                .setMessage("\n Looks like "  + errorString)
                 .setNeutralButton(android.R.string.ok, null)
                 .show();
     }
@@ -441,7 +437,6 @@ public class MultiPlayerApplication extends AndroidApplication implements ISynch
 
     // Leave the room.
     void leaveRoom() {
-
         if (mRoomId != null) {
             mRealTimeMultiplayerClient.leave(mRoomConfig, mRoomId)
                     .addOnCompleteListener(new OnCompleteListener<Void>() {
@@ -449,6 +444,7 @@ public class MultiPlayerApplication extends AndroidApplication implements ISynch
                         public void onComplete(@NonNull Task<Void> task) {
                             mRoomId = null;
                             mRoomConfig = null;
+                            StopMultiplayerEvent.invoke(null);
                         }
                     });
         }
