@@ -322,7 +322,6 @@ public class MultiPlayerApplication extends AndroidApplication implements ISynch
                             onConnected(task.getResult());
                             UpdateHighscore();
                         } else {
-                            handleException(task.getException(), "");
                             onDisconnected();
                         }
                     }
