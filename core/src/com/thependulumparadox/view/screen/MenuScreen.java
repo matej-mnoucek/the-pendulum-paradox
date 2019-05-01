@@ -104,7 +104,7 @@ public class MenuScreen extends BaseScreen
             }
         });
 
-        this.btnHighScore = new TextButton("HighScore", skin);
+        this.btnHighScore = new TextButton("High Score", skin);
         btnHighScore.addListener(new ClickListener(){
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
@@ -147,7 +147,7 @@ public class MenuScreen extends BaseScreen
         });
 
         Label gameName = new Label("THE PENDULUM PARADOX", labelStyle);
-        gameName.setFontScale(1.2f);
+        gameName.setFontScale(1.3f);
 
         table.add(gameName);
         table.row();

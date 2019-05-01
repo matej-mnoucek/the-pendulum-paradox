@@ -22,6 +22,7 @@ public class TutorialScreen extends BaseScreen {
     private Table headLineTable;
     private Table btnTable;
     private Label headLine;
+    private Label tutorialText;
     private TextButton btnBack;
     private Skin skin;
     private Event<EventArgs> menuEvent = new Event<>();
@@ -46,6 +47,22 @@ public class TutorialScreen extends BaseScreen {
         btnTable.setDebug(false);
 
         headLine = new Label("Tutorial", labelStyle);
+        headLine.setFontScale(1f);
+
+        String tutorial = "Player is controlled by UI buttons. The left part of the screen\n" +
+                            "contains buttons for moving left and right and the right part\n" +
+                            "has buttons for shooting and jumping.\n\n" +
+                        "The basic goal is to stay alive as long as possible and get as high\n" +
+                            "score as possible. One game round runs as long as all involved\n" +
+                            "players are alive. Each player has three lives.\n\n" +
+                        "Players get points for killing enemies (5 points) and collecting\n" +
+                            "time machine parts (10 or 20 points).\n\n" +
+                        "In the levels you can also find three different kinds of enhancements\n" +
+                            "(lives, defense, damage).\n\n" +
+                        "The game contains three different kinds of enemies\n" +
+                            "(knight, ninja, ninja boy)";
+        tutorialText = new Label(tutorial, labelStyle);
+        tutorialText.setFontScale(0.6f);
 
         btnBack = new TextButton("Back", skin);
         btnBack.addListener(new ClickListener(){
@@ -63,6 +80,8 @@ public class TutorialScreen extends BaseScreen {
 
         //add headline to headlineTable
         headLineTable.add(headLine).padTop(20);
+        headLineTable.row();
+        headLineTable.add(tutorialText).padTop(20);
         btnTable.add(btnBack).size(300, 60).padBottom(20);
 
         stage.addActor(headLineTable);

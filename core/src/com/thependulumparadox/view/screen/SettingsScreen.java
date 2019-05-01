@@ -90,7 +90,7 @@ public class SettingsScreen extends BaseScreen {
 
         headlineTable.add(headLine).center().padTop(60);
         settingsTable.add(btnSound).center();
-        backTable.add(btnMenu).center().size(300,60);
+        backTable.add(btnMenu).center().size(300,60).padBottom(20);
         stage.addActor(settingsTable);
         stage.addActor(headlineTable);
         stage.addActor(backTable);
