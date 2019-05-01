@@ -380,7 +380,7 @@ public class GamePresenter extends Game
 
             // Move player to the correct spot
             GameScene scene = (GameScene) levels.currentLevelScene();
-            mainPlayer.getComponent(PlayerComponent.class).defaults();
+            //mainPlayer.getComponent(PlayerComponent.class).defaults();
             mainPlayer.getComponent(DynamicBodyComponent.class).position(scene.getStartPoint());
             mainPlayer.getComponent(DynamicBodyComponent.class).wakeup();
 
