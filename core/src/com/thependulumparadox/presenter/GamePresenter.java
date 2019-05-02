@@ -254,9 +254,10 @@ public class GamePresenter extends Game
             inGameMusic.getComponent(MusicComponent.class).play = false;
 
             // Submit Highscore if possible
+            int mainPlayerScore = mainPlayer.getComponent(PlayerComponent.class).score;
             if (multiPlayerAvailable)
             {
-                synchronization.submitScore(mainPlayer.getComponent(PlayerComponent.class).score);
+                synchronization.submitScore(mainPlayerScore);
             }
 
             // Delete all level entities
@@ -265,6 +266,10 @@ public class GamePresenter extends Game
             // Show game over screen
             Gdx.input.setInputProcessor(levels.currentGameOverViewState().getScreen().getStage());
             viewMachine.nextState(levels.currentGameOverViewState());
+
+            // Show highscore in game over sceen
+            ((GameOverScreen)levels.currentGameOverViewState().getScreen())
+                    .setScore(mainPlayerScore);
         });
 
         // Link interaction system events
@@ -295,10 +300,11 @@ public class GamePresenter extends Game
                 body2.position(new Vector2(0,0));
             }
 
-            //submit highscore if possible
+            // Submit highscore if possible
+            int mainPlayerScore = mainPlayer.getComponent(PlayerComponent.class).score;
             if (multiPlayerAvailable)
             {
-                synchronization.submitScore(mainPlayer.getComponent(PlayerComponent.class).score);
+                synchronization.submitScore(mainPlayerScore);
             }
 
             // Change music
@@ -311,6 +317,10 @@ public class GamePresenter extends Game
             // Show game over screen
             Gdx.input.setInputProcessor(levels.currentGameOverViewState().getScreen().getStage());
             viewMachine.nextState(levels.currentGameOverViewState());
+
+            // Show highscore in game over sceen
+            ((GameOverScreen)levels.currentGameOverViewState().getScreen())
+                    .setScore(mainPlayerScore);
         });
 
         // THE GAME CAN ALSO END ARTIFICIALLY BY GETTING BACK TO MAIN MENU
