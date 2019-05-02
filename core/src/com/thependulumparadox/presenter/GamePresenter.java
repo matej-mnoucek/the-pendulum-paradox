@@ -225,7 +225,7 @@ public class GamePresenter extends Game
         {
             levelBoundarySystem.checkBoundaries = false;
 
-            // Notify other game instance
+            // Notify other game instance about player death
             if (multiPlayerAvailable && synchronization.isUserSignedIn())
             {
                 synchronization.sendAction("D", null);
@@ -286,122 +286,6 @@ public class GamePresenter extends Game
             synchronization.getPlayerDeathEvent().addHandler(gameOver);
         }
 
-        /*
-        // Player out of bounds
-        levelBoundarySystem.playerOutOfBounds.addHandler((args) ->
-        {
-            levelBoundarySystem.checkBoundaries = false;
-
-            // Notify other game instance
-            if (multiPlayerAvailable && synchronization.isUserSignedIn())
-            {
-                synchronization.sendAction("D", null);
-            }
-
-
-            // Remove players from the system
-            ecs.removeEntity(mainPlayer);
-
-            // Clear forces and reset position
-            DynamicBodyComponent body = mainPlayer.getComponent(DynamicBodyComponent.class);
-            body.body.setLinearVelocity(0,0);
-            body.body.setAngularVelocity(0);
-            body.position(new Vector2(0,0));
-
-            // Deal with second player
-            if (secondPlayer != null)
-            {
-                // Remove players from the system
-                ecs.removeEntity(secondPlayer);
-
-                // Clear forces and reset position
-                DynamicBodyComponent body2 = secondPlayer.getComponent(DynamicBodyComponent.class);
-                body2.body.setLinearVelocity(0,0);
-                body2.body.setAngularVelocity(0);
-                body2.position(new Vector2(0,0));
-            }
-
-
-            // Change music
-            menuMusic.getComponent(MusicComponent.class).play = true;
-            inGameMusic.getComponent(MusicComponent.class).play = false;
-
-            // Submit Highscore if possible
-            int mainPlayerScore = mainPlayer.getComponent(PlayerComponent.class).score;
-            if (multiPlayerAvailable)
-            {
-                synchronization.submitScore(mainPlayerScore);
-            }
-
-            // Delete all level entities
-            ((GameScene)levels.currentLevelScene()).destroyEntities();
-
-            // Show game over screen
-            Gdx.input.setInputProcessor(levels.currentGameOverViewState().getScreen().getStage());
-            viewMachine.nextState(levels.currentGameOverViewState());
-
-            // Show highscore in game over sceen
-            ((GameOverScreen)levels.currentGameOverViewState().getScreen())
-                    .setScore(mainPlayerScore);
-        });
-
-        // Link interaction system events
-        interactionSystem.playerDeath.addHandler((args) ->
-        {
-            levelBoundarySystem.checkBoundaries = false;
-
-            // Notify other game instance
-            if (multiPlayerAvailable && synchronization.isUserSignedIn())
-            {
-                synchronization.sendAction("D", null);
-            }
-
-
-            // Remove players from the system
-            ecs.removeEntity(mainPlayer);
-
-            // Clear forces and reset position
-            DynamicBodyComponent body = mainPlayer.getComponent(DynamicBodyComponent.class);
-            body.body.setLinearVelocity(0,0);
-            body.body.setAngularVelocity(0);
-            body.position(new Vector2(0,0));
-
-            // Deal with second player
-            if (secondPlayer != null)
-            {
-                // Remove players from the system
-                ecs.removeEntity(secondPlayer);
-
-                // Clear forces and reset position
-                DynamicBodyComponent body2 = secondPlayer.getComponent(DynamicBodyComponent.class);
-                body2.body.setLinearVelocity(0,0);
-                body2.body.setAngularVelocity(0);
-                body2.position(new Vector2(0,0));
-            }
-
-            // Submit highscore if possible
-            int mainPlayerScore = mainPlayer.getComponent(PlayerComponent.class).score;
-            if (multiPlayerAvailable)
-            {
-                synchronization.submitScore(mainPlayerScore);
-            }
-
-            // Change music
-            menuMusic.getComponent(MusicComponent.class).play = true;
-            inGameMusic.getComponent(MusicComponent.class).play = false;
-
-            // Delete all level entities
-            ((GameScene)levels.currentLevelScene()).destroyEntities();
-
-            // Show game over screen
-            Gdx.input.setInputProcessor(levels.currentGameOverViewState().getScreen().getStage());
-            viewMachine.nextState(levels.currentGameOverViewState());
-
-            // Show highscore in game over sceen
-            ((GameOverScreen)levels.currentGameOverViewState().getScreen())
-                    .setScore(mainPlayerScore);
-        });
-        */
 
         // THE GAME CAN ALSO END ARTIFICIALLY BY GETTING BACK TO MAIN MENU
         ((InGameScreen) inGameScreen).getMenuEvent().addHandler((args) ->
@@ -535,6 +419,7 @@ public class GamePresenter extends Game
             viewMachine.nextState(levels.currentInGameViewState());
         });
 
+
         // Link game start
         ((MenuScreen) menuScreen).getMultiPlayerEvent().addHandler((args) ->
         {
@@ -596,9 +481,6 @@ public class GamePresenter extends Game
                 // call on state machine to change state
                 viewMachine.nextState(levels.currentInGameViewState());
             }
-            else{
-
-            }
         });
 
         // If multiplayer is ready to start link multiplayer has started event
@@ -632,17 +514,24 @@ public class GamePresenter extends Game
         ((MenuScreen) menuScreen).getHighScoreEvent().addHandler((args) -> {
             // set input processor to new State's BaseScreen stage
             Gdx.input.setInputProcessor(highScoreScreen.getStage());
-            if (multiPlayerAvailable){
-                if(synchronization.isUserSignedIn()) {
+
+            if (multiPlayerAvailable)
+            {
+                if(synchronization.isUserSignedIn())
+                {
                     ((HighScoreScreen) highScoreScreen).populateHighScoreList(synchronization.getHighscore());
-                }else{
+                }
+                else
+                {
                     ((HighScoreScreen) highScoreScreen).populateHighScoreList("");
 
                 }
-
-            }else{
+            }
+            else
+            {
                 ((HighScoreScreen)highScoreScreen).populateHighScoreList("");
             }
+
             // call on state machine to change state
             viewMachine.nextState(viewStateHighScore);
         });
@@ -685,16 +574,24 @@ public class GamePresenter extends Game
         ((GameOverScreen) gameOverScreen).getHighScoreEvent().addHandler((args) -> {
             // set input processor to new State's BaseScreen stage
             Gdx.input.setInputProcessor(highScoreScreen.getStage());
-            if (multiPlayerAvailable){
-                if(synchronization.isUserSignedIn()) {
-                    ((HighScoreScreen) highScoreScreen).populateHighScoreList(synchronization.getHighscore());
-                }else{
-                    ((HighScoreScreen) highScoreScreen).populateHighScoreList("");
 
+            if (multiPlayerAvailable)
+            {
+                if(synchronization.isUserSignedIn())
+                {
+                    ((HighScoreScreen) highScoreScreen).populateHighScoreList(synchronization.getHighscore());
                 }
-            }else{
+                else
+                {
+                    ((HighScoreScreen) highScoreScreen).populateHighScoreList("");
+                }
+            }
+            else
+            {
                 ((HighScoreScreen)highScoreScreen).populateHighScoreList("");
-            }            // call on state machine to change state
+            }
+
+            // call on state machine to change state
             viewMachine.nextState(viewStateHighScore);
         });
 
@@ -739,7 +636,6 @@ public class GamePresenter extends Game
             // call on state machine to change state
             viewMachine.nextState(viewStateMenu);
         });
-
 
 
         // CONTROL EVENTS
@@ -787,6 +683,7 @@ public class GamePresenter extends Game
                 DynamicBodyComponent body = mainPlayer.getComponent(DynamicBodyComponent.class);
                 synchronization.sendAction("S", body.body.getPosition());
             }
+
             ((EventControlModule) mainPlayer.getComponent(ControlComponent.class).controlModule).attackStart();
         });
 
@@ -845,8 +742,6 @@ public class GamePresenter extends Game
 
         // Get current view state and render it
         ((Screen)viewMachine.getCurrentState()).render(delta);
-
-
     }
 
     @Override
