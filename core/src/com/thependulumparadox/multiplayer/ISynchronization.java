@@ -16,6 +16,7 @@ public interface ISynchronization
     boolean isGameInProgress();
     Event getStartMultiplayerEvent();
     Event getStopMultiplayerEvent();
+    Event getPlayerDeathEvent();
     void setInputHandler(IMoveCommands inputHandler);
     void sendAction(String action, Vector2 position);
     void synchronize();

@@ -23,9 +23,13 @@ public class LevelBoundarySystem extends EntitySystem
     private final float DEATH_BOUND = -0.3f;
     private final float CLOSE_THRESHOLD = 0.3f;
 
+    private Entity mainPlayer;
+
     private ImmutableArray<Entity> playerEntities;
     private ComponentMapper<DynamicBodyComponent> dynamicBodyComponentMapper
             = ComponentMapper.getFor(DynamicBodyComponent.class);
+    private ComponentMapper<PlayerComponent> playerComponentMapper
+            = ComponentMapper.getFor(PlayerComponent.class);
 
     public Event<EventArgs> levelEndReached = new Event<>();
     public Event<EventArgs> playerOutOfBounds = new Event<>();
@@ -42,6 +46,18 @@ public class LevelBoundarySystem extends EntitySystem
     {
         playerEntities = engine.getEntitiesFor(Family.all(PlayerComponent.class,
                 TransformComponent.class).get());
+
+        for (Entity entity : playerEntities)
+        {
+            PlayerComponent player = playerComponentMapper.get(entity);
+
+            // The first player
+            if (player.id == 1)
+            {
+                mainPlayer = entity;
+                break;
+            }
+        }
     }
 
     @Override
@@ -49,42 +65,20 @@ public class LevelBoundarySystem extends EntitySystem
     {
         if (playerEntities.size() > 0 && checkBoundaries)
         {
-            // Detect if both players reached level end
-            boolean allReached = true;
-            for (int i = 0; i < playerEntities.size(); i++)
-            {
-                Entity entity = playerEntities.get(i);
-                DynamicBodyComponent body = dynamicBodyComponentMapper.get(entity);
+            // Detect if main player reached level end
+            DynamicBodyComponent body = dynamicBodyComponentMapper.get(mainPlayer);
 
-                if (body.body.getPosition().dst(levelEndPoint) > CLOSE_THRESHOLD)
-                {
-                    allReached = false;
-                    break;
-                }
-            }
-
-            if (allReached)
+            if (body.body.getPosition().dst(levelEndPoint) < CLOSE_THRESHOLD)
             {
                 levelEndReached.invoke(null);
             }
 
 
-            // Detect if any player is out of level bounds
+            // Detect if main player is out of level bounds
             Vector2 bottomBound = new Vector2(0, DEATH_BOUND);
-            boolean playerOut = false;
-            for (int i = 0; i < playerEntities.size(); i++)
-            {
-                Entity entity = playerEntities.get(i);
-                DynamicBodyComponent body = dynamicBodyComponentMapper.get(entity);
+            DynamicBodyComponent body2 = dynamicBodyComponentMapper.get(mainPlayer);
 
-                if (body.body.getPosition().y < bottomBound.y)
-                {
-                    playerOut = true;
-                    break;
-                }
-            }
-
-            if (playerOut)
+            if (body2.body.getPosition().y < bottomBound.y)
             {
                 playerOutOfBounds.invoke(null);
             }

@@ -25,6 +25,7 @@ import com.thependulumparadox.model.component.SoundComponent;
 import com.thependulumparadox.model.component.StaticBodyComponent;
 import com.thependulumparadox.model.component.enhancement.Enhancement;
 import com.thependulumparadox.observer.Event;
+import com.thependulumparadox.observer.EventArgs;
 import com.thependulumparadox.observer.ValueEventArgs;
 
 /**
@@ -67,7 +68,7 @@ public class InteractionSystem extends EntitySystem
 
     // Events
     public final Event<ValueEventArgs<PlayerComponent>> playerUpdate = new Event<>();
-    public final Event<ValueEventArgs<PlayerComponent>> playerDeath = new Event<>();
+    public final Event<EventArgs> playerDeath = new Event<>();
 
 
     public InteractionSystem(World world)

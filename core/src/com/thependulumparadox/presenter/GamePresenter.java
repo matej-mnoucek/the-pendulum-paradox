@@ -43,6 +43,7 @@ import com.thependulumparadox.model.system.RenderingSystem;
 import com.thependulumparadox.model.system.PhysicsSystem;
 import com.thependulumparadox.observer.Event;
 import com.thependulumparadox.observer.EventArgs;
+import com.thependulumparadox.observer.IEventHandler;
 import com.thependulumparadox.observer.ValueEventArgs;
 import com.thependulumparadox.state.IStateMachine;
 import com.thependulumparadox.state.StateMachine;
@@ -220,10 +221,82 @@ public class GamePresenter extends Game
 
 
         // TWO WAYS HOW CAN PLAYER DIE == FALLING OUT OF BOUNDS, DYING
+        IEventHandler<EventArgs> gameOver = (args) ->
+        {
+            levelBoundarySystem.checkBoundaries = false;
+
+            // Notify other game instance
+            if (multiPlayerAvailable && synchronization.isUserSignedIn())
+            {
+                synchronization.sendAction("D", null);
+            }
+
+
+            // Remove players from the system
+            ecs.removeEntity(mainPlayer);
+
+            // Clear forces and reset position
+            DynamicBodyComponent body = mainPlayer.getComponent(DynamicBodyComponent.class);
+            body.body.setLinearVelocity(0,0);
+            body.body.setAngularVelocity(0);
+            body.position(new Vector2(0,0));
+
+            // Deal with second player
+            if (secondPlayer != null)
+            {
+                // Remove players from the system
+                ecs.removeEntity(secondPlayer);
+
+                // Clear forces and reset position
+                DynamicBodyComponent body2 = secondPlayer.getComponent(DynamicBodyComponent.class);
+                body2.body.setLinearVelocity(0,0);
+                body2.body.setAngularVelocity(0);
+                body2.position(new Vector2(0,0));
+            }
+
+
+            // Change music
+            menuMusic.getComponent(MusicComponent.class).play = true;
+            inGameMusic.getComponent(MusicComponent.class).play = false;
+
+            // Submit Highscore if possible
+            int mainPlayerScore = mainPlayer.getComponent(PlayerComponent.class).score;
+            if (multiPlayerAvailable)
+            {
+                synchronization.submitScore(mainPlayerScore);
+            }
+
+            // Delete all level entities
+            ((GameScene)levels.currentLevelScene()).destroyEntities();
+
+            // Show game over screen
+            Gdx.input.setInputProcessor(levels.currentGameOverViewState().getScreen().getStage());
+            viewMachine.nextState(levels.currentGameOverViewState());
+
+            // Show highscore in game over sceen
+            ((GameOverScreen)levels.currentGameOverViewState().getScreen())
+                    .setScore(mainPlayerScore);
+        };
+
+        levelBoundarySystem.playerOutOfBounds.addHandler(gameOver);
+        interactionSystem.playerDeath.addHandler(gameOver);
+
+        if (multiPlayerAvailable)
+        {
+            synchronization.getPlayerDeathEvent().addHandler(gameOver);
+        }
+
+        /*
         // Player out of bounds
         levelBoundarySystem.playerOutOfBounds.addHandler((args) ->
         {
             levelBoundarySystem.checkBoundaries = false;
+
+            // Notify other game instance
+            if (multiPlayerAvailable && synchronization.isUserSignedIn())
+            {
+                synchronization.sendAction("D", null);
+            }
 
 
             // Remove players from the system
@@ -277,6 +350,12 @@ public class GamePresenter extends Game
         {
             levelBoundarySystem.checkBoundaries = false;
 
+            // Notify other game instance
+            if (multiPlayerAvailable && synchronization.isUserSignedIn())
+            {
+                synchronization.sendAction("D", null);
+            }
+
 
             // Remove players from the system
             ecs.removeEntity(mainPlayer);
@@ -322,11 +401,18 @@ public class GamePresenter extends Game
             ((GameOverScreen)levels.currentGameOverViewState().getScreen())
                     .setScore(mainPlayerScore);
         });
+        */
 
         // THE GAME CAN ALSO END ARTIFICIALLY BY GETTING BACK TO MAIN MENU
         ((InGameScreen) inGameScreen).getMenuEvent().addHandler((args) ->
         {
             levelBoundarySystem.checkBoundaries = false;
+
+            // Notify other game instance
+            if (multiPlayerAvailable && synchronization.isUserSignedIn())
+            {
+                synchronization.sendAction("D", null);
+            }
 
 
             // Remove players from the system
