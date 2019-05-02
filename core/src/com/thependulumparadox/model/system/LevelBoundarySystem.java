@@ -20,7 +20,8 @@ import com.thependulumparadox.view.scene.GameScene;
  */
 public class LevelBoundarySystem extends EntitySystem
 {
-    private final float DEATH_BOUND = -10f;
+    private final float DEATH_BOUND = -0.3f;
+    private final float CLOSE_THRESHOLD = 0.3f;
 
     private ImmutableArray<Entity> playerEntities;
     private ComponentMapper<DynamicBodyComponent> dynamicBodyComponentMapper
@@ -55,7 +56,7 @@ public class LevelBoundarySystem extends EntitySystem
                 Entity entity = playerEntities.get(i);
                 DynamicBodyComponent body = dynamicBodyComponentMapper.get(entity);
 
-                if (body.body.getPosition().dst(levelEndPoint) > 0.3f)
+                if (body.body.getPosition().dst(levelEndPoint) > CLOSE_THRESHOLD)
                 {
                     allReached = false;
                     break;

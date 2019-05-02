@@ -109,11 +109,13 @@ public class InGameScreen extends BaseScreen
 
 
         btnLeft = new Button(skin, "left");
+        btnLeft.setColor(1,1,1,0.8f);
         btnRight = new Button(skin, "right");
+        btnRight.setColor(1,1,1,0.8f);
         btnJump = new Touchpad(3, skin, "default");
-        btnJump.setColor(1, 0,0,1);
+        btnJump.setColor(0,0,1,0.8f);
         btnShoot = new Touchpad(3, skin, "default");
-        btnShoot.setColor(0,0,1,1);
+        btnShoot.setColor(1,0,0,0.8f);
 
 
         //add clicklistneres for buttons
