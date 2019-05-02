@@ -82,6 +82,8 @@ public class MultiPlayerApplication extends AndroidApplication implements ISynch
 
     public Event<EventArgs> StartMultiplayerEvent = new Event<>();
     public Event<EventArgs> StopMultiplayerEvent = new Event<>();
+    public Event<EventArgs> playerDeathEvent = new Event<>();
+
 
     // Room ID where the currently active game is taking place; null if we're
     // not playing.
@@ -153,6 +155,9 @@ public class MultiPlayerApplication extends AndroidApplication implements ISynch
         return StopMultiplayerEvent;
     }
 
+    public Event getPlayerDeathEvent(){
+        return playerDeathEvent;
+    }
 
     public void submitScore(int score)
     {
@@ -317,7 +322,7 @@ public class MultiPlayerApplication extends AndroidApplication implements ISynch
                     InputHandler.stopShooting();
                     break;
                 case "D":
-                    //implement death
+                    playerDeathEvent.invoke(null);
                     break;
                 default:
                     //error
