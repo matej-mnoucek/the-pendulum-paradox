@@ -25,9 +25,12 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 public class GameOverScreen extends BaseScreen{
 
     private Label headLine;
+    private Label score;
+
     TextButton btnNewGame;
     TextButton btnToHighscores;
     TextButton btnToMenu;
+
     public Event<EventArgs> btnNewGamePressed;
     private Skin skin;
     private BitmapFont font24;
@@ -37,6 +40,7 @@ public class GameOverScreen extends BaseScreen{
     private Event<EventArgs> newGameEvent = new Event<>();
     private Event<EventArgs> highScoreEvent = new Event<>();
     private Event<EventArgs> menuEvent = new Event<>();
+
     public GameOverScreen()
     {
         //set font and labelStyle
@@ -61,6 +65,8 @@ public class GameOverScreen extends BaseScreen{
 
         //create label for headline
         headLine = new Label("GAME OVER!", labelStyle);
+        score = new Label("Score: 0", labelStyle);
+        score.setFontScale(0.8f);
 
         btnNewGamePressed = new Event<EventArgs>();
         //create button for starting new game
@@ -78,7 +84,7 @@ public class GameOverScreen extends BaseScreen{
             }
         });
         //create button for going to highscore screen
-        btnToHighscores = new TextButton("Highscores", skin);
+        btnToHighscores = new TextButton("High Score", skin);
         btnToHighscores.addListener(new ClickListener(){
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
@@ -108,7 +114,9 @@ public class GameOverScreen extends BaseScreen{
         });
 
         //add headline to headlineTable
-        headLineTable.add(headLine).center().padTop(60);
+        headLineTable.add(headLine).center().padTop(80);
+        headLineTable.row();
+        headLineTable.add(score).padTop(20);
 
         //add buttons to buttonTable
         buttonTable.add(btnNewGame).center().size(300,60);
@@ -120,7 +128,11 @@ public class GameOverScreen extends BaseScreen{
         //add tables to stage
         stage.addActor(buttonTable);
         stage.addActor(headLineTable);
+    }
 
+    public void setScore(int value)
+    {
+        score.setText("Score: " + value);
     }
 
     public Event<EventArgs> getNewGameEvent() {
