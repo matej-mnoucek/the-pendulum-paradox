@@ -754,11 +754,13 @@ public class GamePresenter extends Game
         // Get delta time value for current frame
         float delta = Gdx.graphics.getDeltaTime();
 
+        // Update method
+        update(delta);
+
         // Get current view state and render it
         ((Screen)viewMachine.getCurrentState()).render(delta);
 
-        // Update method
-        update(delta);
+
     }
 
     @Override
