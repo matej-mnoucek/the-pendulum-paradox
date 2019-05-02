@@ -1,5 +1,6 @@
 package com.thependulumparadox.game;
 
+import android.accounts.NetworkErrorException;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Intent;
@@ -20,6 +21,7 @@ import com.google.android.gms.games.AnnotatedData;
 import com.google.android.gms.games.Games;
 import com.google.android.gms.games.GamesActivityResultCodes;
 import com.google.android.gms.games.GamesCallbackStatusCodes;
+import com.google.android.gms.games.GamesClient;
 import com.google.android.gms.games.GamesClientStatusCodes;
 import com.google.android.gms.games.LeaderboardsClient;
 import com.google.android.gms.games.Player;
@@ -220,6 +222,14 @@ public class MultiPlayerApplication extends AndroidApplication implements ISynch
                 .setRoomStatusUpdateCallback(mRoomStatusUpdateCallback)
                 .setAutoMatchCriteria(autoMatchCriteria)
                 .build();
+
+        if (mRealTimeMultiplayerClient == null){
+            handleException(new Exception(), "You are not connected to the internet!");
+            getStopMultiplayerEvent().invoke(null);
+            return;
+        }
+
+
         mRealTimeMultiplayerClient.create(mRoomConfig).addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
             public void onComplete(@NonNull Task<Void> task) {
@@ -369,6 +379,7 @@ public class MultiPlayerApplication extends AndroidApplication implements ISynch
                 errorString = "there was a network error!";
                 break;
             default:
+                errorString = details;
                 break;
         }
 
@@ -379,7 +390,7 @@ public class MultiPlayerApplication extends AndroidApplication implements ISynch
 
         new AlertDialog.Builder(MultiPlayerApplication.this)
                 .setTitle("Oops!")
-                .setMessage("\n Looks like "  + errorString)
+                .setMessage("Looks like "  + errorString)
                 .setNeutralButton(android.R.string.ok, null)
                 .show();
     }
