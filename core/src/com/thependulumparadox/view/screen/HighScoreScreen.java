@@ -224,16 +224,22 @@ public class HighScoreScreen extends BaseScreen
 
     public void populateHighScoreList(String highscores)
     {
-        if (highscores == ""){
-            for(int i = 0; i < 10; i++){
+        if (highscores == "")
+        {
+            for(int i = 0; i < 10; i++)
+            {
                 score[i] = 0;
                 names[i] = "----";
             }
-        }else {
+        }
+        else
+        {
             String[] scores = highscores.split("!");
-            for (int i = 0; i < scores.length; i++) {
+            for (int i = 0; i < scores.length; i++)
+            {
                 String[] temp = scores[i].split(":");
-                score[i] = Integer.parseInt(temp[1].replace(".","0").replace(",","0").replaceAll("\\s+",""));
+                score[i] = Integer.parseInt(temp[1].replace(".","0")
+                        .replace(",","0").replaceAll("\\s+",""));
                 names[i] = temp[0];
             }
         }

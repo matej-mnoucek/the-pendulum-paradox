@@ -35,17 +35,15 @@ public class SettingsScreen extends BaseScreen {
 
     public SettingsScreen()
     {
-
-        //set font and labelstyle
+        // Set font and labelstyle
         initFonts();
         Label.LabelStyle labelStyle = new Label.LabelStyle();
         labelStyle.font = this.font24;
         labelStyle.fontColor = Color.WHITE;
 
-
         this.skin = new Skin(Gdx.files.internal("skins/uiskin.json"));
 
-        //create Table
+        // Create Table
         headlineTable = new Table();
         headlineTable.top();
         headlineTable.setFillParent(true);
@@ -118,10 +116,12 @@ public class SettingsScreen extends BaseScreen {
 
     public void setSound(boolean on)
     {
-        if(on) {
+        if(on)
+        {
             btnSound.setChecked(true);
         }
-        else {
+        else
+        {
             btnSound.setChecked(false);
         }
     }

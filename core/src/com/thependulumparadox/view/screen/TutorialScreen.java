@@ -61,6 +61,7 @@ public class TutorialScreen extends BaseScreen {
                             "(lives, defense, damage).\n\n" +
                         "The game contains three different kinds of enemies\n" +
                             "(knight, ninja, ninja boy)";
+
         tutorialText = new Label(tutorial, labelStyle);
         tutorialText.setFontScale(0.6f);
 
@@ -78,7 +79,7 @@ public class TutorialScreen extends BaseScreen {
             }
         });
 
-        //add headline to headlineTable
+        // Add headline to headlineTable
         headLineTable.add(headLine).padTop(20);
         headLineTable.row();
         headLineTable.add(tutorialText).padTop(20);
@@ -86,15 +87,15 @@ public class TutorialScreen extends BaseScreen {
 
         stage.addActor(headLineTable);
         stage.addActor(btnTable);
-
     }
 
     public Event<EventArgs> getMenuEvent() {
         return menuEvent;
     }
 
-    //initialize TrueTypeFont
-    private void initFonts(){
+    // Initialize TrueTypeFont
+    private void initFonts()
+    {
         FreeTypeFontGenerator generator =
                 new FreeTypeFontGenerator(Gdx.files.internal("fonts/freeagentbold.ttf"));
         FreeTypeFontGenerator.FreeTypeFontParameter params =

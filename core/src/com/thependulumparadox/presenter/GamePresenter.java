@@ -278,6 +278,7 @@ public class GamePresenter extends Game
                     .setScore(mainPlayerScore);
         };
 
+        // Add player death event handlers
         levelBoundarySystem.playerOutOfBounds.addHandler(gameOver);
         interactionSystem.playerDeath.addHandler(gameOver);
 
@@ -478,7 +479,7 @@ public class GamePresenter extends Game
                 menuMusic.getComponent(MusicComponent.class).play = false;
                 inGameMusic.getComponent(MusicComponent.class).play = true;
 
-                // call on state machine to change state
+                // Call on state machine to change state
                 viewMachine.nextState(levels.currentInGameViewState());
             }
         });
@@ -504,15 +505,15 @@ public class GamePresenter extends Game
         // Settings button pressed from main menu
         ((MenuScreen) menuScreen).getSettingsEvent().addHandler((args) ->
         {
-            // set input processor to new State's BaseScreen stage
+            // Set input processor to new State's BaseScreen stage
             Gdx.input.setInputProcessor(settingsScreen.getStage());
-            // call on state machine to change state
+            // Call on state machine to change state
             viewMachine.nextState(viewStateSettings);
         });
 
         // Highscore button pressed from main menu
         ((MenuScreen) menuScreen).getHighScoreEvent().addHandler((args) -> {
-            // set input processor to new State's BaseScreen stage
+            // Set input processor to new State's BaseScreen stage
             Gdx.input.setInputProcessor(highScoreScreen.getStage());
 
             if (multiPlayerAvailable)
@@ -532,21 +533,21 @@ public class GamePresenter extends Game
                 ((HighScoreScreen)highScoreScreen).populateHighScoreList("");
             }
 
-            // call on state machine to change state
+            // Call on state machine to change state
             viewMachine.nextState(viewStateHighScore);
         });
 
         // Tutorial button pressed in main menu
         ((MenuScreen) menuScreen).getTutorialEvent().addHandler((args) -> {
-            // set input processor to new State's BaseScreen stage
+            // Set input processor to new State's BaseScreen stage
             Gdx.input.setInputProcessor(tutorialScreen.getStage());
-            // call on state machine to change state
+            // Call on state machine to change state
             viewMachine.nextState(viewStateTutorial);
         });
 
         // Google log in button pressed in main menu
         ((MenuScreen) menuScreen).getGoogleLoginEvent().addHandler((args) -> {
-            // invoke google play sign in
+            // Invoke google play sign in
             if (multiPlayerAvailable)
             {
                 synchronization.startSignInIntent();
@@ -560,19 +561,19 @@ public class GamePresenter extends Game
             soundSystem.soundOn = !soundSystem.soundOn;
         });
 
-        // new game pressed from gameOver state
+        // New game pressed from gameOver state
         ((GameOverScreen) gameOverScreen).getNewGameEvent().addHandler((args) -> {
-            // set input processor to new State's BaseScreen stage
+            // Set input processor to new State's BaseScreen stage
             Gdx.input.setInputProcessor(inGameScreen.getStage());
-            // call on state machine to change state
+            // Call on state machine to change state
             viewMachine.nextState(levels.currentInGameViewState());
 
             ((MenuScreen) menuScreen).getNewGameEvent().invoke(null);
         });
 
-        // press highscore button from game over screen
+        // Press highscore button from game over screen
         ((GameOverScreen) gameOverScreen).getHighScoreEvent().addHandler((args) -> {
-            // set input processor to new State's BaseScreen stage
+            // Set input processor to new State's BaseScreen stage
             Gdx.input.setInputProcessor(highScoreScreen.getStage());
 
             if (multiPlayerAvailable)
@@ -591,49 +592,49 @@ public class GamePresenter extends Game
                 ((HighScoreScreen)highScoreScreen).populateHighScoreList("");
             }
 
-            // call on state machine to change state
+            // Call on state machine to change state
             viewMachine.nextState(viewStateHighScore);
         });
 
-        // main menu button pressed from game over screen
+        // Main menu button pressed from game over screen
         ((GameOverScreen) gameOverScreen).getMenuEvent().addHandler((args) -> {
-            // set input processor to new State's BaseScreen stage
+            // Set input processor to new State's BaseScreen stage
             Gdx.input.setInputProcessor(menuScreen.getStage());
-            // call on state machine to change state
+            // Call on state machine to change state
             viewMachine.nextState(viewStateMenu);
         });
 
         // Highscore button pressed from main menu screen
         ((HighScoreScreen) highScoreScreen).getMenuEvent().addHandler((args) -> {
-            // set input processor to new State's BaseScreen stage
+            // Set input processor to new State's BaseScreen stage
             Gdx.input.setInputProcessor(menuScreen.getStage());
-            // call on state machine to change state
+            // Call on state machine to change state
             viewMachine.nextState(viewStateMenu);
         });
 
-        // sound button pressed from settings screen
+        // Sound button pressed from settings screen
         ((SettingsScreen) settingsScreen).getSoundEvent().addHandler((args) -> {
-            //if sound is currently playing: pause menu-music. Set in-game sound to be off.
-            //set boolean variable "soundOn" to false
+            // If sound is currently playing: pause menu-music. Set in-game sound to be off.
+            // Set boolean variable "soundOn" to false
 
             ((InGameScreen) inGameScreen).setSound(!soundSystem.soundOn);
             soundSystem .soundOn = !soundSystem.soundOn;
 
         });
 
-        // if back button pressed from settings screen:
+        // If back button pressed from settings screen:
         ((SettingsScreen) settingsScreen).getMenuEvent().addHandler((args) -> {
-            // set input processor to new State's BaseScreen stage
+            // Set input processor to new State's BaseScreen stage
             Gdx.input.setInputProcessor(menuScreen.getStage());
-            // call on state machine to change state
+            // Call on state machine to change state
             viewMachine.nextState(viewStateMenu);
         });
 
-        // tutorial button pressed from main menu screen
+        // Tutorial button pressed from main menu screen
         ((TutorialScreen) tutorialScreen).getMenuEvent().addHandler((args) -> {
-            // set input processor to new State's BaseScreen stage
+            // Set input processor to new State's BaseScreen stage
             Gdx.input.setInputProcessor(menuScreen.getStage());
-            // call on state machine to change state
+            // Call on state machine to change state
             viewMachine.nextState(viewStateMenu);
         });
 
@@ -679,7 +680,8 @@ public class GamePresenter extends Game
 
         ((InGameScreen) inGameScreen).getShootEvent().addHandler((args) -> {
 
-            if(multiPlayerAvailable) {
+            if(multiPlayerAvailable)
+            {
                 DynamicBodyComponent body = mainPlayer.getComponent(DynamicBodyComponent.class);
                 synchronization.sendAction("S", body.body.getPosition());
             }

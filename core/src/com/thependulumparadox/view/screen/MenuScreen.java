@@ -26,7 +26,6 @@ import com.thependulumparadox.presenter.GamePresenter;
  */
 public class MenuScreen extends BaseScreen
 {
-
     private TextButton btnNewGame;
     private TextButton btnMultiPlayerGame;
     private TextButton btnTutorial;
@@ -55,12 +54,10 @@ public class MenuScreen extends BaseScreen
         labelStyle.font = font24;
         labelStyle.fontColor = Color.WHITE;
 
-
         Table table = new Table();
         table.center();
         table.setFillParent(true);
 
-        //TODO: Fit buttons with final size of screen!
 
         this.btnNewGame = new TextButton("New Game", skin);
         btnNewGame.addListener(new ClickListener(){

@@ -43,33 +43,34 @@ public class GameOverScreen extends BaseScreen{
 
     public GameOverScreen()
     {
-        //set font and labelStyle
+        // Set font and labelStyle
         initFonts();
         Label.LabelStyle labelStyle = new Label.LabelStyle();
         labelStyle.font = font24;
         labelStyle.fontColor = Color.WHITE;
 
-        // declare skin
+        // Declare skin
         this.skin = new Skin(Gdx.files.internal("skins/uiskin.json"));
 
-        //create table for buttons. place in center of stage. size root of table to stage
+        // Create table for buttons, place in center of stage, size root of table to stage
         buttonTable = new Table();
         buttonTable.center();
         buttonTable.setFillParent(true);
         buttonTable.setDebug(true);
 
-        //create table for headline.
+        // Create table for headline
         headLineTable = new Table();
         headLineTable.top();
         headLineTable.setFillParent(true);
 
-        //create label for headline
+        // Create label for headline
         headLine = new Label("GAME OVER!", labelStyle);
         score = new Label("Score: 0", labelStyle);
         score.setFontScale(0.8f);
 
         btnNewGamePressed = new Event<EventArgs>();
-        //create button for starting new game
+
+        // Create button for starting new game
         btnNewGame = new TextButton("New Game", skin);
         btnNewGame.addListener(new ClickListener(){
             @Override
@@ -83,7 +84,7 @@ public class GameOverScreen extends BaseScreen{
                 super.touchUp(event, x, y, pointer, button);
             }
         });
-        //create button for going to highscore screen
+        // Create button for going to highscore screen
         btnToHighscores = new TextButton("High Score", skin);
         btnToHighscores.addListener(new ClickListener(){
             @Override
@@ -98,7 +99,7 @@ public class GameOverScreen extends BaseScreen{
             }
         });
 
-        //create button for going back to menu
+        // Create button for going back to menu
         btnToMenu = new TextButton("Main Menu", skin);
         btnToMenu.addListener(new ClickListener(){
             @Override
@@ -113,19 +114,19 @@ public class GameOverScreen extends BaseScreen{
             }
         });
 
-        //add headline to headlineTable
+        // Add headline to headlineTable
         headLineTable.add(headLine).center().padTop(80);
         headLineTable.row();
         headLineTable.add(score).padTop(20);
 
-        //add buttons to buttonTable
+        // Add buttons to buttonTable
         buttonTable.add(btnNewGame).center().size(300,60);
         buttonTable.row();
         buttonTable.add(btnToMenu).center().size(300,60).padTop(20);
         buttonTable.row();
         buttonTable.add(btnToHighscores).center().size(300,60).padTop(20);
 
-        //add tables to stage
+        // Add tables to stage
         stage.addActor(buttonTable);
         stage.addActor(headLineTable);
     }
@@ -152,7 +153,7 @@ public class GameOverScreen extends BaseScreen{
     }
 
 
-    //initialize TrueTypeFont
+    // Initialize TrueTypeFont
     private void initFonts()
     {
         FreeTypeFontGenerator generator =

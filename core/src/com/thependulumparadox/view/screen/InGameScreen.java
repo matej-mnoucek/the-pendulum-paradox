@@ -58,7 +58,6 @@ public class InGameScreen extends BaseScreen
     Event<EventArgs> soundEvent = new Event<>();
     Event<EventArgs> MenuEvent = new Event<>();
 
-
     private boolean soundOn;
 
 
@@ -73,18 +72,18 @@ public class InGameScreen extends BaseScreen
 
         this.soundOn = true;
 
-        //table for holding HUD objects
+        // Table for holding HUD objects
         hudTable = new Table();
         hudTable.top();
         hudTable.setFillParent(true);
 
-        //table for holding move buttons. left bottom side of screen
+        // Table for holding move buttons, left bottom side of screen
         moveBtnTable = new Table();
         moveBtnTable.bottom().left();
         moveBtnTable.setFillParent(true);
         moveBtnTable.setDebug(false);
 
-        //table for holding shoot and jump buttons. Right bottom side of screen
+        // Table for holding shoot and jump buttons, right bottom side of screen
         actionBtnTable = new Table();
         actionBtnTable.bottom().right();
         actionBtnTable.setFillParent(true);
@@ -94,19 +93,16 @@ public class InGameScreen extends BaseScreen
         lifeCounter = 0;
         scoreCounter = 0;
 
-        //create labels for lives and ammo
+        // Create labels for lives and ammo
         lifeLabel = new Label("LIVES: ", labelStyle);
         lifeCount = new Label(String.format("%01d", lifeCounter),labelStyle);
         scoreLabel = new Label("SCORE:", labelStyle);
         scoreCount = new Label(String.format("%03d", scoreCounter), labelStyle);
 
-
         btnSound = new Button(skin, "sound");
         btnSound.setChecked(true);
 
-
         btnMenu = new TextButton("Main menu", skin);
-
 
         btnLeft = new Button(skin, "left");
         btnLeft.setColor(1,1,1,0.8f);
@@ -118,7 +114,7 @@ public class InGameScreen extends BaseScreen
         btnShoot.setColor(1,0,0,0.8f);
 
 
-        //add clicklistneres for buttons
+        // Add click listeners for buttons
         btnSound.addListener(new ClickListener(){
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
@@ -131,8 +127,6 @@ public class InGameScreen extends BaseScreen
                 super.touchUp(event, x, y, pointer, button);
             }
         });
-
-
         btnMenu.addListener(new ClickListener(){
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
@@ -145,8 +139,6 @@ public class InGameScreen extends BaseScreen
                 super.touchUp(event, x, y, pointer, button);
             }
         });
-
-
         btnLeft.addListener(new ClickListener(){
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
@@ -198,7 +190,7 @@ public class InGameScreen extends BaseScreen
             }
         });
 
-        //add ammo, lives and weapon to HUD table
+        // Add score and lives to HUD table
         hudTable.add(scoreLabel).expandX().align(Align.left).padLeft(20).padTop(10);
         hudTable.add(btnMenu).expandX().align(Align.center).padTop(20).height(50).width(150);
         hudTable.add(lifeLabel).expandX().align(Align.right).padRight(20).padTop(10);
@@ -212,21 +204,22 @@ public class InGameScreen extends BaseScreen
         hudTable.add(btnSound).align(Align.right).padRight(20).padTop(20).width(60).height(60);
 
 
-        //add move buttons to movebtnTable
+        // Add move buttons to movebtnTable
         moveBtnTable.add(btnLeft).width(120).height(120).padLeft(40).padBottom(15);
         moveBtnTable.add(btnRight).width(120).height(120).padBottom(40).padLeft(20);
 
-        //add action buttons to actionBtnTable
+        // Add action buttons to actionBtnTable
         actionBtnTable.add(btnJump).width(120).height(120).padBottom(40).padRight(20);
         actionBtnTable.add(btnShoot).width(120).height(120).padRight(30).padBottom(15);
 
-        //add tables to Stage
+        // Add tables to Stage
         stage.addActor(hudTable);
         stage.addActor(moveBtnTable);
         stage.addActor(actionBtnTable);
     }
 
-    private void initFonts(){
+    private void initFonts()
+    {
         FreeTypeFontGenerator generator =
                 new FreeTypeFontGenerator(Gdx.files.internal("fonts/freeagentbold.ttf"));
         FreeTypeFontGenerator.FreeTypeFontParameter params =
@@ -237,11 +230,15 @@ public class InGameScreen extends BaseScreen
         this.font24 = generator.generateFont(params);
     }
 
-    public void setSound(boolean on){
-        if(on){
+    public void setSound(boolean on)
+    {
+        if(on)
+        {
             btnSound.setChecked(true);
             this.soundOn = true;
-        } else{
+        }
+        else
+        {
             btnSound.setChecked(false);
             this.soundOn = false;
         }

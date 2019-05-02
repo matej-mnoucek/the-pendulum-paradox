@@ -30,7 +30,6 @@ public class NetworkControlModule extends EventControlModule implements IMoveCom
     {
         leftEnd();
         body.setTransform(position,0);
-
     }
 
     @Override
@@ -39,7 +38,6 @@ public class NetworkControlModule extends EventControlModule implements IMoveCom
     public void stopMoveRight(Vector2 position)
     {
         rightEnd();
-
         body.setTransform(position,0);
     }
 
@@ -48,9 +46,12 @@ public class NetworkControlModule extends EventControlModule implements IMoveCom
     @Override
     public void stopJump() { jumpEnd(); }
     @Override
-    public void startShooting(Vector2 position  ) {
+    public void startShooting(Vector2 position )
+    {
         body.setTransform(position,0);
-        attackStart(); }
+        attackStart();
+    }
+
     @Override
     public void stopShooting() { attackEnd(); }
 }
