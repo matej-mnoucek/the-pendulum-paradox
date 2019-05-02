@@ -3,7 +3,10 @@ package com.thependulumparadox.game;
 import android.accounts.NetworkErrorException;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.view.KeyEvent;
@@ -79,6 +82,8 @@ public class MultiPlayerApplication extends AndroidApplication implements ISynch
 
     public Event<EventArgs> StartMultiplayerEvent = new Event<>();
     public Event<EventArgs> StopMultiplayerEvent = new Event<>();
+    public Event<EventArgs> playerDeathEvent = new Event<>();
+
 
     // Room ID where the currently active game is taking place; null if we're
     // not playing.
@@ -130,6 +135,10 @@ public class MultiPlayerApplication extends AndroidApplication implements ISynch
         mGoogleSignInClient = GoogleSignIn.getClient(this, GoogleSignInOptions.DEFAULT_GAMES_SIGN_IN);
 
     }
+
+
+
+
     public boolean isUserSignedIn(){
         return (mSignedInAccount != null);
     }
@@ -146,6 +155,9 @@ public class MultiPlayerApplication extends AndroidApplication implements ISynch
         return StopMultiplayerEvent;
     }
 
+    public Event getPlayerDeathEvent(){
+        return playerDeathEvent;
+    }
 
     public void submitScore(int score)
     {
@@ -223,7 +235,7 @@ public class MultiPlayerApplication extends AndroidApplication implements ISynch
                 .setAutoMatchCriteria(autoMatchCriteria)
                 .build();
 
-        if (mRealTimeMultiplayerClient == null){
+        if (mRealTimeMultiplayerClient == null || mGoogleSignInClient == null){
             handleException(new Exception(), "You are not connected to the internet!");
             getStopMultiplayerEvent().invoke(null);
             return;
@@ -308,6 +320,9 @@ public class MultiPlayerApplication extends AndroidApplication implements ISynch
                 case "SS":
                     //stop shooting
                     InputHandler.stopShooting();
+                    break;
+                case "D":
+                    playerDeathEvent.invoke(null);
                     break;
                 default:
                     //error
