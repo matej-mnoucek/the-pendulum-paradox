@@ -235,13 +235,6 @@ public class MultiPlayerApplication extends AndroidApplication implements ISynch
                 .setAutoMatchCriteria(autoMatchCriteria)
                 .build();
 
-        if (mRealTimeMultiplayerClient == null || mGoogleSignInClient == null){
-            handleException(new Exception(), "You are not connected to the internet!");
-            getStopMultiplayerEvent().invoke(null);
-            return;
-        }
-
-
         mRealTimeMultiplayerClient.create(mRoomConfig).addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
             public void onComplete(@NonNull Task<Void> task) {
@@ -394,7 +387,6 @@ public class MultiPlayerApplication extends AndroidApplication implements ISynch
                 errorString = "there was a network error!";
                 break;
             default:
-                errorString = details;
                 break;
         }
 
