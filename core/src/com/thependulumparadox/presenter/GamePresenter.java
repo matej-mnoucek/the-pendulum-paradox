@@ -527,6 +527,7 @@ public class GamePresenter extends Game
             stopMultiGame = synchronization.getStopMultiplayerEvent();
             stopMultiGame.addHandler((args) ->{
                 ((InGameScreen) inGameScreen).getMenuEvent().invoke(null);
+                multiPlayerGameReady = true;
             } );
         }
 
