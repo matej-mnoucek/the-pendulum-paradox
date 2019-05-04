@@ -58,7 +58,7 @@ public class MenuScreen extends BaseScreen
 
         loggedIn = new Label("", labelStyle);
         loggedIn.setAlignment(Align.center);
-        setIsLoggedIn(true);
+        setIsLoggedIn(false);
 
         Table table = new Table();
         table.center();

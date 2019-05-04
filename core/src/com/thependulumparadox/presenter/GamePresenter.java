@@ -706,6 +706,11 @@ public class GamePresenter extends Game
             ((EventControlModule) mainPlayer.getComponent(ControlComponent.class).controlModule).jumpStart();
         });
 
+        // Check if player is already logged in Google Play Games
+        if (multiPlayerAvailable)
+        {
+            ((MenuScreen) menuScreen).setIsLoggedIn(synchronization.isUserSignedIn());
+        }
     }
 
     public void update(float delta)
