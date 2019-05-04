@@ -551,6 +551,7 @@ public class GamePresenter extends Game
             if (multiPlayerAvailable)
             {
                 synchronization.startSignInIntent();
+                ((MenuScreen) menuScreen).setIsLoggedIn(synchronization.isUserSignedIn());
             }
         });
 

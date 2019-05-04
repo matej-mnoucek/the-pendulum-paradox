@@ -27,6 +27,7 @@ public class InGameScreen extends BaseScreen
     private Label lifeCount;
     private Label scoreLabel;
     private Label scoreCount;
+
     private Image weapon;
     private Button btnSound;
     private Button btnMenu;

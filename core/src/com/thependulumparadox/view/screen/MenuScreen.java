@@ -15,6 +15,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.utils.Align;
 import com.thependulumparadox.presenter.GamePresenter;
 import com.thependulumparadox.multiplayer.ISynchronization;
 import com.thependulumparadox.observer.Event;
@@ -33,6 +34,7 @@ public class MenuScreen extends BaseScreen
     private TextButton btnSettings;
     private TextButton btnGoogleLogin;
     private Skin skin;
+    private Label loggedIn;
 
     private BitmapFont font24;
 
@@ -53,6 +55,10 @@ public class MenuScreen extends BaseScreen
         Label.LabelStyle labelStyle = new Label.LabelStyle();
         labelStyle.font = font24;
         labelStyle.fontColor = Color.WHITE;
+
+        loggedIn = new Label("", labelStyle);
+        loggedIn.setAlignment(Align.center);
+        setIsLoggedIn(true);
 
         Table table = new Table();
         table.center();
@@ -144,7 +150,7 @@ public class MenuScreen extends BaseScreen
         });
 
         Label gameName = new Label("THE PENDULUM PARADOX", labelStyle);
-        gameName.setFontScale(1.3f);
+        gameName.setFontScale(1.4f);
 
         table.add(gameName);
         table.row();
@@ -159,6 +165,8 @@ public class MenuScreen extends BaseScreen
         table.add(btnTutorial).center().size(300,55).padTop(20);
         table.row();
         table.add(btnGoogleLogin).center().size(300,55).padTop(20);
+        table.row();
+        table.add(loggedIn).center().padTop(30);
 
         stage.addActor(table);
     }
@@ -202,6 +210,18 @@ public class MenuScreen extends BaseScreen
 
     public Event<EventArgs> getGoogleLoginEvent(){ return googleLoginEvent; }
 
+
+    public void setIsLoggedIn(boolean isLoggedIn)
+    {
+        if (isLoggedIn)
+        {
+            loggedIn.setText("Ready to play multiplayer");
+        }
+        else
+        {
+            loggedIn.setText("To play multiplayer\nlog in first");
+        }
+    }
 
     @Override
     public void show() {
