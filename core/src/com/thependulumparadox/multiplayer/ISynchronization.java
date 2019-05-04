@@ -17,6 +17,7 @@ public interface ISynchronization
     Event getStartMultiplayerEvent();
     Event getStopMultiplayerEvent();
     Event getPlayerDeathEvent();
+    Event getUserLoggedInEvent();
     void setInputHandler(IMoveCommands inputHandler);
     void sendAction(String action, Vector2 position);
     void synchronize();

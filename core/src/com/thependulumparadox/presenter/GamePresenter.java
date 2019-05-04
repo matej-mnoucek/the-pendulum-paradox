@@ -57,6 +57,8 @@ import com.thependulumparadox.view.screen.MenuScreen;
 import com.thependulumparadox.view.screen.SettingsScreen;
 import com.thependulumparadox.view.screen.TutorialScreen;
 
+import java.awt.Menu;
+
 /**
  * The main control class of the whole game
  * It is closer to MVP pattern than to MVC and that's why it's called Presenter
@@ -551,7 +553,6 @@ public class GamePresenter extends Game
             if (multiPlayerAvailable)
             {
                 synchronization.startSignInIntent();
-                ((MenuScreen) menuScreen).setIsLoggedIn(synchronization.isUserSignedIn());
             }
         });
 
@@ -709,7 +710,11 @@ public class GamePresenter extends Game
         // Check if player is already logged in Google Play Games
         if (multiPlayerAvailable)
         {
-            ((MenuScreen) menuScreen).setIsLoggedIn(synchronization.isUserSignedIn());
+            MenuScreen screen = ((MenuScreen) menuScreen);
+            screen.setIsLoggedIn(synchronization.isUserSignedIn());
+            synchronization.getUserLoggedInEvent().addHandler((args) -> {
+                screen.setIsLoggedIn(true);
+            });
         }
     }
 
