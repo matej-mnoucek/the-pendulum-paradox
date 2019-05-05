@@ -74,7 +74,7 @@ public class MultiPlayerApplication extends AndroidApplication implements ISynch
     public Event<EventArgs> startMultiplayerEvent = new Event<>();
     public Event<EventArgs> stopMultiplayerEvent = new Event<>();
     public Event<EventArgs> playerDeathEvent = new Event<>();
-    public Event<EventArgs> userLoggedIn = new Event<>();jak
+    public Event<EventArgs> userLoggedIn = new Event<>();
 
 
     // Room ID where the currently active game is taking place, null if we're not playing.

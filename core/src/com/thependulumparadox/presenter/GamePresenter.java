@@ -148,6 +148,7 @@ public class GamePresenter extends Game
         // Load levels
         TiledMap level1 = new TmxMapLoader().load("levels/level1.tmx");
         TiledMap level2 = new TmxMapLoader().load("levels/level2.tmx");
+        TiledMap level3 = new TmxMapLoader().load("levels/level3.tmx");
 
         // Create menu view states, states are made up of one screen and one scene
         GameScene menuScene = new GameScene(level1, mainCamera, world, ecs);
@@ -157,13 +158,14 @@ public class GamePresenter extends Game
         viewStateTutorial = new ViewState(menuScene, tutorialScreen);
 
         // Load levels, add them to the manager and modify camera zoom
-        mainCamera.zoom = 1.5f;
+        mainCamera.zoom = 1.65f;
         GameScene levelScene1 = new GameScene(level1, mainCamera, world, ecs);
         GameScene levelScene2 = new GameScene(level2, mainCamera, world, ecs);
+        GameScene levelScene3 = new GameScene(level3, mainCamera, world, ecs);
 
         levels.addLevel(levelScene1, inGameScreen, gameOverScreen);
         levels.addLevel(levelScene2, inGameScreen, gameOverScreen);
-
+        levels.addLevel(levelScene3, inGameScreen, gameOverScreen);
         // Add states to the state machine
         viewMachine.addState(viewStateMenu);
         viewMachine.addState(viewStateHighScore);
